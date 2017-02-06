@@ -2,19 +2,24 @@
 #include "../inc/global.h"
 
 /* Basic Object */
-Obj::Obj() { }
+Obj::Obj() {
+	id = objtotal++;
+}
 void Obj::update() { }	
+int Obj::objtotal = 0;
 
 
 /* Visible Object */
-VisibleObj::VisibleObj(float x, float y, int w, int h) : x(x), y(y), w(w), h(h) { }
+VisibleObj::VisibleObj(float x, float y, int w, int h, int depth) : x(x), y(y), w(w), h(h), depth(depth) { }
 void VisibleObj::draw() {
-	al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "O");
+	al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "#");
+}
+bool VisibleObj::operator<(const VisibleObj &r) {
+	return this->depth < r.depth;
 }
 
-
 /* Mobile Object */
-MobileObj::MobileObj(float x, float y, int w, int h) : VisibleObj(x, y, w, h) {
+MobileObj::MobileObj(float x, float y, int w, int h, int depth) : VisibleObj(x, y, w, h, depth) {
 	vspeed = 0;
 	hspeed = 0;
 }
@@ -26,7 +31,7 @@ void MobileObj::update() {
 
 
 /* Player Object */
-Player::Player(float x, float y, int w, int h) : MobileObj(x, y, w, h) {
+Player::Player(float x, float y, int w, int h, int depth) : MobileObj(x, y, w, h, depth) {
 	score = 0;
 }
 void Player::update() {
@@ -53,16 +58,18 @@ void Player::update() {
 		hspeed = 0;
 
 	/* don't leave the screen */
-	if (x + hspeed <= (w/2) || x + hspeed >= SCREEN_W - (w/2))
+	if (x+hspeed <= (w/2) || x+hspeed >= SCREEN_W - (w/2))
 		hspeed = 0;
 
-	if (y + vspeed <= 0 || y + vspeed >= SCREEN_H - h)
+	if (y+vspeed <= h/2 || y+vspeed >= SCREEN_H - h/2)
 		vspeed = 0;
 
 	/* handle collisions */
 
+	/* update position based on speed */
 	super::update();
 }
 void Player::draw() {
-	al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "@");
+/*	al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "@"); */
+	al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
 }

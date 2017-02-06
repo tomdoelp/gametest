@@ -10,6 +10,12 @@
 #include "../inc/global.h"
 #include "../inc/Obj.h"
 
+//#include <list>
+// std::list<int> L;
+// L.push_back(1)
+// L.insert(++L.begin(), 2);
+// L.sort
+
 /* externs from global.h */
 bool done;
 ALLEGRO_EVENT_QUEUE* event_queue;
@@ -18,8 +24,9 @@ ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
 bool key[4] = {false, false, false, false};
 
-ALLEGRO_SAMPLE *sample = NULL;
 
+
+ALLEGRO_SAMPLE *sample = NULL;
 
 void abort(const char* message) {
 	fprintf(stderr,"%s\n", message);
@@ -87,12 +94,14 @@ void game_loop() {
 	bool redraw = true;
 	al_start_timer(timer);
 
+	/* load and play a sound */
 	sample = al_load_sample("ring.ogg");
 	if (!sample)
-		fprintf(stderr, "RING RING RING ! ! !\n");
-	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+		fprintf(stderr, "Error loading sound file\n");
+	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL); 
 
-	Player p (100, 100, 72, 72); 
+	/* create a player object */
+	Player p (SCREEN_W/2, SCREEN_H/2, 36, 72); 
 
 	while (!done) {
 		ALLEGRO_EVENT event;
@@ -145,7 +154,7 @@ void game_loop() {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(0,0,0));
 			p.draw();
-			//update graphics();
+			//update_graphics();
 			al_flip_display();
 		}
 	}
