@@ -43,25 +43,25 @@ Player::Player(float x, float y, int w, int h, int depth) : MobileObj(x, y, w, h
 
 void Player::update() {
 	/* vertical control */
-	if (key[KEY_UP]) {
+	if (key[ALLEGRO_KEY_UP]) {
 		vspeed = -5;
-	} else if (key[KEY_DOWN]) {
+	} else if (key[ALLEGRO_KEY_DOWN]) {
 		vspeed = 5;
 	} else
 		vspeed = 0;
 
-	if (key[KEY_UP] && key[KEY_DOWN])
+	if (key[ALLEGRO_KEY_UP] && key[ALLEGRO_KEY_DOWN])
 		vspeed = 0;
 
 	/* horizontal control */
-	if (key[KEY_LEFT]) {
+	if (key[ALLEGRO_KEY_LEFT]) {
 		hspeed = -5;
-	} else if (key[KEY_RIGHT]) {
+	} else if (key[ALLEGRO_KEY_RIGHT]) {
 		hspeed = 5;
 	} else
 		hspeed = 0;
 
-	if (key[KEY_LEFT] && key[KEY_RIGHT])
+	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
 		hspeed = 0;
 
 	/* don't leave the screen */

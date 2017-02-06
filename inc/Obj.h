@@ -33,6 +33,7 @@ class VisibleObj : public Obj {
 		int w;
 		int h;
 		int depth;
+		bool visible;
 };
 
 

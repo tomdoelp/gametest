@@ -24,8 +24,7 @@ ALLEGRO_EVENT_QUEUE* event_queue;
 ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
-bool key[4] = {false, false, false, false};
-
+bool key[ALLEGRO_KEY_MAX];
 
 
 ALLEGRO_SAMPLE *sample = NULL;
@@ -36,6 +35,10 @@ void abort(const char* message) {
 }
 
 void init() {
+	/* fill keyboard array with false */
+	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
+		key[i] = false;
+	}
 	if (!al_init())
 		abort("Failed to initialize allegro");
 
@@ -50,6 +53,7 @@ void init() {
 	display = al_create_display(SCREEN_W, SCREEN_H);
 	if (!display)
 		abort("Failed to create display");
+	al_set_window_title(display, "o b o m a  does the  m a m b o");
 
 	event_queue = al_create_event_queue();
 	if (!event_queue)
@@ -67,7 +71,7 @@ void init() {
 	if (!al_init_ttf_addon())
 		abort("Failed to initialize ttf addon");
 
-	font = al_load_ttf_font("/home/tom/school/cse350/APHont/APHont-Regular_q15c.ttf",72,0);
+	font = al_load_ttf_font("/home/tom/school/cse350/APHont/APHont-Regular_q15c.ttf",72,0); 
 	if (!font)
 		abort("Failed to load font");
 
@@ -119,37 +123,39 @@ void game_loop() {
 			if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
 				done = true;
 			}
-			switch (event.keyboard.keycode) {
-				case ALLEGRO_KEY_UP: 
-					key[KEY_UP] = true;
-					break;
-				case ALLEGRO_KEY_DOWN: 
-					key[KEY_DOWN] = true;
-					break;
-				case ALLEGRO_KEY_LEFT: 
-					key[KEY_LEFT] = true;
-					break;
-				case ALLEGRO_KEY_RIGHT: 
-					key[KEY_RIGHT] = true;
-					break;
-			}
+			key[event.keyboard.keycode] = true;
+			/*switch (event.keyboard.keycode) {
+			  case ALLEGRO_KEY_UP: 
+			  key[KEY_UP] = true;
+			  break;
+			  case ALLEGRO_KEY_DOWN: 
+			  key[KEY_DOWN] = true;
+			  break;
+			  case ALLEGRO_KEY_LEFT: 
+			  key[KEY_LEFT] = true;
+			  break;
+			  case ALLEGRO_KEY_RIGHT: 
+			  key[KEY_RIGHT] = true;
+			  break;
+			  }*/
 			//get_input();
 		}
 		else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-			switch (event.keyboard.keycode) {
-				case ALLEGRO_KEY_UP: 
-					key[KEY_UP] = false;
-					break;
-				case ALLEGRO_KEY_DOWN: 
-					key[KEY_DOWN] = false;
-					break;
-				case ALLEGRO_KEY_LEFT: 
-					key[KEY_LEFT] = false;
-					break;
-				case ALLEGRO_KEY_RIGHT: 
-					key[KEY_RIGHT] = false;
-					break;
-			}
+			key[event.keyboard.keycode] = false;
+			/*switch (event.keyboard.keycode) {
+			  case ALLEGRO_KEY_UP: 
+			  key[KEY_UP] = false;
+			  break;
+			  case ALLEGRO_KEY_DOWN: 
+			  key[KEY_DOWN] = false;
+			  break;
+			  case ALLEGRO_KEY_LEFT: 
+			  key[KEY_LEFT] = false;
+			  break;
+			  case ALLEGRO_KEY_RIGHT: 
+			  key[KEY_RIGHT] = false;
+			  break;
+			  }*/
 		}
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
