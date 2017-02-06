@@ -12,7 +12,8 @@ int Obj::objtotal = 0;
 /* Visible Object */
 VisibleObj::VisibleObj(float x, float y, int w, int h, int depth) : x(x), y(y), w(w), h(h), depth(depth) { }
 void VisibleObj::draw() {
-	al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "#");
+/*	al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "#"); */
+	al_draw_filled_rectangle(x-w/2, y-h/2, x+w/2, y+h/2, al_map_rgb(125,125,125));	
 }
 bool VisibleObj::operator<(const VisibleObj &r) {
 	return this->depth < r.depth;
