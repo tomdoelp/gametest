@@ -5,113 +5,62 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include "../inc/global.h"
+#include "../inc/Obj.h"
 
-class Object {
-	public:
-		Object(float x, float y, int w, int h) : x(x), y(y), w(w), h(h) { }
-/*	private: */
-		float x;
-		float y;
-		int w;
-		int h;
-		float hspeed = 0;
-		float vspeed = 0;
+/* externs from global.h */
+bool done;
+ALLEGRO_EVENT_QUEUE* event_queue;
+ALLEGRO_TIMER* timer;
+ALLEGRO_DISPLAY* display;
+ALLEGRO_FONT *font;
+bool key[4] = {false, false, false, false};
 
-		void update() {
-			if (x + hspeed > (w/2) && x + hspeed < SCREEN_W - (w/2))
-				x += hspeed;
-			else 
-				hspeed = 0;
-
-			if (y + vspeed > 0 && y + vspeed < SCREEN_H - h)
-				y += vspeed;
-			else
-				vspeed = 0;
-		}
-		
-		void draw() {
-			al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "#");
-		}
-};
-
-
-
-struct Player: public Object {
-	public:
-		Player(float x, float y, int w, int h) : Object(x, y, w, h) { }
-
-		void update() {
-			if (key[KEY_UP]) {
-				vspeed = -5;
-			} else if (key[KEY_DOWN]) {
-				vspeed = 5;
-			} else
-				vspeed = 0;
-
-			if (key[KEY_UP] && key[KEY_DOWN])
-				vspeed = 0;
-
-			if (key[KEY_LEFT]) {
-				hspeed = -5;
-			} else if (key[KEY_RIGHT]) {
-				hspeed = 5;
-			} else
-				hspeed = 0;
-
-			if (key[KEY_LEFT] && key[KEY_RIGHT])
-				hspeed = 0;
-
-			Object::update();
-		}
-
-		void draw() {
-			al_draw_text(font, al_map_rgb(255,255,255), x, y, ALLEGRO_ALIGN_CENTRE, "@");
-		}
-};
+ALLEGRO_SAMPLE *sample = NULL;
 
 
 void abort(const char* message) {
-	printf("%s\n", message);
+	fprintf(stderr,"%s\n", message);
 	exit(1);
 }
 
 void init() {
-	if (!al_init()) {
+	if (!al_init())
 		abort("Failed to initialize allegro");
-	}
 
-	if (!al_install_keyboard()) {
+	if (!al_install_keyboard())
 		abort("Failed to install keyboard");
-	}
 
 	timer = al_create_timer(1.0 / FPS);
-	if (!timer) {
+	if (!timer)
 		abort("Failed to create timer");
-	}
 
 	al_set_new_display_flags(ALLEGRO_WINDOWED);
 	display = al_create_display(SCREEN_W, SCREEN_H);
-	if (!display) {
+	if (!display)
 		abort("Failed to create display");
-	}
 
 	event_queue = al_create_event_queue();
-	if (!event_queue) {
+	if (!event_queue)
 		abort("Failed to create event queue");
-	}
 
-	if (!al_init_font_addon()) {
-		abort("Failed to do font thing");
-	}
-	if (!al_init_ttf_addon()) {
-		abort("Failed to do ttf");
-	}
+	if (!al_install_audio())
+		abort("Failed to install audio");
+	if (!al_init_acodec_addon())
+		abort("Failed to initialize audio codecs");
+	if (!al_reserve_samples(1))
+		abort("Failed to reserve samples");
+
+	if (!al_init_font_addon())
+		abort("Failed to initialize font addon");
+	if (!al_init_ttf_addon())
+		abort("Failed to initialize ttf addon");
 
 	font = al_load_ttf_font("/home/tom/school/cse350/APHont/APHont-Regular_q15c.ttf",72,0);
-	if (!font) {
+	if (!font)
 		abort("Failed to load font");
-	}
 
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -129,11 +78,19 @@ void shutdown() {
 
 	if (event_queue)
 		al_destroy_event_queue(event_queue);
+
+	if (sample)
+		al_destroy_sample(sample);
 }
 
 void game_loop() {
 	bool redraw = true;
 	al_start_timer(timer);
+
+	sample = al_load_sample("ring.ogg");
+	if (!sample)
+		fprintf(stderr, "RING RING RING ! ! !\n");
+	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
 	Player p (100, 100, 72, 72); 
 

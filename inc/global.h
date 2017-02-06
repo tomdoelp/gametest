@@ -9,12 +9,12 @@ const int SCREEN_W = 640;
 const int SCREEN_H = 480;
 enum MYKEYS {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
 
-bool done;
-ALLEGRO_EVENT_QUEUE* event_queue;
-ALLEGRO_TIMER* timer;
-ALLEGRO_DISPLAY* display;
-ALLEGRO_FONT *font;
+extern bool done;
+extern ALLEGRO_EVENT_QUEUE* event_queue;
+extern ALLEGRO_TIMER* timer;
+extern ALLEGRO_DISPLAY* display;
+extern ALLEGRO_FONT *font;
 
-bool key[4] = {false, false, false, false};
+extern bool key[4];
 
 #endif
