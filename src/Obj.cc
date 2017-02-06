@@ -10,19 +10,25 @@ int Obj::objtotal = 0;
 
 
 /* Visible Object */
-VisibleObj::VisibleObj(float x, float y, int w, int h, int depth) : x(x), y(y), w(w), h(h), depth(depth) { }
+VisibleObj::VisibleObj(float x, float y, int w, int h, int depth) : x(x), y(y), w(w), h(h), depth(depth) {
+	visible = true;
+}
+
 void VisibleObj::draw() {
 	al_draw_filled_rectangle(x-w/2, y-h/2, x+w/2, y+h/2, al_map_rgb(125,125,125));	
 }
+
 bool VisibleObj::operator<(const VisibleObj &r) {
 	return this->depth < r.depth;
 }
+
 
 /* Mobile Object */
 MobileObj::MobileObj(float x, float y, int w, int h, int depth) : VisibleObj(x, y, w, h, depth) {
 	vspeed = 0;
 	hspeed = 0;
 }
+
 void MobileObj::update() {
 		x += hspeed;
 		y += vspeed;
@@ -34,6 +40,7 @@ void MobileObj::update() {
 Player::Player(float x, float y, int w, int h, int depth) : MobileObj(x, y, w, h, depth) {
 	score = 0;
 }
+
 void Player::update() {
 	/* vertical control */
 	if (key[KEY_UP]) {
@@ -69,6 +76,7 @@ void Player::update() {
 	/* update position based on speed */
 	super::update();
 }
+
 void Player::draw() {
 	al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
 }
