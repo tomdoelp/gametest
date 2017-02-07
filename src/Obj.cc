@@ -1,5 +1,4 @@
 #include "../inc/Obj.h"
-#include "../inc/global.h"
 
 /* Basic Object */
 Obj::Obj() {
@@ -96,11 +95,15 @@ void Player::update() {
 	xnext = x+dx;
 	ynext = y+dy;
 	/* don't leave the screen */
-	if (xnext <= (w/2) || xnext >= SCREEN_W - (w/2))
+	if (xnext <= (w/2) || xnext >= SCREEN_W - (w/2)) {
 		dx = 0;
+		/* TODO place object right at the edge */
+	}
 
-	if (ynext <= h/2 || ynext >= SCREEN_H - h/2)
+	if (ynext <= h/2 || ynext >= SCREEN_H - h/2) {
 		dy = 0;
+		/* TODO place object right at the edge */
+	}
 
 	/* handle collisions */
 	

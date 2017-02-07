@@ -11,7 +11,7 @@
 class Sprite {
 	public:
 		Sprite(const char *fname, float x, float y, float w, float h);
-		Sprite(const char *fname, float x, float y, float w, float h, Box const & b);
+		Sprite(const char *fname, float x, float y, float w, float h, const Box &b);
 		~Sprite();
 
 		float sprite_x();

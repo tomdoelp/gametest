@@ -22,3 +22,5 @@ float Sprite::sprite_w() { return w; }
 float Sprite::sprite_h() { return h; }
 
 void Sprite::draw(float destx, float desty) { al_draw_bitmap(image, destx, desty, 0); }
+
+
