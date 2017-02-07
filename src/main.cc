@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <list>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
@@ -28,6 +29,16 @@ bool key[ALLEGRO_KEY_MAX];
 
 
 ALLEGRO_SAMPLE *sample = NULL;
+std::list<SolidObj> solids;
+void register_solid(SolidObj o) {
+	solids.push_back(o);
+}
+
+std::list<VisibleObj> visibles;
+void register_visible(VisibleObj o) {
+	visibles.push_back(o);
+	visibles.sort();
+}
 
 void abort(const char* message) {
 	fprintf(stderr,"%s\n", message);
@@ -104,10 +115,16 @@ void game_loop() {
 	sample = al_load_sample("ring.ogg");
 	if (!sample)
 		fprintf(stderr, "Error loading sound file\n");
-	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL); 
+/*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);  */
 
 	/* create a player object */
-	Player p (SCREEN_W/2, SCREEN_H/2, 36, 72); 
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0); 
+	register_visible(p);
+
+	/* #BuildTheWall */
+	Wall w (320, 320, 64.0, 64.0, 1); 
+	register_visible(w);
+	register_solid(w);
 
 	while (!done) {
 		ALLEGRO_EVENT event;
@@ -124,44 +141,27 @@ void game_loop() {
 				done = true;
 			}
 			key[event.keyboard.keycode] = true;
-			/*switch (event.keyboard.keycode) {
-			  case ALLEGRO_KEY_UP: 
-			  key[KEY_UP] = true;
-			  break;
-			  case ALLEGRO_KEY_DOWN: 
-			  key[KEY_DOWN] = true;
-			  break;
-			  case ALLEGRO_KEY_LEFT: 
-			  key[KEY_LEFT] = true;
-			  break;
-			  case ALLEGRO_KEY_RIGHT: 
-			  key[KEY_RIGHT] = true;
-			  break;
-			  }*/
 			//get_input();
 		}
 		else if (event.type == ALLEGRO_EVENT_KEY_UP) {
 			key[event.keyboard.keycode] = false;
-			/*switch (event.keyboard.keycode) {
-			  case ALLEGRO_KEY_UP: 
-			  key[KEY_UP] = false;
-			  break;
-			  case ALLEGRO_KEY_DOWN: 
-			  key[KEY_DOWN] = false;
-			  break;
-			  case ALLEGRO_KEY_LEFT: 
-			  key[KEY_LEFT] = false;
-			  break;
-			  case ALLEGRO_KEY_RIGHT: 
-			  key[KEY_RIGHT] = false;
-			  break;
-			  }*/
 		}
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(0,0,0));
-			p.draw();
+			p.draw(); 
+			w.draw(); 
+
+/*			printf("Start drawing\n");
+			for (std::list<VisibleObj>::iterator iterator = visibles.begin(), end = visibles.end();
+					iterator != end;
+					++iterator) {
+				iterator->draw();
+				printf("depth %d\n", iterator->getDepth());
+				
+			}*/
+
 			//update_graphics();
 			al_flip_display();
 		}
