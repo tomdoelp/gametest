@@ -4,12 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
-#include "../inc/global.h"
 
-/* debug purposes? */
-#include <typeinfo>
+#include "../inc/global.h"
 
 /* Basic object. Holds the total number of instances, an id, and can update (nop) */
 class Obj {
@@ -29,10 +26,8 @@ class PhysicalObj : public Obj {
 		~PhysicalObj();
 	protected:
 		typedef Obj super;
-		float x;
-		float y;
-		float w;
-		float h;
+		float x, y;
+		float w, h;
 };
 
 /* Solid object. Player can't move through these? */
@@ -81,8 +76,7 @@ class MobileObj : public VisibleObj {
 		virtual void update();
 	protected:
 		typedef VisibleObj super;
-		float hspeed;
-		float vspeed;
+		float dx, dy;
 };
 
 

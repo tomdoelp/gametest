@@ -53,13 +53,13 @@ void Wall::draw() {
 
 /* Mobile Object */
 MobileObj::MobileObj(float x, float y, float w, float h, int depth) : PhysicalObj(x, y, w, h), VisibleObj(x, y, w, h, depth) {
-	vspeed = 0;
-	hspeed = 0;
+	dy = 0;
+	dx = 0;
 }
 MobileObj::~MobileObj() {}
 void MobileObj::update() {
-		x += hspeed;
-		y += vspeed;
+		x += dx;
+		y += dy;
 }
 
 
@@ -73,34 +73,34 @@ void Player::update() {
 	float xnext, ynext;
 	/* vertical control */
 	if (key[ALLEGRO_KEY_UP]) {
-		vspeed = -5;
+		dy = -5;
 	} else if (key[ALLEGRO_KEY_DOWN]) {
-		vspeed = 5;
+		dy = 5;
 	} else
-		vspeed = 0;
+		dy = 0;
 
 	if (key[ALLEGRO_KEY_UP] && key[ALLEGRO_KEY_DOWN])
-		vspeed = 0;
+		dy = 0;
 
 	/* horizontal control */
 	if (key[ALLEGRO_KEY_LEFT]) {
-		hspeed = -5;
+		dx = -5;
 	} else if (key[ALLEGRO_KEY_RIGHT]) {
-		hspeed = 5;
+		dx = 5;
 	} else
-		hspeed = 0;
+		dx = 0;
 
 	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
-		hspeed = 0;
+		dx = 0;
 
-	xnext = x+hspeed;
-	ynext = y+vspeed;
+	xnext = x+dx;
+	ynext = y+dy;
 	/* don't leave the screen */
 	if (xnext <= (w/2) || xnext >= SCREEN_W - (w/2))
-		hspeed = 0;
+		dx = 0;
 
 	if (ynext <= h/2 || ynext >= SCREEN_H - h/2)
-		vspeed = 0;
+		dy = 0;
 
 	/* handle collisions */
 	
