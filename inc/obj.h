@@ -41,7 +41,7 @@ class SolidObj : public virtual PhysicalObj {
 };
 
 
-/* Visible object. Has a position, size, and depth. Can draw itself. */
+/* Visible object. Has a position, size, depth, and possibly knows a sprite. Can draw itself. */
 /* Compared by depth, so they can be drawn in order. */
 class VisibleObj : public virtual PhysicalObj {
 	public:
