@@ -17,7 +17,7 @@ HEADERS = $(wildcard $(INCDIR)/*.h)
 OBJECTS = $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SOURCES))
 
 # executable target
-EXECUTABLE = test
+EXECUTABLE = game
 
 LIBS = allegro-5 allegro_image-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5 allegro_font-5 allegro_ttf-5 allegro_physfs-5
 CFLAGS += $(shell pkg-config --cflags $(LIBS))
