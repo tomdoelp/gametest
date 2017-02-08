@@ -1,4 +1,4 @@
-#include "../inc/Sprite.h"
+#include "../inc/sprite.h"
 
 /* SpriteStrip */
 SpriteStrip::SpriteStrip(float framew, float frameh, float gap, int row) : w(framew), h(frameh), gap(gap), row(row) {}

@@ -8,7 +8,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_physfs.h>
 #include "../inc/global.h"
-#include "../inc/Utils.h"
+#include "../inc/utils.h"
 
 /*
  * Loading from zip file:

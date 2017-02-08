@@ -1,4 +1,4 @@
-#include "../inc/Utils.h"
+#include "../inc/utils.h"
 
 Box::Box(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 Box::~Box() {}

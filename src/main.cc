@@ -9,8 +9,8 @@
 #include <allegro5/allegro_acodec.h>
 
 #include "../inc/global.h"
-#include "../inc/Obj.h"
-#include "../inc/Sprite.h"
+#include "../inc/obj.h"
+#include "../inc/sprite.h"
 
 //#include <list>
 // std::list<int> L;
