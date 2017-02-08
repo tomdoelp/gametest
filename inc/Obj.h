@@ -52,10 +52,11 @@ class VisibleObj : public virtual PhysicalObj {
 		int getDepth();
 	protected:
 		typedef PhysicalObj super;
-		float aspeed;
 		bool loop;
 		int depth;
 		Sprite *sprite;
+		float aspeed;
+		float frame_index;
 		bool visible;
 };
 

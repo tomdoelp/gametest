@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <math.h> // link with -lm ?
 
+#include "../inc/global.h"
+
 class Box {
 	public:
 		Box(float x=0, float y=0, float w=0, float h=0);

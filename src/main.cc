@@ -28,11 +28,13 @@ bool key[ALLEGRO_KEY_MAX];
 
 
 ALLEGRO_SAMPLE *sample = NULL;
+
 std::list<SolidObj> solids;
 void register_solid(SolidObj o) {
 	solids.push_back(o);
 }
 
+// maybe a forward list? :w
 std::list<VisibleObj> visibles;
 void register_visible(VisibleObj o) {
 	visibles.push_back(o);
@@ -44,29 +46,37 @@ void init() {
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
 		key[i] = false;
 	}
+
+	/* Allegro 5 */
 	if (!al_init())
 		abort("Failed to initialize allegro");
 
+	/* Keyboard */
 	if (!al_install_keyboard())
 		abort("Failed to install keyboard");
 
+	/* Timer */
 	timer = al_create_timer(1.0 / FPS);
 	if (!timer)
 		abort("Failed to create timer");
 
+	/* Display */
 	al_set_new_display_flags(ALLEGRO_WINDOWED);
 	display = al_create_display(SCREEN_W, SCREEN_H);
 	if (!display)
 		abort("Failed to create display");
 	al_set_window_title(display, "o b o m a  does the  m a m b o");
 
+	/* Events */
 	event_queue = al_create_event_queue();
 	if (!event_queue)
 		abort("Failed to create event queue");
 
+	/* Image formats */
 	if (!al_init_image_addon())
 		abort("Failed to initialize image addon");
 
+	/* Audio (probably won't stick with allegro here) */
 	if (!al_install_audio())
 		abort("Failed to install audio");
 	if (!al_init_acodec_addon())
@@ -74,15 +84,16 @@ void init() {
 	if (!al_reserve_samples(1))
 		abort("Failed to reserve samples");
 
+	/* Fonts, ttf */
 	if (!al_init_font_addon())
 		abort("Failed to initialize font addon");
 	if (!al_init_ttf_addon())
 		abort("Failed to initialize ttf addon");
-
 	font = al_load_ttf_font("/home/tom/school/cse350/APHont/APHont-Regular_q15c.ttf",72,0); 
 	if (!font)
 		abort("Failed to load font");
 
+	/* Event sources */
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -114,18 +125,17 @@ void game_loop() {
 		fprintf(stderr, "Error loading sound file\n");
 /*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);  */
 	
+	/* strip for animation */
+	SpriteStrip str_saturn(18,23);
 	/* create a sprite */
-	Sprite spr_saturn("./res/saturn.png");
+	Sprite spr_saturn("./res/saturn_strip.png", 0, 0, str_saturn);
 	spr_saturn.sprite_center_origin(false);
 
 	/* create a player object */
 	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, &spr_saturn);
-	register_visible(p);
 
-	/* #BuildTheWall */
+	/* create a wall object */
 	Wall w (320, 320, 64.0, 64.0, 1); 
-	register_visible(w);
-	register_solid(w);
 
 	while (!done) {
 		ALLEGRO_EVENT event;
@@ -138,11 +148,11 @@ void game_loop() {
 			//update_logic();
 		}
 		else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-			if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-				done = true;
-			}
+			/* update key array (probably slightly overkill tbh) */
 			key[event.keyboard.keycode] = true;
-			//get_input();
+
+			if (key[ALLEGRO_KEY_ESCAPE]) 
+				done = true;
 		}
 		else if (event.type == ALLEGRO_EVENT_KEY_UP) {
 			key[event.keyboard.keycode] = false;
@@ -153,15 +163,6 @@ void game_loop() {
 			al_clear_to_color(al_map_rgb(64,64,64));
 			p.draw(); 
 			w.draw(); 
-
-/*			printf("Start drawing\n");
-			for (std::list<VisibleObj>::iterator iterator = visibles.begin(), end = visibles.end();
-					iterator != end;
-					++iterator) {
-				iterator->draw();
-				printf("depth %d\n", iterator->getDepth());
-				
-			}*/
 
 			//update_graphics();
 			al_flip_display();

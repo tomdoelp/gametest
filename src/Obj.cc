@@ -3,7 +3,7 @@
 /* Basic Object */
 Obj::Obj() {
 	id = objtotal++;
-	fprintf(stderr,"\nid %d created\n", id);
+	alert("id %d", id);
 }
 void Obj::update() { }	
 int Obj::objtotal = 0;
@@ -23,24 +23,31 @@ SolidObj::~SolidObj() {}
 
 /* Visible Object */
 VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(depth), sprite(s) {
-	aspeed = 1.0;
+	aspeed = 2.0 / 60.0;
 	loop = true;
+	frame_index = 0;
 	visible = true;
 }
 
 VisibleObj::~VisibleObj() {}
 void VisibleObj::draw() {
 	/* here's where we will take care of animation, looping, etc */
-	if (sprite != NULL)
-		sprite->sprite_draw(x,y);
+	if (sprite != NULL){
+		sprite->sprite_draw(x,y,frame_index);
+		frame_index += aspeed;
+		if (frame_index >= sprite->getframes() && !loop) {
+			aspeed = 0;
+			frame_index = sprite->getframes();
+		}
+	}
 	else
 		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
 }
 int VisibleObj::getDepth(){
 	return depth;
 }
-bool VisibleObj::operator<(const VisibleObj &r) {
-	return this->depth > r.depth;
+bool VisibleObj::operator<(const VisibleObj &other) {
+	return depth > other.depth; //reverse order, since we draw depth high to low
 }
 
 
