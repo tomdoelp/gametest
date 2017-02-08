@@ -20,6 +20,9 @@ extern ALLEGRO_FONT *font;
 
 extern bool key[ALLEGRO_KEY_MAX];
 
+void abort(const char *format, ...);
+void alert(const char *format, ...);
+
 /* void debug(const char *format, ...)
 {
 	if (!DEBUG)

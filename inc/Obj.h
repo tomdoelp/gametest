@@ -45,14 +45,17 @@ class SolidObj : public virtual PhysicalObj {
 /* Compared by depth, so they can be drawn in order. */
 class VisibleObj : public virtual PhysicalObj {
 	public:
-		VisibleObj(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0);
+		VisibleObj(float x=0.0, float y=0.0, float w=0.0, float h=0.0, int depth=0, Sprite *s=NULL);
 		~VisibleObj();
 		virtual void draw();
 		bool operator<(const VisibleObj &r);
 		int getDepth();
 	protected:
 		typedef PhysicalObj super;
+		float aspeed;
+		bool loop;
 		int depth;
+		Sprite *sprite;
 		bool visible;
 };
 
@@ -72,7 +75,7 @@ class Wall : public SolidObj, public VisibleObj {
 class MobileObj : public VisibleObj {
 	public:
 		MobileObj();
-		MobileObj(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0);
+		MobileObj(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, Sprite *s=NULL);
 		~MobileObj();
 		virtual void update();
 	protected:
@@ -85,7 +88,7 @@ class MobileObj : public VisibleObj {
 class Player : public MobileObj {
 	public:
 		Player();
-		Player(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0);
+		Player(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, Sprite *s=NULL);
 		~Player();
 		virtual void update();
 		virtual void draw();

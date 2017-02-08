@@ -38,4 +38,6 @@ class BoxOrigin : public Box {
 		float ox, oy;
 };
 
+float round_nearest(float n);
+
 #endif

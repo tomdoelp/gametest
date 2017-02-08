@@ -5,11 +5,14 @@
 #include <stdlib.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_physfs.h>
 #include "../inc/global.h"
 #include "../inc/Utils.h"
 
 class Sprite {
 	public:
+		Sprite(const char *fname, float x=0.0, float y=0.0);
 		Sprite(const char *fname, float x, float y, float w, float h);
 		Sprite(const char *fname, float x, float y, float w, float h, const Box &b);
 		~Sprite();
@@ -19,7 +22,9 @@ class Sprite {
 		float sprite_w();
 		float sprite_h();
 
-		void draw(float destx, float desty);
+		void sprite_center_origin(bool round);
+
+		void sprite_draw(float destx, float desty);
 	protected:
 		ALLEGRO_BITMAP *image;
 

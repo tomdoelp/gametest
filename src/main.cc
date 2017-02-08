@@ -10,6 +10,7 @@
 
 #include "../inc/global.h"
 #include "../inc/Obj.h"
+#include "../inc/Sprite.h"
 
 //#include <list>
 // std::list<int> L;
@@ -38,11 +39,6 @@ void register_visible(VisibleObj o) {
 	visibles.sort();
 }
 
-void abort(const char* message) {
-	fprintf(stderr,"%s\n", message);
-	exit(1);
-}
-
 void init() {
 	/* fill keyboard array with false */
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
@@ -67,6 +63,9 @@ void init() {
 	event_queue = al_create_event_queue();
 	if (!event_queue)
 		abort("Failed to create event queue");
+
+	if (!al_init_image_addon())
+		abort("Failed to initialize image addon");
 
 	if (!al_install_audio())
 		abort("Failed to install audio");
@@ -110,13 +109,17 @@ void game_loop() {
 	al_start_timer(timer);
 
 	/* load and play a sound */
-	sample = al_load_sample("ring.ogg");
+	sample = al_load_sample("./res/ring.ogg");
 	if (!sample)
 		fprintf(stderr, "Error loading sound file\n");
 /*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);  */
+	
+	/* create a sprite */
+	Sprite spr_saturn("./res/saturn.png");
+	spr_saturn.sprite_center_origin(false);
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0); 
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, &spr_saturn);
 	register_visible(p);
 
 	/* #BuildTheWall */
@@ -147,7 +150,7 @@ void game_loop() {
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
-			al_clear_to_color(al_map_rgb(0,0,0));
+			al_clear_to_color(al_map_rgb(64,64,64));
 			p.draw(); 
 			w.draw(); 
 

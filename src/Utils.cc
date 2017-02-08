@@ -23,3 +23,6 @@ float BoxOrigin::getoy() { return this->oy; }
 void BoxOrigin::setox(float ox) { this->ox = ox; }
 void BoxOrigin::setoy(float oy) { this->oy = oy; }
 
+float round_nearest(float n) {
+	return (n > 0.0) ? floor(n + 0.5) : ceil(n - 0.5);
+}

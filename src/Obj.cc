@@ -22,12 +22,19 @@ SolidObj::~SolidObj() {}
 
 
 /* Visible Object */
-VisibleObj::VisibleObj(float x, float y, float w, float h, int depth) : PhysicalObj(x, y, w, h), depth(depth) {
+VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(depth), sprite(s) {
+	aspeed = 1.0;
+	loop = true;
 	visible = true;
 }
+
 VisibleObj::~VisibleObj() {}
 void VisibleObj::draw() {
-	al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
+	/* here's where we will take care of animation, looping, etc */
+	if (sprite != NULL)
+		sprite->sprite_draw(x,y);
+	else
+		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
 }
 int VisibleObj::getDepth(){
 	return depth;
@@ -43,28 +50,28 @@ Wall::Wall(float x, float y, float w, float h, int depth) :
 	PhysicalObj(x, y, w, h), 
 	SolidObj(x, y, w, h),
 	VisibleObj(x, y, w, h, depth) {}
-Wall::~Wall() {}
-void Wall::draw() {
-	al_draw_filled_rectangle(x-w/2, y-h/2, x+w/2, y+h/2, al_map_rgb(125,125,125));	
-}
+	Wall::~Wall() {}
+	void Wall::draw() {
+		al_draw_filled_rectangle(x-w/2, y-h/2, x+w/2, y+h/2, al_map_rgb(125,125,125));	
+	}
 
 
 
 /* Mobile Object */
-MobileObj::MobileObj(float x, float y, float w, float h, int depth) : PhysicalObj(x, y, w, h), VisibleObj(x, y, w, h, depth) {
+MobileObj::MobileObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), VisibleObj(x, y, w, h, depth, s) {
 	dy = 0;
 	dx = 0;
 }
 MobileObj::~MobileObj() {}
 void MobileObj::update() {
-		x += dx;
-		y += dy;
+	x += dx;
+	y += dy;
 }
 
 
 
 /* Player Object */
-Player::Player(float x, float y, float w, float h, int depth) : PhysicalObj(x, y, w, h), MobileObj(x, y, w, h, depth) {
+Player::Player(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), MobileObj(x, y, w, h, depth, s) {
 	score = 0;
 }
 Player::~Player() {}
@@ -106,13 +113,16 @@ void Player::update() {
 	}
 
 	/* handle collisions */
-	
+
 
 	/* update position based on speed */
 	super::update();
 }
 void Player::draw() {
-	al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
+	if (sprite) 
+		super::draw();
+	else
+		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
 }
 
 bool Player::bb_collision(float x, float y, float w, float h){
@@ -122,9 +132,9 @@ bool Player::bb_collision(float x, float y, float w, float h){
 	float _h = this->h;
 
 	if ((_x > x+w - 1) ||
-		(_y > y+h - 1) ||
-		(x > _x+_w - 1) ||
-		(y > _y+_h - 1)) 
+			(_y > y+h - 1) ||
+			(x > _x+_w - 1) ||
+			(y > _y+_h - 1)) 
 	{
 		return false;
 	}
