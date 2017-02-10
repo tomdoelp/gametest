@@ -3,10 +3,10 @@
 Box::Box(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 Box::~Box() {}
 
-float Box::getx() { return this->x; }
-float Box::gety() { return this->y; }
-float Box::getw() { return this->w; }
-float Box::geth() { return this->h; }
+float Box::getx() { return x; }
+float Box::gety() { return y; }
+float Box::getw() { return w; }
+float Box::geth() { return h; }
 
 void Box::setx(float x) { this->x = x; }
 void Box::sety(float y) { this->y = y; }

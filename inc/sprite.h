@@ -14,6 +14,7 @@
 #include "load.h"
 using json = nlohmann::json;
 
+/* TODO at some point stop passing the size of the arrays since they are vectors now */
 
 /*
  * Loading from zip file:
@@ -69,12 +70,12 @@ class Sprite {
 		Sprite(const char* name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
 		~Sprite();
 
-		const char *getname();
 		float getx();
 		float gety();
 		float getw();
 		float geth();
 		int getframes();
+		const char *getname();
 
 		void sprite_center_origin(bool round);
 		void sprite_set_origin(float ox, float oy);
@@ -99,7 +100,7 @@ class Sprite {
 /* This will load and store sprite sheet data that I will parse from JSON files */
 class SpriteSheet {
 	public:
-		SpriteSheet(ALLEGRO_BITMAP *sheet, const char* jname);
+		SpriteSheet(const char* fname, const char* jname);
 		~SpriteSheet();
 
 		float getw();
@@ -108,12 +109,14 @@ class SpriteSheet {
 		ALLEGRO_BITMAP *getbitmap();
 
 		Sprite *getsprite(int i);
+		Sprite *getsprite(const char *name);
 		Sprite *operator[](int i);
+		Sprite *operator[](const char *name);
 	private:
 		ALLEGRO_BITMAP *sheet;
 		float w; /* total sheet width */
 		float h; /* total sheet height */
-		int spritenum;
+		int sprnum;
 		
 		std::vector< Sprite > sprites;
 		std::vector< std::vector< Box > > strips;

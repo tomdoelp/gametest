@@ -129,17 +129,21 @@ void game_loop() {
 /*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);  */
 	
 	/* sheet for animation */
-	ALLEGRO_BITMAP *sheet_mrsaturn = load_bitmap("./res/saturn_strip.png");
-	Sprite spr_mrsaturn(sheet_mrsaturn, 18, 23, 2);
+/*	ALLEGRO_BITMAP *sheet_mrsaturn = load_bitmap("./res/saturn_strip.png"); */
+/*	Sprite spr_mrsaturn(sheet_mrsaturn, 18, 23, 2); */
 
 	/* create a spritesheet */
-/*	SpriteSheet s("./res/saturnfishing-sheet.png","./res/saturnfishing.json");  */
+	SpriteSheet sh_saturn("./res/saturnfishing-sheet.png","./res/saturnfishing-sheet.json");
 
 	/* create a sprite */
-	spr_mrsaturn.sprite_center_origin(false);
+	Sprite *spr_saturn1 = sh_saturn[0];
+	Sprite *spr_saturn2 = sh_saturn[1];
+	spr_saturn1->sprite_center_origin(false);
+	spr_saturn2->sprite_center_origin(false);
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, &spr_mrsaturn);
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
+	Player p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
 
 	/* create a wall object */
 	Wall w (320, 320, 64.0, 64.0, 1); 
@@ -169,6 +173,7 @@ void game_loop() {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(64,64,64));
 			p.draw(); 
+			p2.draw(); 
 			w.draw(); 
 
 			//update_graphics();

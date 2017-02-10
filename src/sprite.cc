@@ -1,33 +1,37 @@
 #include "sprite.h"
 
 /* SpriteSheet */
-SpriteSheet::SpriteSheet(ALLEGRO_BITMAP *sheet, const char* jname) : sheet(sheet) {
+SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 	int fx, fy, fw, fh;
 	int framenums;
-	int sprnum;
-/*	std::vector< std::vector< Box > > strips; */
-	w = al_get_bitmap_width(sheet);
-	h = al_get_bitmap_height(sheet);
+	sheet = load_bitmap(fname);
+	if (sheet) {
+		w = al_get_bitmap_width(sheet);
+		h = al_get_bitmap_height(sheet);
+	}
 
 	/* open and parse the metadata file associated with the bitmap */
 	json data;
 
 	data = load_json(jname);
-	sprnum = data["sprites"].size();
-	sprites.reserve(spritenum);
-	strips.reserve(spritenum);
+	sprnum = data["meta"]["sprnum"].get<int>();
+	alert("sprnum: %d", sprnum);
+	sprites.reserve(sprnum);
+	strips.reserve(sprnum);
 
 	for (int i = 0; i < sprnum; i++) {
-		framenums = data["sprites"][i].size();
+		framenums = data["sprites"][i]["frames"].size();
+		strips.push_back(std::vector<Box>());
 		strips[i].reserve(framenums);
 		for (int j = 0; j < framenums; j++) {
 			fx = data["sprites"][i]["frames"][j]["frame"]["x"];
 			fy = data["sprites"][i]["frames"][j]["frame"]["y"];
 			fw = data["sprites"][i]["frames"][j]["frame"]["w"];
 			fh = data["sprites"][i]["frames"][j]["frame"]["h"];
-			strips[i][j] = Box(fx,fy,fw,fh); 
+			strips[i].emplace_back(fx,fy,fw,fh); 
 		}
-		sprites[i] = Sprite(
+		alert(data["sprites"][i]["name"].get<std::string>().c_str());
+		sprites.emplace_back(
 				data["sprites"][i]["name"].get<std::string>().c_str(),
 				sheet, 
 				strips[i], 
@@ -41,13 +45,23 @@ SpriteSheet::~SpriteSheet(){
 		al_destroy_bitmap(sheet);
 }
 Sprite *SpriteSheet::getsprite(int i) {
-	if (i >= 0 && i < spritenum) {
+	if (i >= 0 && i < sprnum) {
 		return &sprites[i];
 	}
 	else return NULL;
 }
+Sprite *SpriteSheet::getsprite(const char* name) {
+	for (auto &spr : sprites) {
+		if (!strcmp(name, spr.getname()))
+			return &spr;
+	}
+	return NULL;
+}
 Sprite *SpriteSheet::operator[](int i) {
 	return getsprite(i);
+}
+Sprite *SpriteSheet::operator[](const char* name) {
+	return getsprite(name);
 }
 
 
@@ -87,7 +101,7 @@ Sprite::Sprite(const char *name, ALLEGRO_BITMAP *sheet, std::vector< Box > frame
 }
 
 Sprite::~Sprite() {
-	for (auto i : subimages) {
+	for (auto &i : subimages) {
 		al_destroy_bitmap(i);
 		i = NULL;
 	}
@@ -98,6 +112,7 @@ float Sprite::gety() { return y; }
 float Sprite::getw() { return w; }
 float Sprite::geth() { return h; }
 int Sprite::getframes() { return frames; }
+const char *Sprite::getname() { return name; }
 
 void Sprite::sprite_center_origin(bool round) {
 	x = w/2;
@@ -112,7 +127,7 @@ void Sprite::sprite_center_origin(bool round) {
 void Sprite::sprite_draw(float destx, float desty, int f, int flags, float angle, float xscale, float yscale) {
 	int n = f % frames;
 	if (subimages[n]) {
-		al_draw_scaled_rotated_bitmap(subimages[n], x, y, destx, desty, xscale, yscale, angle, flags);
+		al_draw_scaled_rotated_bitmap(subimages[n], round_nearest(x), round_nearest(y), round_nearest(destx), round_nearest(desty), xscale, yscale, angle, flags);
 	}
 
 	else if (w != 0 && h != 0) {
