@@ -1,4 +1,4 @@
-#include "../inc/obj.h"
+#include "obj.h"
 
 /* Basic Object */
 Obj::Obj() {

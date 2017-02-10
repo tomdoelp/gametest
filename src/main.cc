@@ -8,9 +8,10 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
-#include "../inc/global.h"
-#include "../inc/obj.h"
-#include "../inc/sprite.h"
+#include "global.h"
+#include "obj.h"
+#include "sprite.h"
+#include "load.h"
 
 //#include <list>
 // std::list<int> L;
@@ -41,6 +42,7 @@ void register_visible(VisibleObj o) {
 	visibles.sort();
 }
 
+
 void init() {
 	/* fill keyboard array with false */
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
@@ -61,7 +63,8 @@ void init() {
 		abort("Failed to create timer");
 
 	/* Display */
-	al_set_new_display_flags(ALLEGRO_WINDOWED);
+	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
+	al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
 	display = al_create_display(SCREEN_W, SCREEN_H);
 	if (!display)
 		abort("Failed to create display");
@@ -119,20 +122,24 @@ void game_loop() {
 	bool redraw = true;
 	al_start_timer(timer);
 
-	/* load and play a sound */
+	/* load and a sound */
 	sample = al_load_sample("./res/ring.ogg");
 	if (!sample)
 		fprintf(stderr, "Error loading sound file\n");
 /*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);  */
 	
-	/* strip for animation */
-	SpriteStrip str_saturn(18,23);
+	/* sheet for animation */
+	ALLEGRO_BITMAP *sheet_mrsaturn = load_bitmap("./res/saturn_strip.png");
+	Sprite spr_mrsaturn(sheet_mrsaturn, 18, 23, 2);
+
+	/* create a spritesheet */
+/*	SpriteSheet s("./res/saturnfishing-sheet.png","./res/saturnfishing.json");  */
+
 	/* create a sprite */
-	Sprite spr_saturn("./res/saturn_strip.png", 0, 0, str_saturn);
-	spr_saturn.sprite_center_origin(false);
+	spr_mrsaturn.sprite_center_origin(false);
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, &spr_saturn);
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, &spr_mrsaturn);
 
 	/* create a wall object */
 	Wall w (320, 320, 64.0, 64.0, 1); 

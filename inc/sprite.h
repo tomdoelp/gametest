@@ -7,8 +7,13 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_physfs.h>
-#include "../inc/global.h"
-#include "../inc/utils.h"
+
+#include "global.h"
+#include "utils.h"
+#include "json.h"
+#include "load.h"
+using json = nlohmann::json;
+
 
 /*
  * Loading from zip file:
@@ -23,62 +28,96 @@
  *  Or google that example where a dude used ALLEGRO_STATE or w/e
  */
 
+/* OKAY NEW PLAN
+ * SpriteSheet holds the parent bitmap
+ * Sprite takes a sheet, h, w, originx=0, originy=0 number of frames=0, row=0, offx=0, offy=0, gap=0
+ * Holds an array of sub-bitmaps, one for each frame.
+ * sprite_draw() takes n=0, draws the nth sub-bitmap
+ *
+ * */
+ 
 /* SpriteStrip, how to get frames of animation from an image strip */
-class SpriteStrip {
+/*class SpriteStrip {
 	public:
-		SpriteStrip(float framew=0, float frameh=0, float gap=0, int row=0);
+		SpriteStrip(float framew, float frameh, float frames, int row, float gap=0, bool centered=false, float ox=0, float oy=0);
 		~SpriteStrip();
 		
-		Box frame(int n);
 		float getw();
 		float geth();
-		float getgap();
+		float getframes();
 		int getrow();
+		float getgap();
+		float getoriginx();
+		float getoriginy();
+		bool getcentered();
+
+		Box operator[](int i);
 		
 	private:
-		float w, h;
-		float gap;
+		float w, h, frames;
 		int row;
-};
+		float gap;
+		bool centered;
+		float ox, oy;
+};*/
+
 
 /* Sprite. Holds bitmap & data, bounding box, and a strip for information */
 class Sprite {
 	public:
-		Sprite(const char *fname, float x=0.0, float y=0.0); /* Single frame, get dimensions from file */
-		Sprite(const char *fname, float x, float y, const SpriteStrip &s); /* animated */
-		Sprite(const char *fname, float x, float y, const SpriteStrip &s, const Box &b); /* animated w/ bbox*/
+		Sprite(ALLEGRO_BITMAP *sheet, float w, float h, int frames=1, float gap=0, float offx=0, float offy=0, float ox=0, float oy=0);
+		Sprite(const char* name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
 		~Sprite();
 
-		float sprite_x();
-		float sprite_y();
-		float sprite_w();
-		float sprite_h();
+		const char *getname();
+		float getx();
+		float gety();
+		float getw();
+		float geth();
 		int getframes();
 
 		void sprite_center_origin(bool round);
+		void sprite_set_origin(float ox, float oy);
 
-		void sprite_draw(float destx, float desty, int f=0);
+		void sprite_draw(float destx, float desty, int f=0, int flags=0, float angle=0, float xscale=1, float yscale=1);
 	protected:
-		ALLEGRO_BITMAP *image;
+		const char *name;
+		std::vector< ALLEGRO_BITMAP* > subimages;
 
-		float x, y;
 		float w, h;
-
-		SpriteStrip strip;
-		int frames;
+		int frames, index;
+		float x, y;
 
 		Box bbox;
-		/* Box bbox(bx, by, bw, bh);
- 		 * or just Box bbox(b); (copy constructor) */
 
 		/* TODO: 
  		 * bounding box info
-		 * a general box class ? probably a good idea
-		 * bitmap
-		 * frames from an animation strip
  		 */
 };
 
+
+/* This will load and store sprite sheet data that I will parse from JSON files */
+class SpriteSheet {
+	public:
+		SpriteSheet(ALLEGRO_BITMAP *sheet, const char* jname);
+		~SpriteSheet();
+
+		float getw();
+		float geth();
+
+		ALLEGRO_BITMAP *getbitmap();
+
+		Sprite *getsprite(int i);
+		Sprite *operator[](int i);
+	private:
+		ALLEGRO_BITMAP *sheet;
+		float w; /* total sheet width */
+		float h; /* total sheet height */
+		int spritenum;
+		
+		std::vector< Sprite > sprites;
+		std::vector< std::vector< Box > > strips;
+};
 /* Plan:
  * singleton ?
  * Objects get a pointer to a sprite

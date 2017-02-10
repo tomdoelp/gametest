@@ -2,7 +2,7 @@
 #
 
 CC = g++
-CFLAGS = -c -Wall -g
+CFLAGS = -c -Wall -Iinc -std=c++11 -g
 LDFLAGS = 
 
 SRCDIR = ./src

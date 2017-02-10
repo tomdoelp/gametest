@@ -1,83 +1,102 @@
-#include "../inc/sprite.h"
+#include "sprite.h"
 
-/* SpriteStrip */
-SpriteStrip::SpriteStrip(float framew, float frameh, float gap, int row) : w(framew), h(frameh), gap(gap), row(row) {}
-SpriteStrip::~SpriteStrip() {}
+/* SpriteSheet */
+SpriteSheet::SpriteSheet(ALLEGRO_BITMAP *sheet, const char* jname) : sheet(sheet) {
+	int fx, fy, fw, fh;
+	int framenums;
+	int sprnum;
+/*	std::vector< std::vector< Box > > strips; */
+	w = al_get_bitmap_width(sheet);
+	h = al_get_bitmap_height(sheet);
 
-Box SpriteStrip::frame(int n) {
-	float left, top;
-	left = (n*w + n*gap);
-	top = row*h;
+	/* open and parse the metadata file associated with the bitmap */
+	json data;
 
-	Box b(left,top,w,h);
-	return b;
+	data = load_json(jname);
+	sprnum = data["sprites"].size();
+	sprites.reserve(spritenum);
+	strips.reserve(spritenum);
+
+	for (int i = 0; i < sprnum; i++) {
+		framenums = data["sprites"][i].size();
+		strips[i].reserve(framenums);
+		for (int j = 0; j < framenums; j++) {
+			fx = data["sprites"][i]["frames"][j]["frame"]["x"];
+			fy = data["sprites"][i]["frames"][j]["frame"]["y"];
+			fw = data["sprites"][i]["frames"][j]["frame"]["w"];
+			fh = data["sprites"][i]["frames"][j]["frame"]["h"];
+			strips[i][j] = Box(fx,fy,fw,fh); 
+		}
+		sprites[i] = Sprite(
+				data["sprites"][i]["name"].get<std::string>().c_str(),
+				sheet, 
+				strips[i], 
+				strips[i][0].getw(), 
+				strips[i][0].geth(), 
+				framenums); 
+	}
 }
-float SpriteStrip::getw() { return w; }
-float SpriteStrip::geth() { return h; }
-float SpriteStrip::getgap() { return gap; }
-int SpriteStrip::getrow() { return row; }
-
-
+SpriteSheet::~SpriteSheet(){
+	if (sheet)
+		al_destroy_bitmap(sheet);
+}
+Sprite *SpriteSheet::getsprite(int i) {
+	if (i >= 0 && i < spritenum) {
+		return &sprites[i];
+	}
+	else return NULL;
+}
+Sprite *SpriteSheet::operator[](int i) {
+	return getsprite(i);
+}
 
 
 /* Sprite */
-Sprite::Sprite(const char *fname, float x, float y) : x(x), y(y) {
-	image = al_load_bitmap(fname);
-	if (!image) 
-		alert("Could not load image %s", fname);
-	else {
-		w = al_get_bitmap_width(image);
-		h = al_get_bitmap_height(image);
+Sprite::Sprite(
+		ALLEGRO_BITMAP *sheet, 
+		float w, 
+		float h, 
+		int frames, 
+		float gap, 
+		float offx, 
+		float offy, 
+		float ox, 
+		float oy) : w(w), h(h), frames(frames), x(ox), y(oy) {
+	if (sheet) {
+		subimages.reserve(frames);
+
+		/* fill array of frames with sub-bitmaps */
+		for (int i = 0; i < frames; i++) {
+			subimages[i] = al_create_sub_bitmap(sheet, offx + (i*w + i*gap), offy, w, h);
+		}
 	}
-
-	SpriteStrip strip;
-	frames = 1;
-	Box bbox;
-	
 }
-Sprite::Sprite(const char *fname, float x, float y, const SpriteStrip &s) : x(x), y(y) {
-	int widthspan;
-
-	image = al_load_bitmap(fname);
-	strip = s;
-	w = strip.getw();
-	h = strip.geth();
-
-	if (!image) 
-		alert("Could not load image %s", fname);
-	else {
-		widthspan = al_get_bitmap_width(image) / w;
-		frames = ((widthspan > 1) ? widthspan : 1);
-	}
-
-	Box bbox;
+Sprite::Sprite(const char *name, ALLEGRO_BITMAP *sheet, std::vector< Box > framearray, float w, float h, int n, float ox, float oy) : name(name), w(w), h(h), frames(n), x(ox), y(oy) {
+	if (sheet) {
+		subimages.reserve(frames);
+		/* Create an array of sub-bitmaps based on the array of boxes we've been passed */
+		for (int i = 0; i < frames; i++){
+			subimages[i] = al_create_sub_bitmap(
+					sheet, 
+					framearray[i].getx(),
+					framearray[i].gety(),
+					framearray[i].getw(),
+					framearray[i].geth());
+		}
+	} 
 }
-Sprite::Sprite(const char *fname, float x, float y, const SpriteStrip &s, const Box &b) : x(x), y(y) {
-	int widthspan;
 
-	image = al_load_bitmap(fname);
-	strip = s;
-	w = strip.getw();
-	h = strip.geth();
-
-	if (!image) 
-		alert("Could not load image %s", fname);
-	else {
-		widthspan = al_get_bitmap_width(image) / w;
-		frames = ((widthspan > 1) ? widthspan : 1);
-	}
-
-	bbox = b;
-}
 Sprite::~Sprite() {
-	if (image)
-		al_destroy_bitmap(image);
+	for (auto i : subimages) {
+		al_destroy_bitmap(i);
+		i = NULL;
+	}
 }
 
-float Sprite::sprite_x() { return x; }
-float Sprite::sprite_y() { return y; }
-float Sprite::sprite_w() { return w; }
-float Sprite::sprite_h() { return h; }
+float Sprite::getx() { return x; }
+float Sprite::gety() { return y; }
+float Sprite::getw() { return w; }
+float Sprite::geth() { return h; }
 int Sprite::getframes() { return frames; }
 
 void Sprite::sprite_center_origin(bool round) {
@@ -90,24 +109,15 @@ void Sprite::sprite_center_origin(bool round) {
 	}
 }
 
+void Sprite::sprite_draw(float destx, float desty, int f, int flags, float angle, float xscale, float yscale) {
+	int n = f % frames;
+	if (subimages[n]) {
+		al_draw_scaled_rotated_bitmap(subimages[n], x, y, destx, desty, xscale, yscale, angle, flags);
+	}
 
-void Sprite::sprite_draw(float destx, float desty, int f) { 
-	Box reg;
-	if (image) {
-		if (frames == 1)
-			al_draw_bitmap(image, destx-x, desty-y, 0); 
-		else {
-			reg = strip.frame(f % frames);
-			al_draw_bitmap_region(image, reg.getx(), reg.gety(), reg.getw(), reg.geth(), destx-x, desty-y, 0);
-		}
-	} 
 	else if (w != 0 && h != 0) {
 		al_draw_filled_ellipse(destx, desty, w/2, h/2, al_map_rgb(126,0,0));	
 	} else {
 		al_draw_filled_ellipse(destx, desty, 8, 8, al_map_rgb(126,0,0));	
 	}
 }
-
-
-
-

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <math.h> // link with -lm ?
 
-#include "../inc/global.h"
+#include "global.h"
 
 class Box {
 	public:

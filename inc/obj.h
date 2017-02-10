@@ -6,8 +6,8 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 
-#include "../inc/global.h"
-#include "../inc/sprite.h"
+#include "global.h"
+#include "sprite.h"
 
 /* Basic object. Holds the total number of instances, an id, and can update (nop) */
 class Obj {
