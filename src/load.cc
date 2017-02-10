@@ -26,4 +26,6 @@ SpriteSheet create_spritesheet_from_file(std::vector<std::string> fnames) {
 	}
 	
 	std::system(cmd.c_str());
+
+	return SpriteSheet(fnames.back().c_str(), "TODO get replace extension with .json");
 }
