@@ -18,7 +18,7 @@ for filename in sys.argv[1:-1]:
     options += filename + " "
 options += "--sheet " + sys.argv[-1:][0] + " --data " + jfile + " --format json-array"
  
-command=["aseprite"]
+command=["/home/tom/software/bin/aseprite"]
 command.extend(options.split(' '))
 
 

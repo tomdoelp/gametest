@@ -14,7 +14,11 @@ class Obj {
 	public:
 		Obj();
 		virtual void update();
+		void activate();
+		void deactivate();
+		bool isactive();
 	protected:
+		bool active;
 		int id;
 		static int objtotal;
 };

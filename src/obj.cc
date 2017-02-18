@@ -2,10 +2,14 @@
 
 /* Basic Object */
 Obj::Obj() {
+	active=true;
 	id = objtotal++;
 	alert("id %d", id);
 }
 void Obj::update() { }	
+void Obj::activate() { active = true; }
+void Obj::deactivate() { active = false; }
+bool Obj::isactive() { return active; }
 int Obj::objtotal = 0;
 
 

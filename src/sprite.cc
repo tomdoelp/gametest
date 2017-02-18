@@ -15,7 +15,6 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 
 	data = load_json(jname);
 	sprnum = data["meta"]["sprnum"].get<int>();
-	alert("sprnum: %d", sprnum);
 	sprites.reserve(sprnum);
 	strips.reserve(sprnum);
 
@@ -30,7 +29,6 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 			fh = data["sprites"][i]["frames"][j]["frame"]["h"];
 			strips[i].emplace_back(fx,fy,fw,fh); 
 		}
-		alert(data["sprites"][i]["name"].get<std::string>().c_str());
 		sprites.emplace_back(
 				data["sprites"][i]["name"].get<std::string>().c_str(),
 				sheet, 

@@ -7,6 +7,7 @@
 
 #include "global.h"
 
+
 class Box {
 	public:
 		Box(float x=0, float y=0, float w=0, float h=0);
@@ -15,6 +16,10 @@ class Box {
 		float gety();
 		float getw();
 		float geth();
+
+		bool check_collision(Box &other);
+		bool check_collision_horizontal(Box &other);
+		bool check_collision_vertical(Box &other);
 
 		void setx(float x);
 		void sety(float y);

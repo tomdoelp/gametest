@@ -12,6 +12,8 @@
 #include "obj.h"
 #include "sprite.h"
 #include "load.h"
+#include "level.h"
+#include "view.h"
 
 //#include <list>
 // std::list<int> L;
@@ -28,19 +30,14 @@ ALLEGRO_FONT *font;
 bool key[ALLEGRO_KEY_MAX];
 
 
-ALLEGRO_SAMPLE *sample = NULL;
-
-std::list<SolidObj> solids;
-void register_solid(SolidObj o) {
-	solids.push_back(o);
-}
-
-// maybe a forward list? :w
+// maybe a forward list?
 std::list<VisibleObj> visibles;
 void register_visible(VisibleObj o) {
 	visibles.push_back(o);
 	visibles.sort();
 }
+
+
 
 
 void init() {
@@ -65,10 +62,12 @@ void init() {
 	/* Display */
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
 	al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
-	display = al_create_display(SCREEN_W, SCREEN_H);
+	display = al_create_display(WINDOW_W, WINDOW_H);
 	if (!display)
 		abort("Failed to create display");
-	al_set_window_title(display, "o b o m a  does the  m a m b o");
+	al_set_window_title(display, "B O I N G !");
+
+	ALLEGRO_BITMAP *screen_buffer = al_create_bitmap(SCREEN_W, SCREEN_H);
 
 	/* Events */
 	event_queue = al_create_event_queue();
@@ -79,13 +78,13 @@ void init() {
 	if (!al_init_image_addon())
 		abort("Failed to initialize image addon");
 
-	/* Audio (probably won't stick with allegro here) */
+	/* Audio */
 	if (!al_install_audio())
 		abort("Failed to install audio");
 	if (!al_init_acodec_addon())
 		abort("Failed to initialize audio codecs");
-	if (!al_reserve_samples(1))
-		abort("Failed to reserve samples");
+	if (!al_reserve_samples(4)) 
+		abort("Failed to reserve samples"); 
 
 	/* Fonts, ttf */
 	if (!al_init_font_addon())
@@ -114,30 +113,47 @@ void shutdown() {
 	if (event_queue)
 		al_destroy_event_queue(event_queue);
 
-	if (sample)
-		al_destroy_sample(sample);
+	/* destoy mixers and such */
 }
 
 void game_loop() {
+	View v(SCREEN_W, SCREEN_H);
+
 	bool redraw = true;
 	al_start_timer(timer);
 
-	/* load and a sound */
-	sample = al_load_sample("./res/ring.ogg");
-	if (!sample)
-		fprintf(stderr, "Error loading sound file\n");
-/*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);  */
+	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
+	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 	
+
+	/* load and play an xm music file */
+	ALLEGRO_VOICE *voice = al_create_voice( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
+	ALLEGRO_MIXER *music_mixer = al_create_mixer( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
+	/* and one for sound */
+	ALLEGRO_MIXER *master_mixer = al_create_mixer( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
+	al_attach_mixer_to_mixer(music_mixer, master_mixer); 
+	al_attach_mixer_to_voice(master_mixer, voice); 
+
+	/* buffer count and samples? ? ??? ? ?? ? ? ?  */
+	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Worry.xm", 4, 2048); 
+
+	if (worry) {
+		al_attach_audio_stream_to_mixer(worry, music_mixer);
+		al_set_audio_stream_playmode(worry, ALLEGRO_PLAYMODE_LOOP);
+		al_set_audio_stream_playing(worry, true); 
+	}
+
 	/* sheet for animation */
-/*	ALLEGRO_BITMAP *sheet_mrsaturn = load_bitmap("./res/saturn_strip.png"); */
-/*	Sprite spr_mrsaturn(sheet_mrsaturn, 18, 23, 2); */
+	/*	ALLEGRO_BITMAP *sheet_mrsaturn = load_bitmap("./res/saturn_strip.png"); */
+	/*	Sprite spr_mrsaturn(sheet_mrsaturn, 18, 23, 2); */
 
 	/* create a spritesheet */
+	SpriteSheet sh_saturn1("./res/saturn-sheet.png","./res/saturn-sheet.json");
 	SpriteSheet sh_saturn("./res/saturnfishing-sheet.png","./res/saturnfishing-sheet.json");
 
 	/* create a sprite */
-	Sprite *spr_saturn1 = sh_saturn[0];
-	Sprite *spr_saturn2 = sh_saturn[1];
+	Sprite *spr_saturn1 = sh_saturn1[0];
+	Sprite *spr_saturn2 = sh_saturn[0];
 	spr_saturn1->sprite_center_origin(false);
 	spr_saturn2->sprite_center_origin(false);
 
@@ -171,10 +187,16 @@ void game_loop() {
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
+			
+			al_set_target_bitmap(v.get_buffer());
 			al_clear_to_color(al_map_rgb(64,64,64));
 			p.draw(); 
 			p2.draw(); 
 			w.draw(); 
+			al_set_target_backbuffer(display);
+			al_clear_to_color(al_map_rgb(0,0,0));
+			Box b = v.get_scales();
+			al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, b.getx(), b.gety(), b.getw(), b.geth(), 0);
 
 			//update_graphics();
 			al_flip_display();
