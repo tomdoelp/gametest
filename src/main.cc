@@ -67,8 +67,6 @@ void init() {
 		abort("Failed to create display");
 	al_set_window_title(display, "B O I N G !");
 
-	ALLEGRO_BITMAP *screen_buffer = al_create_bitmap(SCREEN_W, SCREEN_H);
-
 	/* Events */
 	event_queue = al_create_event_queue();
 	if (!event_queue)
@@ -117,14 +115,26 @@ void shutdown() {
 }
 
 void game_loop() {
+
+	///////////////////////////////////////////////
+	// SCREEN STUFF                              //
+	///////////////////////////////////////////////
 	View v(SCREEN_W, SCREEN_H);
 
 	bool redraw = true;
 	al_start_timer(timer);
 
+
+
+
+
+
+	///////////////////////////////////////////////
+	// SOUND STUFF	                             //
+	///////////////////////////////////////////////
+
 	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
 	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-	
 
 	/* load and play an xm music file */
 	ALLEGRO_VOICE *voice = al_create_voice( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
@@ -143,9 +153,12 @@ void game_loop() {
 		al_set_audio_stream_playing(worry, true); 
 	}
 
-	/* sheet for animation */
-	/*	ALLEGRO_BITMAP *sheet_mrsaturn = load_bitmap("./res/saturn_strip.png"); */
-	/*	Sprite spr_mrsaturn(sheet_mrsaturn, 18, 23, 2); */
+
+
+
+	////////////////////////////////////////////////
+	// SPRITE STUFF                               //
+	////////////////////////////////////////////////
 
 	/* create a spritesheet */
 	SpriteSheet sh_saturn1("./res/saturn-sheet.png","./res/saturn-sheet.json");
@@ -159,10 +172,20 @@ void game_loop() {
 
 	/* create a player object */
 	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
-	Player p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
+	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
+	
 
-	/* create a wall object */
-	Wall w (320, 320, 64.0, 64.0, 1); 
+	/////////////////////////////////////////////////
+	// TILES ! ! ! !                               //
+	///////////////////////////////////////////////// 
+	
+	Map m("./res/maps/test.tmx");
+
+
+
+	/////////////////////////////////////////////////
+	// EVENTS                                      //
+	/////////////////////////////////////////////////
 
 	while (!done) {
 		ALLEGRO_EVENT event;
@@ -190,15 +213,16 @@ void game_loop() {
 			
 			al_set_target_bitmap(v.get_buffer());
 			al_clear_to_color(al_map_rgb(64,64,64));
+			m.draw_layer(0); 
 			p.draw(); 
 			p2.draw(); 
-			w.draw(); 
+			m.draw_layer(1); 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0,0,0));
 			Box b = v.get_scales();
 			al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, b.getx(), b.gety(), b.getw(), b.geth(), 0);
 
-			//update_graphics();
+			//update graphics;
 			al_flip_display();
 		}
 	}
