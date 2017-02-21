@@ -9,8 +9,8 @@
 #define DEBUG 1
 
 const float FPS = 60;
-const int WINDOW_W = 640;
-const int WINDOW_H = 480;
+const int WINDOW_W = 1024;
+const int WINDOW_H = 768;
 const int SCREEN_W = 320;
 const int SCREEN_H = 240;
 /*enum MYKEYS {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT}; */

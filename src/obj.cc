@@ -47,11 +47,11 @@ void VisibleObj::draw() {
 	else
 		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
 }
-int VisibleObj::getDepth(){
+int VisibleObj::getDepth() const {
 	return depth;
 }
-bool VisibleObj::operator<(const VisibleObj &other) {
-	return depth > other.depth; //reverse order, since we draw depth high to low
+bool VisibleObj::operator<(const VisibleObj &rhs) {
+	return depth > rhs.getDepth(); //reverse order, since we draw depth high to low
 }
 
 
@@ -90,9 +90,9 @@ void Player::update() {
 	float xnext, ynext;
 	/* vertical control */
 	if (key[ALLEGRO_KEY_UP]) {
-		dy = -5;
+		dy = -2;
 	} else if (key[ALLEGRO_KEY_DOWN]) {
-		dy = 5;
+		dy = 2;
 	} else
 		dy = 0;
 
@@ -101,9 +101,9 @@ void Player::update() {
 
 	/* horizontal control */
 	if (key[ALLEGRO_KEY_LEFT]) {
-		dx = -5;
+		dx = -2;
 	} else if (key[ALLEGRO_KEY_RIGHT]) {
-		dx = 5;
+		dx = 2;
 	} else
 		dx = 0;
 

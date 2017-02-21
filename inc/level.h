@@ -41,6 +41,7 @@ class Map {
 		~Map();
 
 		void draw_layer(int n);
+		std::vector<Box> get_collision_box(Box bbox);
 	private:
 		int w, h;
 		int tilew, tileh;
@@ -52,60 +53,4 @@ class Map {
 		std::vector<bool> solid;
 };
 
-/*namespace pt = boost::property_tree; */
-
-/*class Layer {
-	public: 
-		Layer(std::vector<int> tile_list, int w, int h);
-
-		std::vector< std::vector< int > > get_tile_grid();
-	private:
-		std::vector< std::vector< int > > tile_grid;
-		int w, h;
-};
-		
-
-
-class Tileset {
-	public:
-		Tileset(ALLEGRO_BITMAP *source, int firstgid, int tilew, int tileh, int spacing, int tilecount, int cols); 
-
-		void draw_tile(int gid, float x, float y);
-	private:
-		ALLEGRO_BITMAP *source; 
-		const char* source;  
-		int firstgid;
-		int w, h;
-		int tilew, tileh;
-		int spacing;
-		int tilecount, cols;
-
-		std::vector< ALLEGRO_BITMAP* > tiles;
-};
-
-class Level {
-	public:
-		Level(const char* fname);
-
-		void draw_background();
-		void draw_objects();  
-		void draw_foreground();
-		void draw_layer(int n);
-		std::vector< Box > get_collision_tiles(Box bbox);
-	private:
-		const char *image_source;
-
-		std::vector< ALLEGRO_BITMAP* > tileset_images;
-
-		std::vector< bool > solidtiles;
-		std::vector< Tileset > tilesets;
-		std::vector< Layer > layers;
-		std::vector< ALLEGRO_BITMAP* > tiles;
-
-		int total_w, total_h;
-		int map_w, map_h;
-		int tile_w, tile_h;
-};
-
-*/
 #endif

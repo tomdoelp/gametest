@@ -60,7 +60,8 @@ void init() {
 		abort("Failed to create timer");
 
 	/* Display */
-	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
+	al_set_new_display_flags(ALLEGRO_RESIZABLE | ALLEGRO_GENERATE_EXPOSE_EVENTS | ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
+/*	al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP | ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR); */
 	al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
 	display = al_create_display(WINDOW_W, WINDOW_H);
 	if (!display)
@@ -119,7 +120,7 @@ void game_loop() {
 	///////////////////////////////////////////////
 	// SCREEN STUFF                              //
 	///////////////////////////////////////////////
-	View v(SCREEN_W, SCREEN_H);
+	View v(SCREEN_W, SCREEN_H, display);
 
 	bool redraw = true;
 	al_start_timer(timer);
@@ -145,7 +146,7 @@ void game_loop() {
 	al_attach_mixer_to_voice(master_mixer, voice); 
 
 	/* buffer count and samples? ? ??? ? ?? ? ? ?  */
-	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Worry.xm", 4, 2048); 
+	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Untitled.xm", 4, 2048); 
 
 	if (worry) {
 		al_attach_audio_stream_to_mixer(worry, music_mixer);
@@ -171,9 +172,10 @@ void game_loop() {
 	spr_saturn2->sprite_center_origin(false);
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 1, spr_saturn1);
 	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
-	
+
+
 
 	/////////////////////////////////////////////////
 	// TILES ! ! ! !                               //
@@ -191,26 +193,37 @@ void game_loop() {
 		ALLEGRO_EVENT event;
 		al_wait_for_event(event_queue, &event);
 
-		if (event.type == ALLEGRO_EVENT_TIMER) {
-			redraw = true;
+		switch(event.type){
+			case ALLEGRO_EVENT_TIMER:
+				redraw = true;
+				p.update();
+				//update_logic();
+				break;
+			case ALLEGRO_EVENT_DISPLAY_EXPOSE:
+				redraw = true;
+				break;
+			case ALLEGRO_EVENT_DISPLAY_RESIZE:
+				/* destroy and recreate shaders? */
+				al_acknowledge_resize(event.display.source);
+				redraw = true;
+				break;
+			case ALLEGRO_EVENT_KEY_DOWN:
+				/* update key array (probably slightly overkill tbh) */
+				key[event.keyboard.keycode] = true;
 
-			p.update();
-			//update_logic();
-		}
-		else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-			/* update key array (probably slightly overkill tbh) */
-			key[event.keyboard.keycode] = true;
-
-			if (key[ALLEGRO_KEY_ESCAPE]) 
-				done = true;
-		}
-		else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-			key[event.keyboard.keycode] = false;
+				if (key[ALLEGRO_KEY_ESCAPE]) 
+					done = true;
+				if (key[ALLEGRO_KEY_F])
+					al_toggle_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, true);
+				break;
+			case ALLEGRO_EVENT_KEY_UP:
+				key[event.keyboard.keycode] = false;
+				break;
 		}
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
-			
+
 			al_set_target_bitmap(v.get_buffer());
 			al_clear_to_color(al_map_rgb(64,64,64));
 			m.draw_layer(0); 
@@ -219,8 +232,10 @@ void game_loop() {
 			m.draw_layer(1); 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0,0,0));
-			Box b = v.get_scales();
-			al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, b.getx(), b.gety(), b.getw(), b.geth(), 0);
+			float dispw = al_get_display_width(display);
+			float disph = al_get_display_height(display);
+			float scale = v.get_scale(dispw, disph);
+			al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, dispw/2-(SCREEN_W * scale)/2, disph/2-(SCREEN_H * scale)/2, scale * SCREEN_W, scale * SCREEN_H, 0);
 
 			//update graphics;
 			al_flip_display();
