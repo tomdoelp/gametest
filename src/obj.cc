@@ -26,7 +26,7 @@ SolidObj::~SolidObj() {}
 
 
 /* Visible Object */
-VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(y+h), sprite(s) {
+VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(y), sprite(s) {
 	aspeed = 2.0 / 60.0;
 	loop = true;
 	frame_index = 0;
@@ -45,6 +45,7 @@ void VisibleObj::draw() {
 	}
 	else
 		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
+	al_draw_filled_rectangle(x-1,y-1,x+1,y+1,al_map_rgb(0,0,0));
 }
 bool VisibleObj::operator<(const VisibleObj &rhs) {
 	return depth > rhs.depth; //reverse order, since we draw depth high to low
@@ -73,7 +74,7 @@ MobileObj::~MobileObj() {}
 void MobileObj::update() {
 	x += dx;
 	y += dy;
-	depth = y+h; 
+	depth = y; 
 }
 
 

@@ -125,3 +125,32 @@ void Map::draw_layer(int n) {
 		}
 	}
 }
+
+void Map::draw_row(int r, int l) {
+	int temp = 0;
+	int cols = w;
+	std::vector <int> gids = layers[l].get_gids();
+
+	for (int i = cols*r, max = i+cols; i < max; i++) {
+		temp = gids[i];
+		if (temp > 0) {
+			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
+		}
+	}
+}
+
+void Map::draw_layer_from_row(int r, int l) {
+	if (r > h) 
+		return;
+
+	int temp = 0;
+	int cols = w;
+	std::vector<int> gids = layers[l].get_gids();
+
+	for (std::size_t i = cols*r, max = gids.size(); i != max; i++) {
+		temp = gids[i];
+		if (temp > 0) {
+			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
+		}
+	}
+}

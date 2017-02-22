@@ -155,7 +155,7 @@ void game_loop() {
 	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
 	r.register_visible(&p);
 	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
-	r.register_visible(&p2);
+	r.register_visible(&p2); 
 
 
 	/* Tile Stuff */	

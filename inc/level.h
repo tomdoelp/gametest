@@ -40,12 +40,15 @@ class Map {
 		Map(const char *fname);
 		~Map();
 
+		int tilew, tileh;
+
 		void draw_layer(int n);
+		void draw_row(int r, int l);
+		void draw_layer_from_row(int r, int l);
 		int numlayers();
 		std::vector<Box> get_collision_box(Box bbox);
 	private:
 		int w, h;
-		int tilew, tileh;
 		int nextobj;
 
 		std::vector<Layer> layers;

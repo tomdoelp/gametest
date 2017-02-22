@@ -28,17 +28,35 @@ ALLEGRO_SHADER *Renderer::create_scale_shader() {
 	
 
 void Renderer::render(Map &m) {
+	std::vector<VisibleObj*> row_objs; /* objs on the same row */
 	al_set_target_bitmap(v.get_buffer());
 	al_clear_to_color(al_map_rgb(64,64,64));
 
+	/* Draw the entire background layer first */
 	m.draw_layer(0);
 
 	depth_sort();
-	for (auto &x : visibles) {
-		x->draw();
+	int row = 0;
+	int tileh = m.tileh;
+	for (auto &o : visibles) {
+		int objrow = o->depth / tileh;
+		if (row < objrow) {
+			for (int i = row; i < objrow; i++) {
+				m.draw_row(i,1);
+			}
+			o->draw();
+			row = objrow;
+		} else {
+			o->draw();
+		}
 	}
+	/* draw the rest of the mixed layer */
+	m.draw_layer_from_row(row,1);
 
-	m.draw_layer(1);
+
+
+	/* draw the entire forground layer afterwards */
+	m.draw_layer(2);
 
 	al_set_target_backbuffer(display);
 	al_clear_to_color(al_map_rgb(0,0,0));
