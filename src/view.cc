@@ -16,8 +16,11 @@ float View::get_h() { return SCREEN_H; }
 
 ALLEGRO_BITMAP *View::get_buffer() { return buffer; }
 float View::get_scale(float dispw, float disph) {
-	scale_w = (float) dispw / w;
-	scale_h = (float) disph / h;
-	return scale_w < scale_h ? scale_w : scale_h;
-
+	if (screen_scale == 0) {
+		scale_w = (float) dispw / w;
+		scale_h = (float) disph / h;
+		return scale_w < scale_h ? scale_w : scale_h;
+	} else {
+		return screen_scale;
+	}
 }

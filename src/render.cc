@@ -28,7 +28,6 @@ ALLEGRO_SHADER *Renderer::create_scale_shader() {
 	
 
 void Renderer::render(Map &m) {
-
 	al_set_target_bitmap(v.get_buffer());
 	al_clear_to_color(al_map_rgb(64,64,64));
 
@@ -48,7 +47,6 @@ void Renderer::render(Map &m) {
 	float disph = al_get_display_height(display);
 	float scale = v.get_scale(dispw, disph);
 	if (scale_shader) {
-
 		al_use_shader(scale_shader);
 		al_set_shader_float("bitmap_width", v.get_w());
 		al_set_shader_float("bitmap_height", v.get_h());

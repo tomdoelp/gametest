@@ -23,6 +23,7 @@ ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
 bool key[ALLEGRO_KEY_MAX];
+int screen_scale = 0;
 
 void init() {
 	/* fill keyboard array with false */
@@ -101,7 +102,6 @@ void shutdown() {
 
 void game_loop() {
 	/* DEBUG  */
-	alert("Just deal with nearest neighbor for now"); 
 
 #if DEBUG
 	/* FPS calculation stolen from dradtke */
@@ -189,6 +189,27 @@ void game_loop() {
 					done = true;
 				if (key[ALLEGRO_KEY_F])
 					al_toggle_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, true);
+
+				if (key[ALLEGRO_KEY_0]) {
+					screen_scale = 0;
+					redraw = true;
+				}
+				if (key[ALLEGRO_KEY_1]) {
+					screen_scale = 1;
+					redraw = true;
+				}
+				if (key[ALLEGRO_KEY_2]) {
+					screen_scale = 2;
+					redraw = true;
+				}
+				if (key[ALLEGRO_KEY_3]) {
+					screen_scale = 3;
+					redraw = true;
+				}
+				if (key[ALLEGRO_KEY_4]) {
+					screen_scale = 4;
+					redraw = true;
+				}
 				break;
 			case ALLEGRO_EVENT_KEY_UP:
 				key[event.keyboard.keycode] = false;

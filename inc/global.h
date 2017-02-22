@@ -20,6 +20,7 @@ extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_DISPLAY* display;
 extern ALLEGRO_FONT *font;
+extern int screen_scale;
 
 extern bool key[ALLEGRO_KEY_MAX];
 
