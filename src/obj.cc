@@ -26,7 +26,7 @@ SolidObj::~SolidObj() {}
 
 
 /* Visible Object */
-VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(y), sprite(s) {
+VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(y+h), sprite(s) {
 	aspeed = 2.0 / 60.0;
 	loop = true;
 	frame_index = 0;
@@ -73,7 +73,7 @@ MobileObj::~MobileObj() {}
 void MobileObj::update() {
 	x += dx;
 	y += dy;
-	depth = y; 
+	depth = y+h; 
 }
 
 

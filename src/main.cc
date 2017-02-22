@@ -14,12 +14,7 @@
 #include "load.h"
 #include "level.h"
 #include "view.h"
-
-//#include <list>
-// std::list<int> L;
-// L.push_back(1)
-// L.insert(++L.begin(), 2);
-// L.sort
+#include "render.h"
 
 /* externs from global.h */
 bool done;
@@ -46,7 +41,7 @@ void register_visible(VisibleObj *o) {
 	visibles.push_back(o);
 }
 
-void render(View &v, Map &m){
+void render(View &v, Map &m, double fps=0){
 	al_set_target_bitmap(v.get_buffer());
 	al_clear_to_color(al_map_rgb(64,64,64));
 	
@@ -66,6 +61,11 @@ void render(View &v, Map &m){
 	float disph = al_get_display_height(display);
 	float scale = v.get_scale(dispw, disph);
 	al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, dispw/2-(SCREEN_W * scale)/2, disph/2-(SCREEN_H * scale)/2, scale * SCREEN_W, scale * SCREEN_H, 0);
+
+#if DEBUG
+	al_draw_textf(font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %f", fps);
+#endif
+
 
 	al_flip_display();
 }
@@ -145,11 +145,21 @@ void shutdown() {
 	/* destoy mixers and such */
 }
 
-
 void game_loop() {
+	/* DEBUG  */
+	alert("Just deal with nearest neighbor for now"); 
+
+#if DEBUG
+	/* FPS calculation stolen from dradtke */
+	double old_time = al_get_time(), fps = 0;
+	int frames_done = 0;
+#endif
+
+
 
 	/* SCREEN STUFF */
 	View v(SCREEN_W, SCREEN_H, display);
+	Renderer r(display, v);
 
 	bool redraw = true;
 	al_start_timer(timer);
@@ -185,14 +195,14 @@ void game_loop() {
 	/* create a sprite */
 	Sprite *spr_saturn1 = sh_saturn1[0];
 	Sprite *spr_saturn2 = sh_saturn[0];
-	spr_saturn1->sprite_center_origin(false);
-	spr_saturn2->sprite_center_origin(false);
+	spr_saturn1->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
+	spr_saturn2->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
 
 	/* create a player object */
 	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
-	register_visible(&p);
+	r.register_visible(&p);
 	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
-	register_visible(&p2);
+	r.register_visible(&p2);
 
 
 	/* Tile Stuff */	
@@ -234,12 +244,22 @@ void game_loop() {
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
+			r.render(m);
+#if DEBUG
+			double game_time = al_get_time();
+			if (game_time - old_time >= 1.0) {
+				fps = frames_done / (game_time - old_time);
+				frames_done = 0;
+				old_time = game_time;
+			}
+			frames_done++;
+			al_draw_textf(font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %f", fps);
+#endif
 
-			render(v,m);
+			al_flip_display();
 		}
 	}
 }
-
 
 int main(int argc, char* argv[]) {
 	init();

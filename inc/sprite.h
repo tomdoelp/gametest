@@ -29,39 +29,6 @@ using json = nlohmann::json;
  *  Or google that example where a dude used ALLEGRO_STATE or w/e
  */
 
-/* OKAY NEW PLAN
- * SpriteSheet holds the parent bitmap
- * Sprite takes a sheet, h, w, originx=0, originy=0 number of frames=0, row=0, offx=0, offy=0, gap=0
- * Holds an array of sub-bitmaps, one for each frame.
- * sprite_draw() takes n=0, draws the nth sub-bitmap
- *
- * */
- 
-/* SpriteStrip, how to get frames of animation from an image strip */
-/*class SpriteStrip {
-	public:
-		SpriteStrip(float framew, float frameh, float frames, int row, float gap=0, bool centered=false, float ox=0, float oy=0);
-		~SpriteStrip();
-		
-		float getw();
-		float geth();
-		float getframes();
-		int getrow();
-		float getgap();
-		float getoriginx();
-		float getoriginy();
-		bool getcentered();
-
-		Box operator[](int i);
-		
-	private:
-		float w, h, frames;
-		int row;
-		float gap;
-		bool centered;
-		float ox, oy;
-};*/
-
 
 /* Sprite. Holds bitmap & data, bounding box, and a strip for information */
 class Sprite {
@@ -77,7 +44,7 @@ class Sprite {
 		int getframes();
 		const char *getname();
 
-		void sprite_center_origin(bool round);
+		void sprite_center_origin(Origin o, float offsetx=0, float offsety=0);
 		void sprite_set_origin(float ox, float oy);
 
 		void sprite_draw(float destx, float desty, int f=0, int flags=0, float angle=0, float xscale=1, float yscale=1);
@@ -121,11 +88,5 @@ class SpriteSheet {
 		std::vector< Sprite > sprites;
 		std::vector< std::vector< Box > > strips;
 };
-/* Plan:
- * singleton ?
- * Objects get a pointer to a sprite
- * If they want a sprite somebody already loaded, they get a pointer to the same one
- * OR just do that at the beginning of a game / scene . . .
- */
 
 #endif

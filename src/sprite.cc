@@ -112,14 +112,26 @@ float Sprite::geth() { return h; }
 int Sprite::getframes() { return frames; }
 const char *Sprite::getname() { return name; }
 
-void Sprite::sprite_center_origin(bool round) {
-	x = w/2;
-	y = h/2;
-
-	if (round) {
-		x = round_nearest(x);
-		y = round_nearest(y);
+void Sprite::sprite_center_origin(Origin o, float offsetx, float offsety) {
+	switch (o) {
+		case ORIGIN_DEFAULT:
+			x = 0;
+			y = 0;
+			break;
+		case ORIGIN_CENTER_MIDDLE:
+			x = w/2;
+			y = h/2;
+			break;
+		case ORIGIN_CENTER_BOTTOM:
+			x = w/2;
+			y = h;
+			break;
+		case ORIGIN_CENTER_TOP:
+			x = w/2;
+			y = 0;
 	}
+	x += offsetx;
+	y += offsety;
 }
 
 void Sprite::sprite_draw(float destx, float desty, int f, int flags, float angle, float xscale, float yscale) {

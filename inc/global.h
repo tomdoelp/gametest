@@ -26,6 +26,8 @@ extern bool key[ALLEGRO_KEY_MAX];
 void abort(const char *format, ...);
 void alert(const char *format, ...);
 
+typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
+
 /* void debug(const char *format, ...)
 {
 	if (!DEBUG)
