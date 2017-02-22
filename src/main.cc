@@ -24,52 +24,6 @@ ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
 bool key[ALLEGRO_KEY_MAX];
 
-std::vector<VisibleObj*> visibles;
-void depth_sort(std::vector<VisibleObj*> &v) {
-	for (int i = 1, n = v.size(); i < n; i++) {
-		int j = i;
-		VisibleObj *temp = v[i];
-		while (j>0 && temp->depth < v[j-1]->depth) {
-			v[j] = v[j-1];
-			j--;
-		}
-		v[j] = temp;
-	}
-}
-
-void register_visible(VisibleObj *o) {
-	visibles.push_back(o);
-}
-
-void render(View &v, Map &m, double fps=0){
-	al_set_target_bitmap(v.get_buffer());
-	al_clear_to_color(al_map_rgb(64,64,64));
-	
-	m.draw_layer(0);
-
-	depth_sort(visibles);
-	for (auto &x : visibles) {
-		x->draw();
-	}
-
-	m.draw_layer(1);
-
-	al_set_target_backbuffer(display);
-	al_clear_to_color(al_map_rgb(0,0,0));
-
-	float dispw = al_get_display_width(display);
-	float disph = al_get_display_height(display);
-	float scale = v.get_scale(dispw, disph);
-	al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, dispw/2-(SCREEN_W * scale)/2, disph/2-(SCREEN_H * scale)/2, scale * SCREEN_W, scale * SCREEN_H, 0);
-
-#if DEBUG
-	al_draw_textf(font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %f", fps);
-#endif
-
-
-	al_flip_display();
-}
-
 void init() {
 	/* fill keyboard array with false */
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
@@ -154,7 +108,6 @@ void game_loop() {
 	double old_time = al_get_time(), fps = 0;
 	int frames_done = 0;
 #endif
-
 
 
 	/* SCREEN STUFF */

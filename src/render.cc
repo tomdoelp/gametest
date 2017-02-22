@@ -1,16 +1,37 @@
 #include "render.h"
 
-Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {}
-
+Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
+	scale_shader = create_scale_shader();
+}
 
 void Renderer::register_visible(VisibleObj *o) {
 	visibles.push_back(o);
 }
 
+/* Thanks to SiegeLord, from https://www.allegro.cc/forums/thread/612318 */
+ALLEGRO_SHADER *Renderer::create_scale_shader() {
+	ALLEGRO_SHADER* shader = al_create_shader(ALLEGRO_SHADER_AUTO);
+	if(!al_attach_shader_source(shader, ALLEGRO_VERTEX_SHADER, al_get_default_shader_source(ALLEGRO_SHADER_AUTO, ALLEGRO_VERTEX_SHADER))) {
+		printf("%s\n", al_get_shader_log(shader));
+		return NULL;
+	}
+	if(!al_attach_shader_source_file(shader, ALLEGRO_PIXEL_SHADER, al_get_shader_platform(shader) == ALLEGRO_SHADER_GLSL ? "./res/shaders/coverage_pixel.glsl" : "./res/shaders/coverage_pixel.hlsl")) {
+		printf("%s\n", al_get_shader_log(shader));
+		return NULL;
+	}
+	if(!al_build_shader(shader)) {
+		printf("%s\n", al_get_shader_log(shader));
+		return NULL;
+	}
+	return shader;
+}
+	
+
 void Renderer::render(Map &m) {
+
 	al_set_target_bitmap(v.get_buffer());
 	al_clear_to_color(al_map_rgb(64,64,64));
-	
+
 	m.draw_layer(0);
 
 	depth_sort();
@@ -26,7 +47,19 @@ void Renderer::render(Map &m) {
 	float dispw = al_get_display_width(display);
 	float disph = al_get_display_height(display);
 	float scale = v.get_scale(dispw, disph);
+	if (scale_shader) {
+
+		al_use_shader(scale_shader);
+		al_set_shader_float("bitmap_width", v.get_w());
+		al_set_shader_float("bitmap_height", v.get_h());
+		al_set_shader_float("x_scale", scale);
+		al_set_shader_float("y_scale", scale);
+	} else {
+		al_use_shader(NULL);
+	}
 	al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, dispw/2-(SCREEN_W * scale)/2, disph/2-(SCREEN_H * scale)/2, scale * SCREEN_W, scale * SCREEN_H, 0);
+
+	al_use_shader(NULL);
 }
 
 void Renderer::depth_sort(){

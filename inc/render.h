@@ -27,8 +27,10 @@ class Renderer {
 		View v;
 
 		std::vector<VisibleObj*> visibles;
+		ALLEGRO_SHADER *scale_shader;
 
 		void depth_sort();
+		ALLEGRO_SHADER *create_scale_shader();
 };
 
 #endif
