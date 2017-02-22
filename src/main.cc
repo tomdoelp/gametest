@@ -29,16 +29,46 @@ ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
 bool key[ALLEGRO_KEY_MAX];
 
-
-// maybe a forward list?
-std::list<VisibleObj> visibles;
-void register_visible(VisibleObj o) {
-	visibles.push_back(o);
-	visibles.sort();
+std::vector<VisibleObj*> visibles;
+void depth_sort(std::vector<VisibleObj*> &v) {
+	for (int i = 1, n = v.size(); i < n; i++) {
+		int j = i;
+		VisibleObj *temp = v[i];
+		while (j>0 && temp->depth < v[j-1]->depth) {
+			v[j] = v[j-1];
+			j--;
+		}
+		v[j] = temp;
+	}
 }
 
+void register_visible(VisibleObj *o) {
+	visibles.push_back(o);
+}
 
+void render(View &v, Map &m){
+	al_set_target_bitmap(v.get_buffer());
+	al_clear_to_color(al_map_rgb(64,64,64));
+	
+	m.draw_layer(0);
 
+	depth_sort(visibles);
+	for (auto &x : visibles) {
+		x->draw();
+	}
+
+	m.draw_layer(1);
+
+	al_set_target_backbuffer(display);
+	al_clear_to_color(al_map_rgb(0,0,0));
+
+	float dispw = al_get_display_width(display);
+	float disph = al_get_display_height(display);
+	float scale = v.get_scale(dispw, disph);
+	al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, dispw/2-(SCREEN_W * scale)/2, disph/2-(SCREEN_H * scale)/2, scale * SCREEN_W, scale * SCREEN_H, 0);
+
+	al_flip_display();
+}
 
 void init() {
 	/* fill keyboard array with false */
@@ -115,25 +145,17 @@ void shutdown() {
 	/* destoy mixers and such */
 }
 
+
 void game_loop() {
 
-	///////////////////////////////////////////////
-	// SCREEN STUFF                              //
-	///////////////////////////////////////////////
+	/* SCREEN STUFF */
 	View v(SCREEN_W, SCREEN_H, display);
 
 	bool redraw = true;
 	al_start_timer(timer);
 
 
-
-
-
-
-	///////////////////////////////////////////////
-	// SOUND STUFF	                             //
-	///////////////////////////////////////////////
-
+	/* SOUND STUFF */
 	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
 	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
@@ -155,12 +177,7 @@ void game_loop() {
 	}
 
 
-
-
-	////////////////////////////////////////////////
-	// SPRITE STUFF                               //
-	////////////////////////////////////////////////
-
+	/* SPRITE STUFF */
 	/* create a spritesheet */
 	SpriteSheet sh_saturn1("./res/saturn-sheet.png","./res/saturn-sheet.json");
 	SpriteSheet sh_saturn("./res/saturnfishing-sheet.png","./res/saturnfishing-sheet.json");
@@ -172,23 +189,17 @@ void game_loop() {
 	spr_saturn2->sprite_center_origin(false);
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 1, spr_saturn1);
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
+	register_visible(&p);
 	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
+	register_visible(&p2);
 
 
-
-	/////////////////////////////////////////////////
-	// TILES ! ! ! !                               //
-	///////////////////////////////////////////////// 
-	
+	/* Tile Stuff */	
 	Map m("./res/maps/test.tmx");
 
 
-
-	/////////////////////////////////////////////////
-	// EVENTS                                      //
-	/////////////////////////////////////////////////
-
+	/* Events */
 	while (!done) {
 		ALLEGRO_EVENT event;
 		al_wait_for_event(event_queue, &event);
@@ -224,24 +235,11 @@ void game_loop() {
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
 
-			al_set_target_bitmap(v.get_buffer());
-			al_clear_to_color(al_map_rgb(64,64,64));
-			m.draw_layer(0); 
-			p.draw(); 
-			p2.draw(); 
-			m.draw_layer(1); 
-			al_set_target_backbuffer(display);
-			al_clear_to_color(al_map_rgb(0,0,0));
-			float dispw = al_get_display_width(display);
-			float disph = al_get_display_height(display);
-			float scale = v.get_scale(dispw, disph);
-			al_draw_scaled_bitmap(v.get_buffer(), 0, 0, SCREEN_W, SCREEN_H, dispw/2-(SCREEN_W * scale)/2, disph/2-(SCREEN_H * scale)/2, scale * SCREEN_W, scale * SCREEN_H, 0);
-
-			//update graphics;
-			al_flip_display();
+			render(v,m);
 		}
 	}
 }
+
 
 int main(int argc, char* argv[]) {
 	init();

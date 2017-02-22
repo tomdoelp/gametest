@@ -41,6 +41,7 @@ class Map {
 		~Map();
 
 		void draw_layer(int n);
+		int numlayers();
 		std::vector<Box> get_collision_box(Box bbox);
 	private:
 		int w, h;

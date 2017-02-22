@@ -53,11 +53,10 @@ class VisibleObj : public virtual PhysicalObj {
 		~VisibleObj();
 		virtual void draw();
 		bool operator<(const VisibleObj &rhs);
-		int getDepth() const;
+		int depth;
 	protected:
 		typedef PhysicalObj super;
 		bool loop;
-		int depth;
 		Sprite *sprite;
 		float aspeed;
 		float frame_index;
