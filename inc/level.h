@@ -46,7 +46,9 @@ class Map {
 		void draw_row(int r, int l);
 		void draw_layer_from_row(int r, int l);
 		int numlayers();
-		std::vector<Box> get_collision_box(Box bbox);
+		std::vector<Box> get_collision_box(float ox, float oy, float ow, float oh);
+		std::vector<Box> get_collision_box(Box &bbox);
+		std::vector<int> get_containing_cells(const Box &bbox);
 	private:
 		int w, h;
 		int nextobj;
@@ -54,7 +56,7 @@ class Map {
 		std::vector<Layer> layers;
 		std::vector<ALLEGRO_BITMAP*> tilesets;
 		std::vector<ALLEGRO_BITMAP*> tiles;
-		std::vector<bool> solid;
+		std::vector<int> solid;
 };
 
 #endif

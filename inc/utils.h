@@ -12,14 +12,21 @@ class Box {
 	public:
 		Box(float x=0, float y=0, float w=0, float h=0);
 		~Box();
-		float getx();
-		float gety();
-		float getw();
-		float geth();
+		float get_x() const;
+		float get_y() const;
+		float get_w() const;
+		float get_h() const;
+		float get_center_x() const;
+		float get_center_y() const;
+		float get_halfw() const;
+		float get_halfh() const;
+		float get_hypotenuse() const;
 
-		bool check_collision(Box &other);
-		bool check_collision_horizontal(Box &other);
-		bool check_collision_vertical(Box &other);
+		bool check_collision(const Box &other);
+		float check_collision_horizontal(const Box &other);
+		float check_collision_horizontal(float ox, float ow);
+		float check_collision_vertical(const Box &other);
+		float check_collision_vertical(float oy, float oh);
 
 		void setx(float x);
 		void sety(float y);
@@ -28,6 +35,8 @@ class Box {
 	
 	protected:
 		float x, y, w, h;
+		float halfw, halfh;
+		float hypotenuse;
 };
 
 /* probably won't be used */

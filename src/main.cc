@@ -4,7 +4,6 @@
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
@@ -15,6 +14,7 @@
 #include "level.h"
 #include "view.h"
 #include "render.h"
+#include "world.h"
 
 /* externs from global.h */
 bool done;
@@ -46,7 +46,6 @@ void init() {
 
 	/* Display */
 	al_set_new_display_flags(ALLEGRO_RESIZABLE | ALLEGRO_GENERATE_EXPOSE_EVENTS | ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
-/*	al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP | ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR); */
 	al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
 	display = al_create_display(WINDOW_W, WINDOW_H);
 	if (!display)
@@ -70,12 +69,10 @@ void init() {
 	if (!al_reserve_samples(4)) 
 		abort("Failed to reserve samples"); 
 
-	/* Fonts, ttf */
+	/* Fonts */
 	if (!al_init_font_addon())
 		abort("Failed to initialize font addon");
-	if (!al_init_ttf_addon())
-		abort("Failed to initialize ttf addon");
-	font = al_load_ttf_font("/home/tom/school/cse350/APHont/APHont-Regular_q15c.ttf",72,0); 
+	font = al_create_builtin_font(); 
 	if (!font)
 		abort("Failed to load font");
 
@@ -139,6 +136,9 @@ void game_loop() {
 		al_set_audio_stream_playing(worry, true); 
 	}
 
+	/* Tile Stuff */	
+	Map m("./res/maps/test.tmx");
+	World w(&m);
 
 	/* SPRITE STUFF */
 	/* create a spritesheet */
@@ -152,14 +152,15 @@ void game_loop() {
 	spr_saturn2->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1);
+	Player p(SCREEN_W/2, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn1, &m);
 	r.register_visible(&p);
 	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 32.0, 32.0, 0, spr_saturn2);
 	r.register_visible(&p2); 
 
+	p.attach_to_world(&w);
+	p2.attach_to_world(&w);
 
-	/* Tile Stuff */	
-	Map m("./res/maps/test.tmx");
+
 
 
 	/* Events */
@@ -227,7 +228,7 @@ void game_loop() {
 				old_time = game_time;
 			}
 			frames_done++;
-			al_draw_textf(font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %f", fps);
+			al_draw_textf(font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %.2f", fps);
 #endif
 
 			al_flip_display();

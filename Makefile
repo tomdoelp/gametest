@@ -26,10 +26,12 @@ LDFLAGS += $(shell pkg-config --libs $(LIBS)) -lpugixml
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $^ -o $@ $(LDFLAGS)
+	@$(CC) $^ -o $@ $(LDFLAGS)
+	@echo "$(OBJECTS) -> $@"
 
 $(OBJDIR)/%.o: %.cc $(HEADERS)
-	$(CC) $(CFLAGS) $< -c -o $@
+	@$(CC) $(CFLAGS) $< -c -o $@
+	@echo "$@"
 
 .PHONY: clean
 

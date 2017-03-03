@@ -82,7 +82,7 @@ Map::Map(const char* fname) {
 							(i / columns)*(th + spacing),
 							tw,
 							th));
-				solid.push_back(false);
+				solid.push_back(0);
 			}
 
 
@@ -90,7 +90,7 @@ Map::Map(const char* fname) {
 				int id = tile.attribute("id").as_int();
 				if (tile.child("properties").child("property").attribute("name").value() == std::string("solid") &&
 						tile.child("properties").child("property").attribute("value").as_bool()) {
-					solid[id + firstgid] = true;
+					solid[id + firstgid] = 1;
 				}
 			}
 		}
@@ -153,4 +153,46 @@ void Map::draw_layer_from_row(int r, int l) {
 			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
 		}
 	}
+}
+
+std::vector<Box> Map::get_collision_box(float ox, float oy, float ow, float oh) {
+	int firstcol = ox / tilew;
+	int lastcol = (ox + ow) / tilew;
+	int firstrow = oy / tileh;
+	int lastrow = (oy + oh) / tileh;
+	std::vector<Box> boxes;
+
+	for (int i = 0, cols = lastcol - firstcol; i < cols; i++) {
+		for (int j = 0, rows = lastrow - firstrow; j < rows; j++) {
+			boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
+		}
+	}
+
+	return boxes;
+}
+
+std::vector<Box> Map::get_collision_box(Box &bbox) {
+	int firstcol = bbox.get_x() / tilew;
+	int lastcol = (bbox.get_x() + bbox.get_w()) / tilew;
+	int firstrow = bbox.get_y() / tileh;
+	int lastrow = (bbox.get_y() + bbox.get_h()) / tileh;
+	std::vector<Box> boxes;
+
+	for (int i = 0, cols = lastcol - firstcol; i < cols; i++) {
+		for (int j = 0, rows = lastrow - firstrow; j < rows; j++) {
+			boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
+		}
+	}
+
+	return boxes;
+}
+
+std::vector<int> Map::get_containing_cells(const Box &bbox) {
+	int firstcol = bbox.get_x() / tilew;
+	int lastcol = (bbox.get_x() + bbox.get_w()) / tilew;
+	int firstrow = bbox.get_y() / tileh;
+	int lastrow = (bbox.get_y() + bbox.get_h()) / tileh;
+	std::vector<int> cells;
+
+
 }
