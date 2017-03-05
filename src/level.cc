@@ -158,10 +158,10 @@ void Map::draw_layer_from_row(int r, int l) {
 }
 
 std::vector<Box> Map::get_collision_box(const Box &bbox) {
-	int firstcol = bbox.get_x() / tilew;
-	int lastcol = (bbox.get_x() + bbox.get_w()) / tilew;
-	int firstrow = bbox.get_y() / tileh;
-	int lastrow = (bbox.get_y() + bbox.get_h()) / tileh;
+	int firstcol = (bbox.get_x()) / tilew;
+	int lastcol = (bbox.get_x() + bbox.get_w()-1) / tilew;
+	int firstrow = (bbox.get_y()) / tileh;
+	int lastrow = (bbox.get_y() + bbox.get_h()-1) / tileh;
 	std::vector<Box> boxes;
 	std::vector<int> tilemap = layers[LAYER_COLLISIONS].get_gids();
 	int totaltiles = tilemap.size();
@@ -198,6 +198,10 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 		}
 		if (intersect_v != 0.0f) {
 			intersect.set_y(intersect_v); 
+		}
+		if ((intersect_h == intersect_v || -intersect_h == intersect_v ) && intersect_h != 0.0f){
+			intersect.set_y(0.0f);
+			alert("!");
 		}
 	}
 
