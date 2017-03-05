@@ -31,8 +31,8 @@ Box Box::operator + (const Vec2f &displace) {
 	return Box(x+displace.get_x(), y+displace.get_y(), w, h);
 }
 
-void Box::draw(){
-	al_draw_filled_rectangle(x, y, x+w, y+h, al_map_rgb(0,0,255));
+void Box::draw(ALLEGRO_COLOR color){
+	al_draw_filled_rectangle(x, y, x+w, y+h, color);
 }
 
 Vec2f Box::get_collision_vec(const Box &other) {

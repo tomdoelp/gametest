@@ -55,7 +55,7 @@ class Box {
 		void set_w(float w);
 		void set_h(float h);
 
-		void draw();
+		void draw(ALLEGRO_COLOR color);
 	
 		Box operator + (const Vec2f &displace);
 	protected:

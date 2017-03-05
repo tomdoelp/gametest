@@ -41,8 +41,8 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s)
 
 VisibleObj::~VisibleObj() {}
 void VisibleObj::draw() {
-#if DEBUG
-	al_draw_filled_rectangle(get_bbox().get_x(), get_bbox().get_y(), get_bbox().get_x()+get_bbox().get_w(), get_bbox().get_y()+get_bbox().get_h(), al_map_rgb(255,128, 128));
+#if DEBUG_DRAW
+	get_bbox().draw(al_map_rgb(0,255,0));
 #endif
 	if (sprite){
 		sprite->sprite_draw(x,y,frame_index);
@@ -104,7 +104,7 @@ void Player::update() {
 	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
 		dx = 0;
 
-	 if (world) {
+	 if (world && (dx != 0 || dy != 0)) {
 		 Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
 		 dx += intersection.get_x();
 		 dy += intersection.get_y();
@@ -115,6 +115,11 @@ void Player::update() {
 	 super::update();
 }
 void Player::draw() {
+#if DEBUG_DRAW
+	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy)))
+		b.draw(al_map_rgb(255,0,0));
+#endif
+
 	if (sprite) 
 		super::draw();
 	else

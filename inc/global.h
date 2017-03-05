@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #define DEBUG 1
+#define DEBUG_DRAW 1
 
 const float FPS = 60;
 const int WINDOW_W = 1024;
