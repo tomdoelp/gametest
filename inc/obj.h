@@ -43,6 +43,7 @@ class PhysicalObj : public Obj {
 };
 
 /* Solid object. Player can't move through these? */
+/*
 class SolidObj : public virtual PhysicalObj {
 	public:
 		SolidObj(float x=0.0, float y=0.0, float w=0, float h=0);
@@ -50,11 +51,11 @@ class SolidObj : public virtual PhysicalObj {
 	protected:
 		typedef PhysicalObj super;
 };
-
+*/
 
 /* Visible object. Has a position, size, depth, and possibly knows a sprite. Can draw itself. */
 /* Compared by depth, so they can be drawn in order. */
-class VisibleObj : public virtual PhysicalObj {
+class VisibleObj : public PhysicalObj {
 	public:
 		VisibleObj(float x=0.0, float y=0.0, float w=0.0, float h=0.0, int depth=0, Sprite *s=NULL);
 		virtual ~VisibleObj();
@@ -68,17 +69,6 @@ class VisibleObj : public virtual PhysicalObj {
 		float aspeed;
 		float frame_index;
 		bool visible;
-};
-
-
-/* Wall. A solid, visible object. Player can't move through these. */
-class Wall : public SolidObj, public VisibleObj {
-	public:
-		Wall(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0);
-		virtual ~Wall();
-		virtual void draw();
-	protected:
-		typedef PhysicalObj super;
 };
 
 

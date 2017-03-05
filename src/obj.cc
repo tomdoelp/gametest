@@ -25,9 +25,10 @@ Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
 
 
 /* Solid Object */
+/*
 SolidObj::SolidObj(float x, float y, float w, float h) : PhysicalObj(x, y, w, h) {}
 SolidObj::~SolidObj() {}
-
+*/
 
 
 /* Visible Object */
@@ -40,7 +41,9 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s)
 
 VisibleObj::~VisibleObj() {}
 void VisibleObj::draw() {
+#if DEBUG
 	al_draw_filled_rectangle(get_bbox().get_x(), get_bbox().get_y(), get_bbox().get_x()+get_bbox().get_w(), get_bbox().get_y()+get_bbox().get_h(), al_map_rgb(255,128, 128));
+#endif
 	if (sprite){
 		sprite->sprite_draw(x,y,frame_index);
 		frame_index += aspeed;
@@ -59,20 +62,8 @@ bool VisibleObj::operator<(const VisibleObj &rhs) {
 
 
 
-/* Wall */
-Wall::Wall(float x, float y, float w, float h, int depth) : 
-	PhysicalObj(x, y, w, h), 
-	SolidObj(x, y, w, h),
-	VisibleObj(x, y, w, h, depth) {}
-	Wall::~Wall() {}
-	void Wall::draw() {
-		al_draw_filled_rectangle(x-w/2, y-h/2, x+w/2, y+h/2, al_map_rgb(125,125,125));	
-	}
-
-
-
 /* Mobile Object */
-MobileObj::MobileObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), VisibleObj(x, y, w, h, depth, s) {
+MobileObj::MobileObj(float x, float y, float w, float h, int depth, Sprite *s) : VisibleObj(x, y, w, h, depth, s) {
 	dy = 0;
 	dx = 0;
 }
@@ -86,12 +77,11 @@ void MobileObj::update() {
 
 
 /* Player Object */
-Player::Player(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), MobileObj(x, y, w, h, depth, s) {
+Player::Player(float x, float y, float w, float h, int depth, Sprite *s) : MobileObj(x, y, w, h, depth, s) {
 	score = 0;
 }
 Player::~Player() {}
 void Player::update() {
-	float xnext, ynext;
 	/* vertical control */
 	if (key[ALLEGRO_KEY_UP]) {
 		dy = -2;
@@ -114,8 +104,6 @@ void Player::update() {
 	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
 		dx = 0;
 
- 	 xnext = x+dx;
-	 ynext = y+dy;
 	 if (world) {
 		 Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
 		 dx += intersection.get_x();
