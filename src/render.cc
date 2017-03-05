@@ -33,7 +33,7 @@ void Renderer::render(Map &m) {
 	al_clear_to_color(al_map_rgb(64,64,64));
 
 	/* Draw the entire background layer first */
-	m.draw_layer(0);
+	m.draw_layer(LAYER_BACKGROUND);
 
 	depth_sort();
 	int row = 0;
@@ -42,7 +42,7 @@ void Renderer::render(Map &m) {
 		int objrow = o->depth / tileh;
 		if (row < objrow) {
 			for (int i = row; i < objrow; i++) {
-				m.draw_row(i,1);
+				m.draw_row(i,LAYER_MIXED);
 			}
 			o->draw();
 			row = objrow;
@@ -51,12 +51,12 @@ void Renderer::render(Map &m) {
 		}
 	}
 	/* draw the rest of the mixed layer */
-	m.draw_layer_from_row(row,1);
+	m.draw_layer_from_row(row,LAYER_MIXED);
 
 
 
 	/* draw the entire forground layer afterwards */
-	m.draw_layer(2);
+	m.draw_layer(LAYER_FOREGROUND);
 
 	al_set_target_backbuffer(display);
 	al_clear_to_color(al_map_rgb(0,0,0));

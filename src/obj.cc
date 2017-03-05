@@ -1,21 +1,26 @@
 #include "obj.h"
 
 /* Basic Object */
-Obj::Obj() {
+Obj::Obj(){
 	active=true;
 	id = objtotal++;
 	alert("id %d", id);
+	world = NULL;
 }
+Obj::~Obj() {}
 void Obj::update() { }	
 void Obj::activate() { active = true; }
 void Obj::deactivate() { active = false; }
 bool Obj::isactive() { return active; }
 int Obj::objtotal = 0;
+int Obj::get_id() const { return id; }
+void Obj::attach_to_world(World *world) { this->world = world; }
 
 
 /* Physical Object */
 PhysicalObj::PhysicalObj(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 PhysicalObj::~PhysicalObj() {}
+Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
 
 
 
@@ -35,6 +40,7 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s)
 
 VisibleObj::~VisibleObj() {}
 void VisibleObj::draw() {
+	al_draw_filled_rectangle(get_bbox().get_x(), get_bbox().get_y(), get_bbox().get_x()+get_bbox().get_w(), get_bbox().get_y()+get_bbox().get_h(), al_map_rgb(255,128, 128));
 	if (sprite){
 		sprite->sprite_draw(x,y,frame_index);
 		frame_index += aspeed;
@@ -108,24 +114,17 @@ void Player::update() {
 	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
 		dx = 0;
 
-	xnext = x+dx;
-	ynext = y+dy;
-	/* don't leave the screen */
-	if (xnext <= (w/2) || xnext >= SCREEN_W - (w/2)) {
-		dx = 0;
-		/* TODO place object right at the edge */
-	}
-
-	if (ynext <= h/2 || ynext >= SCREEN_H - h/2) {
-		dy = 0;
-		/* TODO place object right at the edge */
-	}
-
-	/* handle collisions */
+ 	 xnext = x+dx;
+	 ynext = y+dy;
+	 if (world) {
+		 Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
+		 dx += intersection.get_x();
+		 dy += intersection.get_y();
+	 }
 
 
-	/* update position based on speed */
-	super::update();
+	 /* update position based on speed */
+	 super::update();
 }
 void Player::draw() {
 	if (sprite) 
@@ -150,3 +149,5 @@ bool Player::bb_collision(float x, float y, float w, float h){
 
 	return true;
 }
+
+Box Player::get_bbox() const { return Box(x-w/2, y-h/2, w, h); }

@@ -33,8 +33,8 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 				data["sprites"][i]["name"].get<std::string>().c_str(),
 				sheet, 
 				strips[i], 
-				strips[i][0].getw(), 
-				strips[i][0].geth(), 
+				strips[i][0].get_w(), 
+				strips[i][0].get_h(), 
 				framenums); 
 	}
 }
@@ -90,10 +90,10 @@ Sprite::Sprite(const char *name, ALLEGRO_BITMAP *sheet, std::vector< Box > frame
 		for (int i = 0; i < frames; i++){
 			subimages[i] = al_create_sub_bitmap(
 					sheet, 
-					framearray[i].getx(),
-					framearray[i].gety(),
-					framearray[i].getw(),
-					framearray[i].geth());
+					framearray[i].get_x(),
+					framearray[i].get_y(),
+					framearray[i].get_w(),
+					framearray[i].get_h());
 		}
 	} 
 }
@@ -105,10 +105,10 @@ Sprite::~Sprite() {
 	}
 }
 
-float Sprite::getx() { return x; }
-float Sprite::gety() { return y; }
-float Sprite::getw() { return w; }
-float Sprite::geth() { return h; }
+float Sprite::get_x() { return x; }
+float Sprite::get_y() { return y; }
+float Sprite::get_w() { return w; }
+float Sprite::get_h() { return h; }
 int Sprite::getframes() { return frames; }
 const char *Sprite::getname() { return name; }
 

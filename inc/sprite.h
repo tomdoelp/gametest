@@ -37,10 +37,10 @@ class Sprite {
 		Sprite(const char* name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
 		~Sprite();
 
-		float getx();
-		float gety();
-		float getw();
-		float geth();
+		float get_x();
+		float get_y();
+		float get_w();
+		float get_h();
 		int getframes();
 		const char *getname();
 
@@ -70,8 +70,8 @@ class SpriteSheet {
 		SpriteSheet(const char* fname, const char* jname);
 		~SpriteSheet();
 
-		float getw();
-		float geth();
+		float get_w();
+		float get_h();
 
 		ALLEGRO_BITMAP *getbitmap();
 

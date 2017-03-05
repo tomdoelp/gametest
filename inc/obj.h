@@ -8,16 +8,22 @@
 
 #include "global.h"
 #include "sprite.h"
+#include "world.h"
+#include "level.h"
 
 /* Basic object. Holds the total number of instances, an id, and can update (nop) */
 class Obj {
 	public:
 		Obj();
+		virtual ~Obj();
 		virtual void update();
 		void activate();
 		void deactivate();
 		bool isactive();
+		int get_id() const;
+		void attach_to_world(World *world);
 	protected:
+		World *world;
 		bool active;
 		int id;
 		static int objtotal;
@@ -28,7 +34,8 @@ class Obj {
 class PhysicalObj : public Obj {
 	public:
 		PhysicalObj(float x=0.0, float y=0.0, float w=0, float h=0);
-		~PhysicalObj();
+		virtual ~PhysicalObj();
+		virtual Box get_bbox() const;
 	protected:
 		typedef Obj super;
 		float x, y;
@@ -39,7 +46,7 @@ class PhysicalObj : public Obj {
 class SolidObj : public virtual PhysicalObj {
 	public:
 		SolidObj(float x=0.0, float y=0.0, float w=0, float h=0);
-		~SolidObj();
+		virtual ~SolidObj();
 	protected:
 		typedef PhysicalObj super;
 };
@@ -50,7 +57,7 @@ class SolidObj : public virtual PhysicalObj {
 class VisibleObj : public virtual PhysicalObj {
 	public:
 		VisibleObj(float x=0.0, float y=0.0, float w=0.0, float h=0.0, int depth=0, Sprite *s=NULL);
-		~VisibleObj();
+		virtual ~VisibleObj();
 		virtual void draw();
 		bool operator<(const VisibleObj &rhs);
 		int depth;
@@ -68,7 +75,7 @@ class VisibleObj : public virtual PhysicalObj {
 class Wall : public SolidObj, public VisibleObj {
 	public:
 		Wall(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0);
-		~Wall();
+		virtual ~Wall();
 		virtual void draw();
 	protected:
 		typedef PhysicalObj super;
@@ -80,7 +87,7 @@ class MobileObj : public VisibleObj {
 	public:
 		MobileObj();
 		MobileObj(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, Sprite *s=NULL);
-		~MobileObj();
+		virtual ~MobileObj();
 		virtual void update();
 	protected:
 		typedef VisibleObj super;
@@ -93,9 +100,10 @@ class Player : public MobileObj {
 	public:
 		Player();
 		Player(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, Sprite *s=NULL);
-		~Player();
+		virtual ~Player();
 		virtual void update();
 		virtual void draw();
+		virtual Box get_bbox() const;
 	protected:
 		typedef MobileObj super;
 		int score;

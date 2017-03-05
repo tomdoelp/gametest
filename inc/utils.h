@@ -5,27 +5,59 @@
 #include <stdio.h>
 #include <math.h> // link with -lm ?
 
+	#include <allegro5/allegro.h>
+	#include <allegro5/allegro_primitives.h>
+
 #include "global.h"
 
+class Vec2f {
+	public:
+		Vec2f(float x=0.0f, float y=0.0f);
+		~Vec2f();
+
+		float get_x() const;
+		float get_y() const;
+		float get_diagonal() const;
+
+		void set_x(float x);
+		void set_y(float y);
+
+		char *c_str();
+
+
+		bool operator < (const Vec2f &rhs);
+		bool operator == (float diag);
+		bool operator != (float diag);
+
+	protected:
+		float x, y;
+
+};
 
 class Box {
 	public:
 		Box(float x=0, float y=0, float w=0, float h=0);
 		~Box();
-		float getx();
-		float gety();
-		float getw();
-		float geth();
+		float get_x() const;
+		float get_y() const;
+		float get_w() const;
+		float get_h() const;
 
+		Vec2f get_collision_vec(const Box &other);
+		float get_collision_h(const Box &other);
+		float get_collision_v(const Box &other);
 		bool check_collision(Box &other);
 		bool check_collision_horizontal(Box &other);
 		bool check_collision_vertical(Box &other);
 
-		void setx(float x);
-		void sety(float y);
-		void setw(float w);
-		void seth(float h);
+		void set_x(float x);
+		void set_y(float y);
+		void set_w(float w);
+		void set_h(float h);
+
+		void draw();
 	
+		Box operator + (const Vec2f &displace);
 	protected:
 		float x, y, w, h;
 };

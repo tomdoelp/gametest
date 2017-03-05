@@ -7,6 +7,10 @@
 
 #include "global.h"
 #include "load.h"
+#include "utils.h"
+
+typedef enum layertype {LAYER_BACKGROUND, LAYER_MIXED, LAYER_FOREGROUND, LAYER_COLLISIONS} LayerType;
+typedef enum solidtype {TILE_FREE, TILE_SOLID_SQUARE} SolidType;
 
 class Layer {
 	public: 
@@ -18,6 +22,7 @@ class Layer {
 		int w, h;
 		std::vector<int> gids;
 };
+/* TODO: remove this class */
 class Tileset {
 	public:
 		Tileset(int firstgid, const char *name, int tilew, int tileh, int tilecount, int columns);
@@ -33,7 +38,7 @@ class Tileset {
 		ALLEGRO_BITMAP *image_parent;
 		std::vector<ALLEGRO_BITMAP*> tiles; 
 
-		std::vector<bool> properties;
+		std::vector<int> tiletype;
 };
 class Map {
 	public:
@@ -46,7 +51,9 @@ class Map {
 		void draw_row(int r, int l);
 		void draw_layer_from_row(int r, int l);
 		int numlayers();
-		std::vector<Box> get_collision_box(Box bbox);
+		std::vector<Box> get_collision_box(const Box &bbox);
+
+		Vec2f get_collision_vec(const Box &now, const Box &next);
 	private:
 		int w, h;
 		int nextobj;
@@ -54,7 +61,7 @@ class Map {
 		std::vector<Layer> layers;
 		std::vector<ALLEGRO_BITMAP*> tilesets;
 		std::vector<ALLEGRO_BITMAP*> tiles;
-		std::vector<bool> solid;
+		std::vector<SolidType> tiletype;
 };
 
 #endif

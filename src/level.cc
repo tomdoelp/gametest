@@ -44,9 +44,9 @@ Tileset::Tileset(pugi::xml_node &t) {
 	/* for each tile with properties */
 	for(pugi::xml_node tile = t.child("tile"); tile; tile=tile.next_sibling("tile")) {
 		int id = tile.attribute("id").as_int();
-		if (tile.child("properties").child("property").attribute("name").value() == std::string("solid") &&
-			tile.child("properties").child("property").attribute("value").as_bool()) {
-			properties[id] = true;
+		if (tile.child("properties").child("property").attribute("name").value() == std::string("type") &&
+			tile.child("properties").child("property").attribute("value").as_int()) {
+			tiletype[id] = tile.child("properties").child("property").attribute("value").as_int();
 		}
 	}
 }
@@ -82,15 +82,14 @@ Map::Map(const char* fname) {
 							(i / columns)*(th + spacing),
 							tw,
 							th));
-				solid.push_back(false);
+				tiletype.push_back(TILE_FREE);
 			}
 
 
 			for (pugi::xml_node tile = t.child("tile"); tile; tile=tile.next_sibling("tile")) {
 				int id = tile.attribute("id").as_int();
-				if (tile.child("properties").child("property").attribute("name").value() == std::string("solid") &&
-						tile.child("properties").child("property").attribute("value").as_bool()) {
-					solid[id + firstgid] = true;
+				if (tile.child("properties").child("property").attribute("name").value() == std::string("type")) {
+					tiletype[id + firstgid] = static_cast<SolidType>(tile.child("properties").child("property").attribute("value").as_int());
 				}
 			}
 		}
@@ -99,7 +98,8 @@ Map::Map(const char* fname) {
 		for (pugi::xml_node l = map.child("layer"); l; l=l.next_sibling("layer")) {
 			layers.emplace_back(l);
 		}
-	} else 
+	} 
+	else 
 		alert("XML oopsie");
 }
 Map::~Map() {
@@ -127,6 +127,8 @@ void Map::draw_layer(int n) {
 }
 
 void Map::draw_row(int r, int l) {
+	if (r < 0 || r >= h) 
+		return;
 	int temp = 0;
 	int cols = w;
 	std::vector <int> gids = layers[l].get_gids();
@@ -140,7 +142,7 @@ void Map::draw_row(int r, int l) {
 }
 
 void Map::draw_layer_from_row(int r, int l) {
-	if (r > h) 
+	if (r < 0 || r >= h) 
 		return;
 
 	int temp = 0;
@@ -153,4 +155,51 @@ void Map::draw_layer_from_row(int r, int l) {
 			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
 		}
 	}
+}
+
+std::vector<Box> Map::get_collision_box(const Box &bbox) {
+	int firstcol = bbox.get_x() / tilew;
+	int lastcol = (bbox.get_x() + bbox.get_w()) / tilew;
+	int firstrow = bbox.get_y() / tileh;
+	int lastrow = (bbox.get_y() + bbox.get_h()) / tileh;
+	std::vector<Box> boxes;
+	std::vector<int> tilemap = layers[LAYER_COLLISIONS].get_gids();
+	int totaltiles = tilemap.size();
+
+	for (int i = firstcol; i <= lastcol; i++) {
+		for (int j = firstrow; j <= lastrow; j++) {
+			if (i+j*w > 0 && i+j*w < totaltiles &&
+				tiletype[tilemap[i+j*w]] == TILE_SOLID_SQUARE){
+				boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
+			}
+		}
+	}
+	return boxes;
+}
+
+Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
+	/* get all boxes that have a solid type */
+	std::vector<Box> coltiles = get_collision_box(next);
+
+	Vec2f intersect;
+	
+	float boxw = next.get_w();
+	float boxh = next.get_h();
+
+	for (auto &b : coltiles) {
+/*		alert("me  [%.2f - %.2f]\nyou [%.2f - %.2f]", 
+				next.get_y(), next.get_y()+next.get_h(),
+				b.get_y(), b.get_y()+b.get_h());
+				*/
+		float intersect_h = Box(next.get_x(), now.get_y(), boxw, boxh).get_collision_vec(b).get_x();
+		float intersect_v = Box(now.get_x(), next.get_y(), boxw, boxh).get_collision_vec(b).get_y();
+		if (intersect_h != 0.0f) {
+			intersect.set_x(intersect_h);
+		}
+		if (intersect_v != 0.0f) {
+			intersect.set_y(intersect_v); 
+		}
+	}
+
+	return intersect;
 }
