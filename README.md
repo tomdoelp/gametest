@@ -1,3 +1,3 @@
 # locomotive
 
-work-in-progress game engine using the Allegro framework for C++
+a work-in-progress game using the Allegro framework for C++
