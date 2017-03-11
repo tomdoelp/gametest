@@ -8,16 +8,23 @@
 #include "global.h"
 #include "utils.h"
 
+class PhysicalObj;
 class View {
 	public:
+		View();
 		View(float w, float h, ALLEGRO_DISPLAY *d);
+		~View();
+
 		ALLEGRO_BITMAP *get_buffer();
 		float get_x();
 		float get_y();
-		float get_w();
-		float get_h();
+		float get_w() const;
+		float get_h() const;
 		float get_scale(float dispw, float disph);
+		Box get_view_box();
 
+
+		void set_focus(PhysicalObj *o);
 	private:
 		float w, h;
 		ALLEGRO_BITMAP *buffer;
@@ -25,6 +32,10 @@ class View {
 		float x, y;
 		float scale;
 		float scale_w, scale_h, scale_x, scale_y;
+		PhysicalObj *focus;
+
+		float dispw, disph;
+
 };
 
 #endif

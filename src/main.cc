@@ -14,6 +14,7 @@
 #include "level.h"
 #include "view.h"
 #include "render.h"
+#include "world.h"
 
 /* externs from global.h */
 bool done;
@@ -108,8 +109,6 @@ void game_loop() {
 
 
 	/* SCREEN STUFF */
-	View v(SCREEN_W, SCREEN_H, display);
-	Renderer r(display, v);
 
 	bool redraw = true;
 	al_start_timer(timer);
@@ -128,7 +127,7 @@ void game_loop() {
 	al_attach_mixer_to_voice(master_mixer, voice); 
 
 	/* buffer count and samples? ? ??? ? ?? ? ? ?  */
-	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Untitled.xm", 4, 2048); 
+	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Theme2.xm", 4, 2048); 
 
 	if (worry) {
 		al_attach_audio_stream_to_mixer(worry, music_mixer);
@@ -138,27 +137,24 @@ void game_loop() {
 
 
 	/* MAP AND WORLD */	
-	Map m("./res/maps/test.tmx");
-	World world(&m);
+	View v(SCREEN_W, SCREEN_H, display);
+	Renderer r(display, v);
+	World world(&r);
+	world.load_map("./res/maps/bigtest.tmx");
 
 	/* SPRITE STUFF */
 	/* create a spritesheet */
-	SpriteSheet sh_saturn1("./res/saturn-sheet.png","./res/saturn-sheet.json");
+	SpriteSheet sh_death("./res/sprites/death/death2.png","./res/sprites/death/death2.json");
 	SpriteSheet sh_saturn("./res/saturnfishing-sheet.png","./res/saturnfishing-sheet.json");
 
-	/* create a sprite */
-	Sprite *spr_saturn1 = sh_saturn1[0];
-	Sprite *spr_saturn2 = sh_saturn[0];
-	spr_saturn1->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
-	spr_saturn2->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
-
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 16, 16, 0, spr_saturn1);
-	r.register_visible(&p);
-	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 16, 16, 0, spr_saturn2);
-	r.register_visible(&p2); 
+	Player p(SCREEN_W/2, SCREEN_H/2, 16, 8, 0, &sh_death);
+	world.get_renderer()->register_visible(&p);
+	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 16, 16, 0, &sh_saturn);
+	world.get_renderer()->register_visible(&p2); 
 
 	p.attach_to_world(&world);
+	world.set_view_focus(&p);
 	
 
 	/* Events */
@@ -169,8 +165,7 @@ void game_loop() {
 		switch(event.type){
 			case ALLEGRO_EVENT_TIMER:
 				redraw = true;
-				p.update();
-				//update_logic();
+				world.update();
 				break;
 			case ALLEGRO_EVENT_DISPLAY_EXPOSE:
 				redraw = true;
@@ -217,7 +212,7 @@ void game_loop() {
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			redraw = false;
-			r.render(m);
+			world.render();
 #if DEBUG
 			double game_time = al_get_time();
 			if (game_time - old_time >= 1.0) {

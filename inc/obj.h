@@ -8,25 +8,29 @@
 
 #include "global.h"
 #include "sprite.h"
-#include "world.h"
 #include "level.h"
 
+class World;
 /* Basic object. Holds the total number of instances, an id, and can update (nop) */
 class Obj {
 	public:
 		Obj();
+		Obj(World *world);
 		virtual ~Obj();
 		virtual void update();
-		void activate();
-		void deactivate();
-		bool isactive();
+		void set_active(bool active);
+		void set_persistent(bool persistent);
+
+		bool is_active() const;
 		int get_id() const;
+		bool is_persistent() const;
 		void attach_to_world(World *world);
 	protected:
 		World *world;
 		bool active;
 		int id;
 		static int objtotal;
+		bool persistent;
 };
 
 
@@ -34,7 +38,12 @@ class Obj {
 class PhysicalObj : public Obj {
 	public:
 		PhysicalObj(float x=0.0, float y=0.0, float w=0, float h=0);
+		PhysicalObj(World *world, float x=0.0, float y=0.0, float w=0, float h=0);
 		virtual ~PhysicalObj();
+		virtual float get_x() const;
+		virtual float get_y() const;
+		virtual float get_w() const;
+		virtual float get_h() const;
 		virtual Box get_bbox() const;
 	protected:
 		typedef Obj super;
@@ -42,22 +51,13 @@ class PhysicalObj : public Obj {
 		float w, h;
 };
 
-/* Solid object. Player can't move through these? */
-/*
-class SolidObj : public virtual PhysicalObj {
-	public:
-		SolidObj(float x=0.0, float y=0.0, float w=0, float h=0);
-		virtual ~SolidObj();
-	protected:
-		typedef PhysicalObj super;
-};
-*/
 
 /* Visible object. Has a position, size, depth, and possibly knows a sprite. Can draw itself. */
 /* Compared by depth, so they can be drawn in order. */
 class VisibleObj : public PhysicalObj {
 	public:
-		VisibleObj(float x=0.0, float y=0.0, float w=0.0, float h=0.0, int depth=0, Sprite *s=NULL);
+		VisibleObj(float x=0.0, float y=0.0, float w=0.0, float h=0.0, int depth=0, SpriteSheet *s=NULL);
+		VisibleObj(World *world, float x=0.0, float y=0.0, float w=0.0, float h=0.0, int depth=0, SpriteSheet *s=NULL);
 		virtual ~VisibleObj();
 		virtual void draw();
 		bool operator<(const VisibleObj &rhs);
@@ -65,10 +65,12 @@ class VisibleObj : public PhysicalObj {
 	protected:
 		typedef PhysicalObj super;
 		bool loop;
+		SpriteSheet *sheet;
 		Sprite *sprite;
 		float aspeed;
 		float frame_index;
 		bool visible;
+		bool hflip, vflip;
 };
 
 
@@ -76,29 +78,35 @@ class VisibleObj : public PhysicalObj {
 class MobileObj : public VisibleObj {
 	public:
 		MobileObj();
-		MobileObj(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, Sprite *s=NULL);
+		MobileObj(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
+		MobileObj(World *world, float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
 		virtual ~MobileObj();
 		virtual void update();
 	protected:
+		typedef enum compassdirs {DIR_N, DIR_NE, DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW} CompassDir;
+		CompassDir direction;
 		typedef VisibleObj super;
 		float dx, dy;
 };
 
 
 /* Player object. Has a score. Horizontal and vertical motion controlled with arrow keys. */
+/* Just a scratchpad for ideas, really */
 class Player : public MobileObj {
 	public:
 		Player();
-		Player(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, Sprite *s=NULL);
+		Player(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
+		Player(World *world, float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
 		virtual ~Player();
 		virtual void update();
 		virtual void draw();
 		virtual Box get_bbox() const;
 	protected:
+		int spritenum;
+		typedef enum pose {SPR_STAND, SPR_WALK_DOWN, SPR_WALK_DOWN_RIGHT, SPR_WALK_RIGHT, SPR_WALK_UP, SPR_WALK_UP_RIGHT} Pose;
 		typedef MobileObj super;
 		int score;
-
-		bool bb_collision(float x, float y, float w, float h);
+		Sprite *sprites[6];
 };
 
 #endif

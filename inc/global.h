@@ -7,14 +7,16 @@
 #include <errno.h>
 
 #define DEBUG 1
-#define DEBUG_DRAW 1
+#define DEBUG_DRAW 0
+
+#define MIN(a, b) ((a < b) ? a : b)
+#define MAX(a, b) ((a > b) ? a : b)
 
 const float FPS = 60;
 const int WINDOW_W = 1024;
 const int WINDOW_H = 768;
 const int SCREEN_W = 320;
 const int SCREEN_H = 240;
-/*enum MYKEYS {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT}; */
 
 extern bool done;
 extern ALLEGRO_EVENT_QUEUE* event_queue;
@@ -27,19 +29,5 @@ extern bool key[ALLEGRO_KEY_MAX];
 
 void abort(const char *format, ...);
 void alert(const char *format, ...);
-
-typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
-
-/* void debug(const char *format, ...)
-{
-	if (!DEBUG)
-		return;
-
-	va_list argptr;
-	va_start(argptr, format);
-	vfprintf(stderr,format, argptr);
-	fprintf(stderr,"\n");
-}*/ 
-
 
 #endif

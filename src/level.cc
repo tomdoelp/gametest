@@ -51,6 +51,8 @@ Tileset::Tileset(pugi::xml_node &t) {
 	}
 }
 
+Map::Map(){}
+
 Map::Map(const char* fname) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(fname);
@@ -114,19 +116,45 @@ Map::~Map() {
 
 int Map::numlayers() { return layers.size(); }
 
-void Map::draw_layer(int n) {
+void Map::draw_layer(float x, float y, int n) {
 	int temp = 0;
 	std::vector<int> gids = layers[n].get_gids();
 
 	for (std::size_t i = 0, max = gids.size(); i != max; i++) {
 		temp = gids[i];
 		if (temp > 0) {
-			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
+			al_draw_bitmap(tiles[temp-1],x+ (i % w)*tilew,y+ (i/w)*tileh, 0);
 		}
 	}
 }
 
-void Map::draw_row(int r, int l) {
+void Map::draw_layer_region(float x, float y, int n, Box b) {
+	int firstcol, lastcol, firstrow, lastrow;
+	int firstcol_b = b.get_x() / tilew;
+	int lastcol_b = (b.get_x() + b.get_w()-1) / tilew +1;
+	int firstrow_b = b.get_y() / tileh;
+	int lastrow_b = (b.get_y() + b.get_h()-1) / tileh +1;
+
+	/* make sure we only try to draw within the bounds of the map */
+	/* also I would use elvis op but I don't think that's totally portable */
+	firstcol = ((firstcol_b > 0) ? firstcol_b : 0);
+	lastcol = ((lastcol_b < w) ? lastcol_b : w);
+	firstrow = ((firstrow_b > 0) ? firstrow_b : 0);
+	lastrow = ((lastrow_b < h) ? lastrow_b : h);
+
+	int temp = 0;
+	std::vector<int> gids = layers[n].get_gids();
+
+	for (int i = firstcol; i < lastcol; i++) {
+		for (int j = firstrow; j < lastrow; j++) {
+			temp = gids[i+j*w];
+			if (temp > 0)
+				al_draw_bitmap(tiles[temp-1], x+i*tilew, y+j*tileh, 0);
+		}
+	}
+}
+
+void Map::draw_row(float x, float y, int r, int l) {
 	if (r < 0 || r >= h) 
 		return;
 	int temp = 0;
@@ -136,12 +164,32 @@ void Map::draw_row(int r, int l) {
 	for (int i = cols*r, max = i+cols; i < max; i++) {
 		temp = gids[i];
 		if (temp > 0) {
-			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
+			al_draw_bitmap(tiles[temp-1], x+(i % w)*tilew, y+(i/w)*tileh, 0);
 		}
 	}
 }
 
-void Map::draw_layer_from_row(int r, int l) {
+void Map::draw_row_region(float x, float y, int r, int l, Box b) {
+	if (r < 0 || r >= h)
+		return;
+
+	int firstcol_b = b.get_x() / tilew;
+	int lastcol_b = (b.get_x() + b.get_w()) / tilew +1;
+	int firstcol = ((firstcol_b > 0) ? firstcol_b : 0);
+	int lastcol = ((lastcol_b < w) ? lastcol_b : w);
+
+	int temp = 0;
+	std::vector<int> gids = layers[l].get_gids();
+
+	for (int i = w*r+firstcol, max = w*r+lastcol; i < max; i++) {
+		temp = gids[i];
+		if (temp > 0) {
+			al_draw_bitmap(tiles[temp-1], x+(i % w)*tilew, y+(i/w)*tileh, 0);
+		}
+	}
+}
+
+void Map::draw_layer_from_row(float x, float y, int r, int l) {
 	if (r < 0 || r >= h) 
 		return;
 
@@ -152,10 +200,39 @@ void Map::draw_layer_from_row(int r, int l) {
 	for (std::size_t i = cols*r, max = gids.size(); i != max; i++) {
 		temp = gids[i];
 		if (temp > 0) {
-			al_draw_bitmap(tiles[temp-1], (i % w)*tilew, (i/w)*tileh, 0);
+			al_draw_bitmap(tiles[temp-1], x+(i % w)*tilew, y+(i/w)*tileh, 0);
 		}
 	}
 }
+
+void Map::draw_layer_region_from_row(float x, float y, int r, int l, Box b) {
+	if (r < 0 || r >= h)
+		return;
+
+	int firstcol, lastcol, firstrow, lastrow;
+	int firstcol_b = b.get_x() / tilew;
+	int lastcol_b = (b.get_x() + b.get_w()-1) / tilew +1;
+	int lastrow_b = (b.get_y() + b.get_h()-1) / tileh +1;
+
+	/* make sure we only try to draw within the bounds of the map */
+	/* also I would use elvis op but I don't think that's totally portable */
+	firstcol = ((firstcol_b > 0) ? firstcol_b : 0);
+	lastcol = ((lastcol_b < w) ? lastcol_b : w);
+	firstrow = r;
+	lastrow = ((lastrow_b < h) ? lastrow_b : h);
+
+	int temp = 0;
+	std::vector<int> gids = layers[l].get_gids();
+
+	for (int i = firstcol; i < lastcol; i++) {
+		for (int j = firstrow; j < lastrow; j++) {
+			temp = gids[i+j*w];
+			if (temp > 0)
+				al_draw_bitmap(tiles[temp-1], x+i*tilew, y+j*tileh, 0);
+		}
+	}
+}
+
 
 std::vector<Box> Map::get_collision_box(const Box &bbox) {
 	int firstcol = (bbox.get_x()) / tilew;
@@ -169,7 +246,7 @@ std::vector<Box> Map::get_collision_box(const Box &bbox) {
 	for (int i = firstcol; i <= lastcol; i++) {
 		for (int j = firstrow; j <= lastrow; j++) {
 			if (i+j*w > 0 && i+j*w < totaltiles &&
-				tiletype[tilemap[i+j*w]] == TILE_SOLID_SQUARE){
+					tiletype[tilemap[i+j*w]] == TILE_SOLID_SQUARE){
 				boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
 			}
 		}
@@ -182,12 +259,12 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 	std::vector<Box> coltiles = get_collision_box(next);
 
 	Vec2f intersect;
-	
+
 	float boxw = next.get_w();
 	float boxh = next.get_h();
 
 	for (auto &b : coltiles) {
-/*		alert("me  [%.2f - %.2f]\nyou [%.2f - %.2f]", 
+		/*		alert("me  [%.2f - %.2f]\nyou [%.2f - %.2f]", 
 				next.get_y(), next.get_y()+next.get_h(),
 				b.get_y(), b.get_y()+b.get_h());
 				*/
@@ -207,3 +284,5 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 
 	return intersect;
 }
+
+

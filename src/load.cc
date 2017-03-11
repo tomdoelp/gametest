@@ -1,4 +1,5 @@
 #include "load.h"
+#include "sprite.h"
 
 
 ALLEGRO_BITMAP *load_bitmap(const char* fname) {
@@ -35,6 +36,9 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers, int samples) {
 		alert("Could not load audio stream %s", fname);
 	return stream;
 }
+
+SheetManager::SheetManager() {}
+SheetManager::~SheetManager() {}
 
 /*SpriteSheet create_spritesheet_from_file(std::vector<std::string> fnames) {
 	std::string cmd("./src/make_spritesheet ");

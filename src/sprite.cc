@@ -124,7 +124,7 @@ void Sprite::sprite_center_origin(Origin o, float offsetx, float offsety) {
 			break;
 		case ORIGIN_CENTER_BOTTOM:
 			x = w/2;
-			y = h;
+			y = h-1;
 			break;
 		case ORIGIN_CENTER_TOP:
 			x = w/2;

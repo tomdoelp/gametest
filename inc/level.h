@@ -42,18 +42,22 @@ class Tileset {
 };
 class Map {
 	public:
+		Map();
 		Map(const char *fname);
 		~Map();
 
 		int tilew, tileh;
 
-		void draw_layer(int n);
-		void draw_row(int r, int l);
-		void draw_layer_from_row(int r, int l);
+		void draw_layer(float x, float y, int n);
+		void draw_row(float x, float y, int r, int l);
+		void draw_layer_from_row(float x, float y, int r, int l);
 		int numlayers();
 		std::vector<Box> get_collision_box(const Box &bbox);
-
 		Vec2f get_collision_vec(const Box &now, const Box &next);
+
+		void draw_layer_region(float x, float y, int n, Box b);
+		void draw_row_region(float x, float y, int r, int l, Box b);
+		void draw_layer_region_from_row(float x, float y, int r, int l, Box b);
 	private:
 		int w, h;
 		int nextobj;

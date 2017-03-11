@@ -18,11 +18,16 @@
 
 class Renderer {
 	public:
+		Renderer();
 		Renderer(ALLEGRO_DISPLAY *display, View &v);
+		~Renderer();
 
 		void register_visible(VisibleObj *o);
 		void render(Map &m);
+
+		void set_view_focus(PhysicalObj *o);
 	private:
+		ALLEGRO_TRANSFORM trans;
 		ALLEGRO_DISPLAY *display;
 		View v;
 

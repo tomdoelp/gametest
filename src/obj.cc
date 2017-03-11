@@ -1,4 +1,5 @@
 #include "obj.h"
+#include "world.h"
 
 /* Basic Object */
 Obj::Obj(){
@@ -9,17 +10,25 @@ Obj::Obj(){
 }
 Obj::~Obj() {}
 void Obj::update() { }	
-void Obj::activate() { active = true; }
-void Obj::deactivate() { active = false; }
-bool Obj::isactive() { return active; }
+void Obj::set_active(bool active) { this->active = active; }
+bool Obj::is_active() const { return active; }
+void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
+bool Obj::is_persistent() const { return persistent; }
 int Obj::objtotal = 0;
 int Obj::get_id() const { return id; }
-void Obj::attach_to_world(World *world) { this->world = world; }
+void Obj::attach_to_world(World *world) { 
+	this->world = world; 
+	world->register_object(this);
+}
 
 
 /* Physical Object */
 PhysicalObj::PhysicalObj(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 PhysicalObj::~PhysicalObj() {}
+float PhysicalObj::get_x() const { return x; }
+float PhysicalObj::get_y() const { return y; }
+float PhysicalObj::get_w() const { return w; }
+float PhysicalObj::get_h() const { return h; }
 Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
 
 
@@ -32,11 +41,18 @@ SolidObj::~SolidObj() {}
 
 
 /* Visible Object */
-VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, Sprite *s) : PhysicalObj(x, y, w, h), depth(y), sprite(s) {
+VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteSheet *s) : PhysicalObj(x, y, w, h), depth(y), sheet(s) {
+	if (sheet) {
+		sprite = (*sheet)[0];
+		sprite->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
+	}
+
 	aspeed = 2.0 / 60.0;
 	loop = true;
 	frame_index = 0;
 	visible = true;
+	hflip = false;
+	vflip = false;
 }
 
 VisibleObj::~VisibleObj() {}
@@ -44,8 +60,15 @@ void VisibleObj::draw() {
 #if DEBUG_DRAW
 	get_bbox().draw(al_map_rgb(0,255,0));
 #endif
+
 	if (sprite){
-		sprite->sprite_draw(x,y,frame_index);
+		int flags = 0;
+		if (hflip)
+			flags = flags | ALLEGRO_FLIP_HORIZONTAL;
+		if (vflip)
+			flags = flags | ALLEGRO_FLIP_VERTICAL;
+
+		sprite->sprite_draw(x,y,frame_index, flags);
 		frame_index += aspeed;
 		if (frame_index >= sprite->getframes() && !loop) {
 			aspeed = 0;
@@ -54,7 +77,10 @@ void VisibleObj::draw() {
 	}
 	else
 		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
+
+#if DEBUG_DRAW
 	al_draw_filled_rectangle(x-1,y-1,x+1,y+1,al_map_rgb(0,0,0));
+#endif
 }
 bool VisibleObj::operator<(const VisibleObj &rhs) {
 	return depth > rhs.depth; //reverse order, since we draw depth high to low
@@ -63,9 +89,10 @@ bool VisibleObj::operator<(const VisibleObj &rhs) {
 
 
 /* Mobile Object */
-MobileObj::MobileObj(float x, float y, float w, float h, int depth, Sprite *s) : VisibleObj(x, y, w, h, depth, s) {
+MobileObj::MobileObj(float x, float y, float w, float h, int depth, SpriteSheet *s) : VisibleObj(x, y, w, h, depth, s) {
 	dy = 0;
 	dx = 0;
+	direction = DIR_S;
 }
 MobileObj::~MobileObj() {}
 void MobileObj::update() {
@@ -77,16 +104,25 @@ void MobileObj::update() {
 
 
 /* Player Object */
-Player::Player(float x, float y, float w, float h, int depth, Sprite *s) : MobileObj(x, y, w, h, depth, s) {
+Player::Player(float x, float y, float w, float h, int depth, SpriteSheet *s) : MobileObj(x, y, w, h, depth, s) {
 	score = 0;
+	aspeed = 0;
+	spritenum = 6;
+
+	for (int i = 0; i < spritenum; i++) {
+		sprites[i] = (*sheet)[i];
+		sprites[i]->sprite_center_origin(ORIGIN_CENTER_BOTTOM);
+	}
+	sprite = sprites[0];
+
 }
 Player::~Player() {}
 void Player::update() {
 	/* vertical control */
 	if (key[ALLEGRO_KEY_UP]) {
-		dy = -2;
+		dy = -1;
 	} else if (key[ALLEGRO_KEY_DOWN]) {
-		dy = 2;
+		dy = 1;
 	} else
 		dy = 0;
 
@@ -95,24 +131,83 @@ void Player::update() {
 
 	/* horizontal control */
 	if (key[ALLEGRO_KEY_LEFT]) {
-		dx = -2;
+		dx = -1;
 	} else if (key[ALLEGRO_KEY_RIGHT]) {
-		dx = 2;
+		dx = 1;
 	} else
 		dx = 0;
 
 	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
 		dx = 0;
 
-	 if (world && (dx != 0 || dy != 0)) {
-		 Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
-		 dx += intersection.get_x();
-		 dy += intersection.get_y();
-	 }
+	if (dy > 0 && dx == 0)
+		direction = DIR_S;
+	if (dy > 0 && dx > 0)
+		direction = DIR_SE;
+	if (dy > 0 && dx < 0)
+		direction = DIR_SW;
+	if (dy < 0 && dx == 0)
+		direction = DIR_N;
+	if (dy < 0 && dx < 0)
+		direction = DIR_NW;
+	if (dy < 0 && dx > 0)
+		direction = DIR_NE;
+	if (dy == 0 && dx > 0)
+		direction = DIR_E;
+	if (dy == 0 && dx < 0)
+		direction = DIR_W;
 
+	switch (direction) {
+		case DIR_S:
+			sprite = sprites[SPR_WALK_DOWN];
+			hflip = false;
+			break;
+		case DIR_SE:
+			sprite = sprites[SPR_WALK_DOWN_RIGHT];
+			hflip = false;
+			break;
+		case DIR_E:
+			sprite = sprites[SPR_WALK_RIGHT];
+			hflip = false;
+			break;
+		case DIR_NE:
+			sprite = sprites[SPR_WALK_UP_RIGHT];
+			hflip = false;
+			break;
+		case DIR_N:
+			sprite = sprites[SPR_WALK_UP];
+			hflip = false;
+			break;
+		case DIR_SW:
+			sprite = sprites[SPR_WALK_DOWN_RIGHT];
+			hflip = true;
+			break;
+		case DIR_W:
+			sprite = sprites[SPR_WALK_RIGHT];
+			hflip = true;
+			break;
+		case DIR_NW:
+			sprite = sprites[SPR_WALK_UP_RIGHT];
+			hflip = true;
+			break;
+	}
 
-	 /* update position based on speed */
-	 super::update();
+	if (dy ==0 && dx == 0) {
+		sprite = sprites[SPR_STAND];
+		aspeed = 0;
+		hflip = false;
+	}
+	else
+		aspeed = 6.0f/60.0f;
+
+	if (world && (dx != 0 || dy != 0)) {
+		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
+		dx += intersection.get_x();
+		dy += intersection.get_y();
+	}
+
+	/* update position based on speed */
+	super::update();
 }
 void Player::draw() {
 #if DEBUG_DRAW
@@ -120,27 +215,13 @@ void Player::draw() {
 		b.draw(al_map_rgb(255,0,0));
 #endif
 
-	if (sprite) 
+	if (sprite) {
+		if (aspeed == 0)
+			frame_index = direction;
 		super::draw();
+	}
 	else
 		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
 }
 
-bool Player::bb_collision(float x, float y, float w, float h){
-	float _x = this->x - this->w/2;
-	float _y = this->y - this->h/2;
-	float _w = this->w;
-	float _h = this->h;
-
-	if ((_x > x+w - 1) ||
-			(_y > y+h - 1) ||
-			(x > _x+_w - 1) ||
-			(y > _y+_h - 1)) 
-	{
-		return false;
-	}
-
-	return true;
-}
-
-Box Player::get_bbox() const { return Box(x-w/2, y-h/2, w, h); }
+Box Player::get_bbox() const { return Box(x-w/2, y-h+2, w, h); }

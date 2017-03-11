@@ -7,14 +7,27 @@
 
 #include "global.h"
 #include "json.h"
-#include "sprite.h"
 
 using json = nlohmann::json;
+
+class SpriteSheet;
 
 ALLEGRO_BITMAP *load_bitmap(const char* fname);
 json load_json(const char* fname);
 ALLEGRO_SAMPLE *load_sound(const char* fname);
 ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers=4, int samples=2048);
+
+class SheetManager{
+	public:
+		SheetManager();
+		virtual ~SheetManager();
+
+		SpriteSheet *get_sheet(const char *fname, const char *jname);
+
+	protected:
+
+
+};
 
 
 #endif

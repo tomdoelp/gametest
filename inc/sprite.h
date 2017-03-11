@@ -30,6 +30,7 @@ using json = nlohmann::json;
  */
 
 
+typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
 /* Sprite. Holds bitmap & data, bounding box, and a strip for information */
 class Sprite {
 	public:
