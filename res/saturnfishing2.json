@@ -1,0 +1,227 @@
+{ "frames": [
+   {
+    "filename": "saturnfishing-sheet 0.png",
+    "frame": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 1.png",
+    "frame": { "x": 31, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 2.png",
+    "frame": { "x": 62, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 3.png",
+    "frame": { "x": 93, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 4.png",
+    "frame": { "x": 124, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 5.png",
+    "frame": { "x": 155, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 6.png",
+    "frame": { "x": 186, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 7.png",
+    "frame": { "x": 217, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 8.png",
+    "frame": { "x": 248, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 9.png",
+    "frame": { "x": 279, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 10.png",
+    "frame": { "x": 310, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 11.png",
+    "frame": { "x": 341, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 12.png",
+    "frame": { "x": 372, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 13.png",
+    "frame": { "x": 403, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 14.png",
+    "frame": { "x": 434, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 15.png",
+    "frame": { "x": 465, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 16.png",
+    "frame": { "x": 496, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 17.png",
+    "frame": { "x": 527, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 18.png",
+    "frame": { "x": 558, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 19.png",
+    "frame": { "x": 589, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 20.png",
+    "frame": { "x": 620, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 21.png",
+    "frame": { "x": 651, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 22.png",
+    "frame": { "x": 682, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   },
+   {
+    "filename": "saturnfishing-sheet 23.png",
+    "frame": { "x": 713, "y": 0, "w": 31, "h": 78 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 78 },
+    "sourceSize": { "w": 31, "h": 78 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2-dev",
+  "image": "/home/tom/projects/allegro/gametest/res/saturnfishing2-sheet.png",
+  "format": "RGBA8888",
+  "size": { "w": 744, "h": 78 },
+  "scale": "1"
+ }
+}

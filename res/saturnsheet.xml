@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sheet>
+	<name>Mr. Saturn</name>
+	<xoffset>2</xoffset>
+	<yoffset>0</yoffset>
+	<num>10</num>
+	<sprite>
+		<name>walkright</name>
+	</sprite>
+
+</sheet>
