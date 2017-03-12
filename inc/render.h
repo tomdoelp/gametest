@@ -15,8 +15,10 @@
 #include "load.h"
 #include "level.h"
 #include "view.h"
+#include "menu.h"
 
 class Renderer {
+	friend class World;
 	public:
 		Renderer();
 		Renderer(ALLEGRO_DISPLAY *display, View &v);
@@ -30,12 +32,14 @@ class Renderer {
 		ALLEGRO_TRANSFORM trans;
 		ALLEGRO_DISPLAY *display;
 		View v;
+		Pause pmenu;
 
 		std::vector<VisibleObj*> visibles;
 		ALLEGRO_SHADER *scale_shader;
 
 		void depth_sort();
 		ALLEGRO_SHADER *create_scale_shader();
+		ALLEGRO_BITMAP *temp;
 };
 
 #endif

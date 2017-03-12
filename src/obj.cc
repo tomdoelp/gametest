@@ -157,6 +157,7 @@ void Player::update() {
 	if (dy == 0 && dx < 0)
 		direction = DIR_W;
 
+	Sprite *temp = sprite;
 	switch (direction) {
 		case DIR_S:
 			sprite = sprites[SPR_WALK_DOWN];
@@ -191,6 +192,8 @@ void Player::update() {
 			hflip = true;
 			break;
 	}
+	if (sprite != temp)
+		frame_index = 0;
 
 	if (dy ==0 && dx == 0) {
 		sprite = sprites[SPR_STAND];

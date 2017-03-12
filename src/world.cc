@@ -18,6 +18,8 @@ void World::update() {
 			o->update();
 		}
 	}
+	else
+		r->pmenu.update();
 }
 
 void World::register_object(Obj *o) {

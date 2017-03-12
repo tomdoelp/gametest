@@ -4,6 +4,7 @@ Renderer::Renderer() {}
 Renderer::~Renderer() {}
 Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 	scale_shader = create_scale_shader();
+	temp = NULL;
 }
 
 void Renderer::register_visible(VisibleObj *o) {
@@ -27,7 +28,7 @@ ALLEGRO_SHADER *Renderer::create_scale_shader() {
 	}
 	return shader;
 }
-	
+
 void Renderer::set_view_focus(PhysicalObj *o) {
 	v.set_focus(o);
 }
@@ -41,9 +42,20 @@ void Renderer::render(Map &m) {
 	al_use_transform(&trans);
 
 	if (paused) {
-		al_draw_text(font, al_map_rgb(255,255,255), v.get_x()+v.get_w()/2, v.get_y()+v.get_h()/2, ALLEGRO_ALIGN_CENTRE, "PAUSED");
+		if (!temp) {
+			temp = al_create_bitmap(al_get_bitmap_width(v.get_buffer()), al_get_bitmap_height(v.get_buffer()));
+			al_set_target_bitmap(temp);
+			al_draw_bitmap(v.get_buffer(),0,0,0);
+		}
+		al_set_target_bitmap(v.get_buffer());
+		al_draw_bitmap(temp,v.get_x(), v.get_y(),0);
+		pmenu.draw(v.get_x()+v.get_w()/2, v.get_y()+v.get_h()/2);
 	}
 	else {
+		if (temp) {
+			al_destroy_bitmap(temp);
+			temp = NULL;
+		}
 		al_clear_to_color(al_map_rgb(0,0,0));
 
 		Box vbox = v.get_view_box();

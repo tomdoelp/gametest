@@ -19,6 +19,8 @@ class View;
 class Renderer;
 */
 
+typedef enum mode {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_SCENE} Mode;
+
 class World {
 	public:
 		World(Renderer *r);
@@ -32,11 +34,16 @@ class World {
 		void set_view_focus(PhysicalObj *o);
 
 		void load_map(const char* fname);
+
+		/* template function for creating objects */
+		/* destroy function takes obj id */
 	protected:
 		Map *m;
 		Renderer *r;
 		std::vector<Obj *> objects;
 		std::vector<PhysicalObj *> physicals;
+		Mode current_mode;
+		
 };
 
 #endif

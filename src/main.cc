@@ -56,7 +56,6 @@ void init() {
 	display = al_create_display(WINDOW_W, WINDOW_H);
 	if (!display)
 		abort("Failed to create display");
-	al_set_window_title(display, "B O I N G !");
 
 	/* Events */
 	event_queue = al_create_event_queue();
@@ -137,6 +136,7 @@ void game_loop() {
 	if (worry) {
 		al_attach_audio_stream_to_mixer(worry, music_mixer);
 		al_set_audio_stream_playmode(worry, ALLEGRO_PLAYMODE_LOOP);
+		al_set_audio_stream_gain(worry, 0.5f);
 		al_set_audio_stream_playing(worry, true); 
 	}
 
@@ -151,13 +151,10 @@ void game_loop() {
 	/* SPRITE STUFF */
 	/* create a spritesheet */
 	SpriteSheet sh_death("./res/sprites/death/death2.png","./res/sprites/death/death2.json");
-	SpriteSheet sh_saturn("./res/saturnfishing-sheet.png","./res/saturnfishing-sheet.json");
 
 	/* create a player object */
 	Player p(SCREEN_W/2, SCREEN_H/2, 16, 8, 0, &sh_death);
 	world.get_renderer()->register_visible(&p);
-	VisibleObj p2(SCREEN_W/2+100, SCREEN_H/2, 16, 16, 0, &sh_saturn);
-	world.get_renderer()->register_visible(&p2); 
 
 	p.attach_to_world(&world);
 	world.set_view_focus(&p);
@@ -183,6 +180,7 @@ void game_loop() {
 			case ALLEGRO_EVENT_KEY_DOWN:
 				/* update key array (probably slightly overkill tbh) */
 				key[event.keyboard.keycode] = true;
+				key_press[event.keyboard.keycode] = true;
 
 				if (key[ALLEGRO_KEY_ESCAPE]) 
 					paused = !paused;
@@ -214,6 +212,11 @@ void game_loop() {
 			case ALLEGRO_EVENT_TIMER:
 				redraw = true;
 				world.update();
+
+				for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
+					key_press[i] = false;
+				}
+
 				break;
 		}
 
