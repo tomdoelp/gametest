@@ -13,8 +13,10 @@ Map *World::get_map() { return m; }
 Renderer *World::get_renderer() { return r; }
 
 void World::update() {
-	for (auto &o : objects) {
-		o->update();
+	if (!paused) {
+		for (auto &o : objects) {
+			o->update();
+		}
 	}
 }
 
@@ -34,5 +36,5 @@ void World::load_map(const char* fname) {
 }
 
 void World::render() {
-		r->render(*m);
+	r->render(*m);
 }

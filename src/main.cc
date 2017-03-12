@@ -23,12 +23,17 @@ ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
 bool key[ALLEGRO_KEY_MAX];
+bool key_press[ALLEGRO_KEY_MAX];
+int key_map[ALLEGRO_KEY_MAX];
 int screen_scale = 0;
+bool paused = false;
 
 void init() {
 	/* fill keyboard array with false */
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
 		key[i] = false;
+		key_press[i] = false;
+		key_map[i] = i;
 	}
 
 	/* Allegro 5 */
@@ -142,6 +147,7 @@ void game_loop() {
 	World world(&r);
 	world.load_map("./res/maps/bigtest.tmx");
 
+
 	/* SPRITE STUFF */
 	/* create a spritesheet */
 	SpriteSheet sh_death("./res/sprites/death/death2.png","./res/sprites/death/death2.json");
@@ -163,9 +169,8 @@ void game_loop() {
 		al_wait_for_event(event_queue, &event);
 
 		switch(event.type){
-			case ALLEGRO_EVENT_TIMER:
-				redraw = true;
-				world.update();
+			case ALLEGRO_EVENT_DISPLAY_CLOSE:
+				done = true;
 				break;
 			case ALLEGRO_EVENT_DISPLAY_EXPOSE:
 				redraw = true;
@@ -180,9 +185,7 @@ void game_loop() {
 				key[event.keyboard.keycode] = true;
 
 				if (key[ALLEGRO_KEY_ESCAPE]) 
-					done = true;
-				if (key[ALLEGRO_KEY_F])
-					al_toggle_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, true);
+					paused = !paused;
 
 				if (key[ALLEGRO_KEY_0]) {
 					screen_scale = 0;
@@ -207,6 +210,10 @@ void game_loop() {
 				break;
 			case ALLEGRO_EVENT_KEY_UP:
 				key[event.keyboard.keycode] = false;
+				break;
+			case ALLEGRO_EVENT_TIMER:
+				redraw = true;
+				world.update();
 				break;
 		}
 

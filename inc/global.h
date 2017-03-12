@@ -26,6 +26,10 @@ extern ALLEGRO_FONT *font;
 extern int screen_scale;
 
 extern bool key[ALLEGRO_KEY_MAX];
+extern int key_map[ALLEGRO_KEY_MAX];
+extern bool key_press[ALLEGRO_KEY_MAX];
+
+extern bool paused;
 
 void abort(const char *format, ...);
 void alert(const char *format, ...);
