@@ -19,15 +19,14 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers=4, int samples=
 
 class SheetManager{
 	public:
+		typedef enum SHNAME { SH_DEATH, SH_NUM } SheetName;
 		SheetManager();
-		virtual ~SheetManager();
+		~SheetManager();
 
-		SpriteSheet *get_sheet(const char *fname, const char *jname);
-
+		static SpriteSheet *get_sheet(SheetName sheet);
 	protected:
-
+		static std::vector<SpriteSheet *> SheetList;
 
 };
-
 
 #endif

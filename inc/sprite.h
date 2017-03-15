@@ -30,10 +30,10 @@ using json = nlohmann::json;
  */
 
 
-typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
 /* Sprite. Holds bitmap & data, bounding box, and a strip for information */
 class Sprite {
 	public:
+typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
 		Sprite(ALLEGRO_BITMAP *sheet, float w, float h, int frames=1, float gap=0, float offx=0, float offy=0, float ox=0, float oy=0);
 		Sprite(const char* name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
 		~Sprite();
@@ -65,6 +65,7 @@ class Sprite {
 };
 
 
+
 /* This will load and store sprite sheet data that I will parse from JSON files */
 class SpriteSheet {
 	public:
@@ -85,9 +86,11 @@ class SpriteSheet {
 		float w; /* total sheet width */
 		float h; /* total sheet height */
 		int sprnum;
-		
+
 		std::vector< Sprite > sprites;
 		std::vector< std::vector< Box > > strips;
 };
+
+
 
 #endif

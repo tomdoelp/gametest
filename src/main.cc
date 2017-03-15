@@ -122,22 +122,26 @@ void game_loop() {
 	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
 	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
+/*	int audiodepth = 44100; */
+	int audiodepth = 11025; 
+
 	/* load and play an xm music file */
-	ALLEGRO_VOICE *voice = al_create_voice( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
-	ALLEGRO_MIXER *music_mixer = al_create_mixer( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
+	ALLEGRO_VOICE *voice = al_create_voice(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
+	ALLEGRO_MIXER *music_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
 	/* and one for sound */
-	ALLEGRO_MIXER *master_mixer = al_create_mixer( 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
+	ALLEGRO_MIXER *master_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
 	al_attach_mixer_to_mixer(music_mixer, master_mixer); 
 	al_attach_mixer_to_voice(master_mixer, voice); 
 
 	/* buffer count and samples? ? ??? ? ?? ? ? ?  */
-	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Theme2.xm", 4, 2048); 
+/*	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Theme2.xm", 4, 2048);  */
+	ALLEGRO_AUDIO_STREAM *song = load_stream( "./res/music/offbeat.xm", 8, 4096); 
 
-	if (worry) {
-		al_attach_audio_stream_to_mixer(worry, music_mixer);
-		al_set_audio_stream_playmode(worry, ALLEGRO_PLAYMODE_LOOP);
-		al_set_audio_stream_gain(worry, 0.5f);
-		al_set_audio_stream_playing(worry, true); 
+	if (song) {
+		al_attach_audio_stream_to_mixer(song, music_mixer);
+		al_set_audio_stream_playmode(song, ALLEGRO_PLAYMODE_LOOP);
+		al_set_audio_stream_gain(song, 0.7f);
+		al_set_audio_stream_playing(song, true); 
 	}
 
 
@@ -150,14 +154,15 @@ void game_loop() {
 
 	/* SPRITE STUFF */
 	/* create a spritesheet */
-	SpriteSheet sh_death("./res/sprites/death/death2.png","./res/sprites/death/death2.json");
+/*	SpriteSheet sh_death("./res/sprites/death/death2.png","./res/sprites/death/death2.json"); */
 
 	/* create a player object */
-	Player p(SCREEN_W/2, SCREEN_H/2, 16, 8, 0, &sh_death);
-	world.get_renderer()->register_visible(&p);
+/*	Player p(SCREEN_W/2, SCREEN_H/2); */
+/*	world.get_renderer()->register_visible(&p); */
 
-	p.attach_to_world(&world);
-	world.set_view_focus(&p);
+/*	p.attach_to_world(&world); */
+
+	world.create_visible<Player>(SCREEN_W/2, SCREEN_H/2);
 	
 
 	/* Events */
@@ -185,6 +190,7 @@ void game_loop() {
 				if (key[ALLEGRO_KEY_ESCAPE]) 
 					paused = !paused;
 
+				/* basically all these are debug and should be moved or removed */
 				if (key[ALLEGRO_KEY_0]) {
 					screen_scale = 0;
 					redraw = true;
@@ -205,6 +211,15 @@ void game_loop() {
 					screen_scale = 4;
 					redraw = true;
 				}
+				if (key[ALLEGRO_KEY_PAD_PLUS]) {
+					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) + 0.1f);
+				}
+				if (key[ALLEGRO_KEY_PAD_MINUS]) {
+					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) - 0.1f);
+				}
+
+
+
 				break;
 			case ALLEGRO_EVENT_KEY_UP:
 				key[event.keyboard.keycode] = false;

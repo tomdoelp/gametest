@@ -14,12 +14,18 @@ void Obj::set_active(bool active) { this->active = active; }
 bool Obj::is_active() const { return active; }
 void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
 bool Obj::is_persistent() const { return persistent; }
+
 int Obj::objtotal = 0;
+
 int Obj::get_id() const { return id; }
 void Obj::attach_to_world(World *world) { 
 	this->world = world; 
 	world->register_object(this);
 }
+bool Obj::operator ==(const Obj &rhs) {
+	return this->get_id() == rhs.get_id();
+}
+
 
 
 /* Physical Object */
@@ -44,7 +50,7 @@ SolidObj::~SolidObj() {}
 VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteSheet *s) : PhysicalObj(x, y, w, h), depth(y), sheet(s) {
 	if (sheet) {
 		sprite = (*sheet)[0];
-		sprite->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
+		sprite->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM); 
 	}
 
 	aspeed = 2.0 / 60.0;
@@ -69,7 +75,8 @@ void VisibleObj::draw() {
 			flags = flags | ALLEGRO_FLIP_VERTICAL;
 
 		sprite->sprite_draw(x,y,frame_index, flags);
-		frame_index += aspeed;
+		if (!paused)
+			frame_index += aspeed;
 		if (frame_index >= sprite->getframes() && !loop) {
 			aspeed = 0;
 			frame_index = sprite->getframes();
@@ -104,14 +111,29 @@ void MobileObj::update() {
 
 
 /* Player Object */
-Player::Player(float x, float y, float w, float h, int depth, SpriteSheet *s) : MobileObj(x, y, w, h, depth, s) {
+Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_sheet(SheetManager::SH_DEATH)) {
 	score = 0;
 	aspeed = 0;
 	spritenum = 6;
 
 	for (int i = 0; i < spritenum; i++) {
 		sprites[i] = (*sheet)[i];
-		sprites[i]->sprite_center_origin(ORIGIN_CENTER_BOTTOM);
+		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
+	}
+	sprite = sprites[0];
+
+}
+Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_sheet(SheetManager::SH_DEATH)) {
+	attach_to_world(world);
+
+	world->set_view_focus(this);
+	score = 0;
+	aspeed = 0;
+	spritenum = 6;
+
+	for (int i = 0; i < spritenum; i++) {
+		sprites[i] = (*sheet)[i];
+		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
 

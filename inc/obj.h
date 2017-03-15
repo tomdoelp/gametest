@@ -25,6 +25,8 @@ class Obj {
 		int get_id() const;
 		bool is_persistent() const;
 		void attach_to_world(World *world);
+
+		bool operator ==(const Obj &rhs);
 	protected:
 		World *world;
 		bool active;
@@ -95,8 +97,8 @@ class MobileObj : public VisibleObj {
 class Player : public MobileObj {
 	public:
 		Player();
-		Player(float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
-		Player(World *world, float x=0.0, float y=0.0, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
+		Player(float x=0.0, float y=0.0);
+		Player(World *world, float x=0.0, float y=0.0);
 		virtual ~Player();
 		virtual void update();
 		virtual void draw();

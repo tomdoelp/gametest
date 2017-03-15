@@ -37,16 +37,52 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers, int samples) {
 	return stream;
 }
 
+
+std::vector<SpriteSheet *> SheetManager::SheetList;
 SheetManager::SheetManager() {}
-SheetManager::~SheetManager() {}
+SheetManager::~SheetManager() {
+	for (int i = 0, max = SheetList.size(); i < max; i++) {
+		delete SheetList[i];
+	}
+}
+
+SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
+	if (SheetList.empty()) {
+		for (int i = 0; i < SheetManager::SH_NUM; i++) { 
+			SheetList.push_back(NULL); 
+		} 
+	}
+
+
+	if (SheetList[sheet]){
+		alert("dup sprite sheet");
+		return SheetList[sheet];
+	}
+
+	switch (sheet) {
+		case SH_DEATH:
+			SheetList[sheet] = new SpriteSheet("./res/sprites/death/death2.png", "./res/sprites/death/death2.json");
+			break;
+		default:
+			break;
+	}
+	return SheetList[sheet];
+}
+
+
+
+
+
+
+
 
 /*SpriteSheet create_spritesheet_from_file(std::vector<std::string> fnames) {
-	std::string cmd("./src/make_spritesheet ");
-	for (auto s : fnames) {
-		cmd += s;
-	}
-	
-	std::system(cmd.c_str());
+  std::string cmd("./src/make_spritesheet ");
+  for (auto s : fnames) {
+  cmd += s;
+  }
 
-	return SpriteSheet(fnames.back().c_str(), "TODO get replace extension with .json");
-}*/ 
+  std::system(cmd.c_str());
+
+  return SpriteSheet(fnames.back().c_str(), "TODO get replace extension with .json");
+  }*/ 

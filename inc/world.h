@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <memory>
+#include <type_traits>
 
 #include "global.h"
 #include "level.h"
@@ -37,13 +39,20 @@ class World {
 
 		/* template function for creating objects */
 		/* destroy function takes obj id */
+		template <class T> void create_visible(float x=0.0f, float y=0.0f) {
+			/*	std::shared_ptr<T> obj (new T(x,y)); */
+			T *obj = new T(this,x,y);
+
+			r->register_visible(obj);
+		}
+		void destroy(Obj *o);
 	protected:
 		Map *m;
 		Renderer *r;
 		std::vector<Obj *> objects;
 		std::vector<PhysicalObj *> physicals;
 		Mode current_mode;
-		
+
 };
 
 #endif
