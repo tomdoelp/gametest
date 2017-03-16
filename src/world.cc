@@ -39,7 +39,7 @@ void World::load_map(const char* fname) {
 	if (m) {
 		delete m;
 	}
-	m = new Map(fname);
+	m = new Map(this, fname);
 }
 
 void World::render() {

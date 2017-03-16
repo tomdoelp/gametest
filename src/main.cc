@@ -99,6 +99,7 @@ void shutdown() {
 	if (event_queue)
 		al_destroy_event_queue(event_queue);
 
+	SheetManager::clear_sheets();
 	/* destoy mixers and such */
 }
 
@@ -159,10 +160,9 @@ void game_loop() {
 	/* create a player object */
 /*	Player p(SCREEN_W/2, SCREEN_H/2); */
 /*	world.get_renderer()->register_visible(&p); */
-
 /*	p.attach_to_world(&world); */
 
-	world.create_visible<Player>(SCREEN_W/2, SCREEN_H/2);
+/*	world.create_visible<Player>(SCREEN_W/2, SCREEN_H/2); */
 	
 
 	/* Events */

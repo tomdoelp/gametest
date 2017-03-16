@@ -24,6 +24,7 @@ class SheetManager{
 		~SheetManager();
 
 		static SpriteSheet *get_sheet(SheetName sheet);
+		static void clear_sheets();
 	protected:
 		static std::vector<SpriteSheet *> SheetList;
 

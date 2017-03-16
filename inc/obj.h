@@ -18,6 +18,8 @@ class Obj {
 		Obj(World *world);
 		virtual ~Obj();
 		virtual void update();
+		virtual void map_start();
+		virtual void map_end();
 		void set_active(bool active);
 		void set_persistent(bool persistent);
 

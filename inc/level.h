@@ -12,6 +12,7 @@
 typedef enum layertype {LAYER_BACKGROUND, LAYER_MIXED, LAYER_FOREGROUND, LAYER_COLLISIONS} LayerType;
 typedef enum solidtype {TILE_FREE, TILE_SOLID_SQUARE} SolidType;
 
+class World;
 class Layer {
 	public: 
 		Layer(const char *name, int w, int h, std::vector<int> gids);
@@ -23,6 +24,7 @@ class Layer {
 		std::vector<int> gids;
 };
 /* TODO: remove this class */
+/*
 class Tileset {
 	public:
 		Tileset(int firstgid, const char *name, int tilew, int tileh, int tilecount, int columns);
@@ -39,11 +41,11 @@ class Tileset {
 		std::vector<ALLEGRO_BITMAP*> tiles; 
 
 		std::vector<int> tiletype;
-};
+}; */
 class Map {
 	public:
 		Map();
-		Map(const char *fname);
+		Map(World *world, const char *fname);
 		~Map();
 
 		int tilew, tileh;
@@ -61,6 +63,7 @@ class Map {
 	private:
 		int w, h;
 		int nextobj;
+		World *world;
 
 		std::vector<Layer> layers;
 		std::vector<ALLEGRO_BITMAP*> tilesets;

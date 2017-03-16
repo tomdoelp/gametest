@@ -1,4 +1,5 @@
 #include "level.h"
+#include "world.h"
 
 Layer::Layer(const char *name, int w, int h, std::vector<int> gids) : name(name), w(w), h(h), gids(gids) {}
 
@@ -17,8 +18,9 @@ Layer::Layer(pugi::xml_node &l) {
 std::vector<int> Layer::get_gids() { return gids; }
 
 
-Tileset::Tileset(int firstgid, const char *name, int tilew, int tileh, int tilecount, int columns) : firstgid(firstgid), name(name), tilew(tilew), tileh(tileh), tilecount(tilecount), columns(columns) {}
+/*Tileset::Tileset(int firstgid, const char *name, int tilew, int tileh, int tilecount, int columns) : firstgid(firstgid), name(name), tilew(tilew), tileh(tileh), tilecount(tilecount), columns(columns) {} */
 
+/*
 Tileset::Tileset(pugi::xml_node &t) {
 	firstgid = t.attribute("firstgid").as_int();
 	name = t.attribute("name").value();
@@ -30,9 +32,7 @@ Tileset::Tileset(pugi::xml_node &t) {
 
 	image_parent = load_bitmap((std::string("./res/maps/") + t.child("image").attribute("source").value()).c_str());
 
-	/* for each tile in the set */
 	for(int i = firstgid; i < tilecount+firstgid; i++) {
-		/* make a sub-bitmap */
 		tiles.emplace_back(al_create_sub_bitmap(
 					image_parent, 
 					(i % columns)*(tilew + spacing),
@@ -41,7 +41,6 @@ Tileset::Tileset(pugi::xml_node &t) {
 					tileh));
 	}
 
-	/* for each tile with properties */
 	for(pugi::xml_node tile = t.child("tile"); tile; tile=tile.next_sibling("tile")) {
 		int id = tile.attribute("id").as_int();
 		if (tile.child("properties").child("property").attribute("name").value() == std::string("type") &&
@@ -49,11 +48,11 @@ Tileset::Tileset(pugi::xml_node &t) {
 			tiletype[id] = tile.child("properties").child("property").attribute("value").as_int();
 		}
 	}
-}
+}*/
 
 Map::Map(){}
 
-Map::Map(const char* fname) {
+Map::Map(World *world, const char* fname) : world(world) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(fname);
 
@@ -99,6 +98,19 @@ Map::Map(const char* fname) {
 		/* for each layer */
 		for (pugi::xml_node l = map.child("layer"); l; l=l.next_sibling("layer")) {
 			layers.emplace_back(l);
+		}
+
+		/* for each object group */
+		for (pugi::xml_node og = map.child("objectgroup"); og; og=og.next_sibling("objectgroup")){
+			for (pugi::xml_node o = og.child("object"); o; o=o.next_sibling("object")) {
+				std::string otype = o.attribute("type").value();
+
+				if (otype == std::string("Player")) {
+					world->create_visible<Player>(
+							o.attribute("x").as_float(),	
+							o.attribute("y").as_float());
+				}
+			}
 		}
 	} 
 	else 

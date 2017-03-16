@@ -69,6 +69,10 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 	return SheetList[sheet];
 }
 
+void SheetManager::clear_sheets(){
+	for (auto &s : SheetList)
+		delete s;
+}
 
 
 

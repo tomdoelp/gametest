@@ -9,7 +9,9 @@ Obj::Obj(){
 	world = NULL;
 }
 Obj::~Obj() {}
-void Obj::update() { }	
+void Obj::update() {}	
+void Obj::map_start() {}
+void Obj::map_end() {}
 void Obj::set_active(bool active) { this->active = active; }
 bool Obj::is_active() const { return active; }
 void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
@@ -136,7 +138,6 @@ Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, Sheet
 		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
-
 }
 Player::~Player() {}
 void Player::update() {
@@ -159,9 +160,11 @@ void Player::update() {
 	} else
 		dx = 0;
 
+	/* Not moving */
 	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
 		dx = 0;
 
+	/* which way ya facing */
 	if (dy > 0 && dx == 0)
 		direction = DIR_S;
 	if (dy > 0 && dx > 0)
@@ -214,9 +217,12 @@ void Player::update() {
 			hflip = true;
 			break;
 	}
-	if (sprite != temp)
-		frame_index = 0;
+	/* always start a walkcycle from the same place */
+	if (sprite != temp){
+		frame_index = 2;
+	}
 
+	/* stand tall and proud if not moving */
 	if (dy ==0 && dx == 0) {
 		sprite = sprites[SPR_STAND];
 		aspeed = 0;
@@ -225,6 +231,7 @@ void Player::update() {
 	else
 		aspeed = 6.0f/60.0f;
 
+	/* Tile collision handling */
 	if (world && (dx != 0 || dy != 0)) {
 		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
 		dx += intersection.get_x();
