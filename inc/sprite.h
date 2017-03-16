@@ -14,8 +14,6 @@
 #include "load.h"
 using json = nlohmann::json;
 
-/* TODO at some point stop passing the size of the arrays since they are vectors now */
-
 /*
  * Loading from zip file:
  *
@@ -56,12 +54,6 @@ typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER
 		float w, h;
 		int frames, index;
 		float x, y;
-
-		Box bbox;
-
-		/* TODO: 
- 		 * bounding box info
- 		 */
 };
 
 

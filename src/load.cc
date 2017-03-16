@@ -5,7 +5,7 @@
 ALLEGRO_BITMAP *load_bitmap(const char* fname) {
 	ALLEGRO_BITMAP *image = al_load_bitmap(fname);
 	if (!image) 
-		alert("Could not load image %s", fname);
+		LOG("Could not load image " << fname);
 	return image;
 }
 
@@ -15,7 +15,7 @@ json load_json(const char* fname) {
 	if (i)
 		i >> j;
 	else
-		alert("Could not load json file %s", fname);
+		LOG("Could not load json file " << fname);
 
 	return j;
 }
@@ -24,7 +24,7 @@ json load_json(const char* fname) {
 ALLEGRO_SAMPLE *load_sound(const char* fname) {
 	ALLEGRO_SAMPLE *sound = al_load_sample(fname);
 	if (!sound) 
-		alert("Could not load sample %s", fname);
+		LOG("Could not load sample " << fname);
 	return sound;
 }
 
@@ -33,7 +33,7 @@ ALLEGRO_SAMPLE *load_sound(const char* fname) {
 ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers, int samples) {
 	ALLEGRO_AUDIO_STREAM *stream = al_load_audio_stream(fname, buffers, samples);
 	if (!stream) 
-		alert("Could not load audio stream %s", fname);
+		LOG("Could not load audio stream " << fname);
 	return stream;
 }
 
@@ -55,7 +55,7 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 
 
 	if (SheetList[sheet]){
-		alert("dup sprite sheet");
+		LOG("dup sprite sheet");
 		return SheetList[sheet];
 	}
 

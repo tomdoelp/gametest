@@ -12,6 +12,19 @@
 #define MIN(a, b) ((a < b) ? a : b)
 #define MAX(a, b) ((a > b) ? a : b)
 
+#ifdef DEBUG
+#	define LOG(x) do { std::cerr << x << std::endl; } while (0)
+#else
+#	define LOG(x)
+#endif
+
+#ifdef DEBUG
+#	define D(x) x
+#else
+#	define D(x)
+#endif
+
+
 const float FPS = 60;
 const int WINDOW_W = 1024;
 const int WINDOW_H = 768;

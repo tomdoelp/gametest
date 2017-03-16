@@ -23,25 +23,7 @@ class Layer {
 		int w, h;
 		std::vector<int> gids;
 };
-/* TODO: remove this class */
-/*
-class Tileset {
-	public:
-		Tileset(int firstgid, const char *name, int tilew, int tileh, int tilecount, int columns);
-		Tileset(pugi::xml_node &t);
-	private:
-		int firstgid;
-		const char* name;
-		int tilew, tileh;
-		int tilecount;
-		int columns;
-		int spacing;
 
-		ALLEGRO_BITMAP *image_parent;
-		std::vector<ALLEGRO_BITMAP*> tiles; 
-
-		std::vector<int> tiletype;
-}; */
 class Map {
 	public:
 		Map();

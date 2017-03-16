@@ -17,39 +17,6 @@ Layer::Layer(pugi::xml_node &l) {
 }
 std::vector<int> Layer::get_gids() { return gids; }
 
-
-/*Tileset::Tileset(int firstgid, const char *name, int tilew, int tileh, int tilecount, int columns) : firstgid(firstgid), name(name), tilew(tilew), tileh(tileh), tilecount(tilecount), columns(columns) {} */
-
-/*
-Tileset::Tileset(pugi::xml_node &t) {
-	firstgid = t.attribute("firstgid").as_int();
-	name = t.attribute("name").value();
-	tilew = t.attribute("tilewidth").as_int();
-	tileh = t.attribute("tileheight").as_int();
-	tilecount = t.attribute("tilecount").as_int();
-	columns = t.attribute("columns").as_int();
-	spacing = 0;
-
-	image_parent = load_bitmap((std::string("./res/maps/") + t.child("image").attribute("source").value()).c_str());
-
-	for(int i = firstgid; i < tilecount+firstgid; i++) {
-		tiles.emplace_back(al_create_sub_bitmap(
-					image_parent, 
-					(i % columns)*(tilew + spacing),
-					(i / columns)*(tileh + spacing),
-					tilew,
-					tileh));
-	}
-
-	for(pugi::xml_node tile = t.child("tile"); tile; tile=tile.next_sibling("tile")) {
-		int id = tile.attribute("id").as_int();
-		if (tile.child("properties").child("property").attribute("name").value() == std::string("type") &&
-			tile.child("properties").child("property").attribute("value").as_int()) {
-			tiletype[id] = tile.child("properties").child("property").attribute("value").as_int();
-		}
-	}
-}*/
-
 Map::Map(){}
 
 Map::Map(World *world, const char* fname) : world(world) {
@@ -114,7 +81,7 @@ Map::Map(World *world, const char* fname) : world(world) {
 		}
 	} 
 	else 
-		alert("XML oopsie");
+		LOG("XML oopsie");
 }
 Map::~Map() {
 	for (auto& ts : tilesets) {
@@ -148,7 +115,6 @@ void Map::draw_layer_region(float x, float y, int n, Box b) {
 	int lastrow_b = (b.get_y() + b.get_h()-1) / tileh +1;
 
 	/* make sure we only try to draw within the bounds of the map */
-	/* also I would use elvis op but I don't think that's totally portable */
 	firstcol = ((firstcol_b > 0) ? firstcol_b : 0);
 	lastcol = ((lastcol_b < w) ? lastcol_b : w);
 	firstrow = ((firstrow_b > 0) ? firstrow_b : 0);

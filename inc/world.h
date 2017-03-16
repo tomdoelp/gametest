@@ -37,16 +37,14 @@ class World {
 
 		void load_map(const char* fname);
 
-		/* template function for creating objects */
-		/* destroy function takes obj id */
 		template <class T> T* create_visible(float x=0.0f, float y=0.0f) {
-			/*	std::shared_ptr<T> obj (new T(x,y)); */
 			T *obj = new T(this,x,y);
 
 			r->register_visible(obj);
 
 			return obj;
 		}
+
 		void destroy(Obj *o);
 	protected:
 		Map *m;

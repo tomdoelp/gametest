@@ -5,10 +5,12 @@
 Obj::Obj(){
 	active=true;
 	id = objtotal++;
-	alert("id %d", id);
+	LOG("object " << id << " in");
 	world = NULL;
 }
-Obj::~Obj() {}
+Obj::~Obj() { 
+	LOG("object " << id << " out");
+}
 void Obj::update() {}	
 void Obj::map_start() {}
 void Obj::map_end() {}

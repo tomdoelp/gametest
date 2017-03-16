@@ -123,8 +123,8 @@ void game_loop() {
 	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
 	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
-/*	int audiodepth = 44100; */
-	int audiodepth = 11025; 
+	int audiodepth = 44100; 
+/*	int audiodepth = 11025;  */
 
 	/* load and play an xm music file */
 	ALLEGRO_VOICE *voice = al_create_voice(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
@@ -134,7 +134,6 @@ void game_loop() {
 	al_attach_mixer_to_mixer(music_mixer, master_mixer); 
 	al_attach_mixer_to_voice(master_mixer, voice); 
 
-	/* buffer count and samples? ? ??? ? ?? ? ? ?  */
 /*	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Theme2.xm", 4, 2048);  */
 	ALLEGRO_AUDIO_STREAM *song = load_stream( "./res/music/offbeat.xm", 8, 4096); 
 
@@ -150,20 +149,8 @@ void game_loop() {
 	View v(SCREEN_W, SCREEN_H, display);
 	Renderer r(display, v);
 	World world(&r);
+	/* Load a map from a file */
 	world.load_map("./res/maps/bigtest.tmx");
-
-
-	/* SPRITE STUFF */
-	/* create a spritesheet */
-/*	SpriteSheet sh_death("./res/sprites/death/death2.png","./res/sprites/death/death2.json"); */
-
-	/* create a player object */
-/*	Player p(SCREEN_W/2, SCREEN_H/2); */
-/*	world.get_renderer()->register_visible(&p); */
-/*	p.attach_to_world(&world); */
-
-/*	world.create_visible<Player>(SCREEN_W/2, SCREEN_H/2); */
-	
 
 	/* Events */
 	while (!done) {
