@@ -25,6 +25,8 @@ class Renderer {
 		~Renderer();
 
 		void register_visible(VisibleObj *o);
+/*		void destroy_visible(VisibleObj *o); */
+		void destroy_visible(Obj *o);
 		void render(Map &m);
 
 		void set_view_focus(PhysicalObj *o);

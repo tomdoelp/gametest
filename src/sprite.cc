@@ -83,6 +83,7 @@ Sprite::Sprite(
 			subimages[i] = al_create_sub_bitmap(sheet, offx + (i*w + i*gap), offy, w, h);
 		}
 	}
+	name = "spr";
 }
 Sprite::Sprite(const char *name, ALLEGRO_BITMAP *sheet, std::vector< Box > framearray, float w, float h, int n, float ox, float oy) : name(name), w(w), h(h), frames(n), x(ox), y(oy) {
 	LOG("Sprite " << name << " created");

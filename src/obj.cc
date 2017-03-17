@@ -7,6 +7,7 @@ Obj::Obj(){
 	id = objtotal++;
 	LOG("Object " << id << " created");
 	world = NULL;
+	persistent = false;
 }
 Obj::~Obj() { 
 	LOG("Object " << id << " destroyed");
@@ -41,13 +42,6 @@ float PhysicalObj::get_w() const { return w; }
 float PhysicalObj::get_h() const { return h; }
 Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
 
-
-
-/* Solid Object */
-/*
-SolidObj::SolidObj(float x, float y, float w, float h) : PhysicalObj(x, y, w, h) {}
-SolidObj::~SolidObj() {}
-*/
 
 
 /* Visible Object */
@@ -140,6 +134,7 @@ Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, Sheet
 		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
+	persistent = true;
 }
 Player::~Player() {}
 void Player::update() {

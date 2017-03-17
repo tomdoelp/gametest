@@ -8,8 +8,30 @@ Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 }
 
 void Renderer::register_visible(VisibleObj *o) {
-	visibles.insert(visibles.begin() + o->get_id(), o);
+	//visibles.insert(visibles.begin() + o->get_id(), o);
+	visibles.push_back(o);
 }
+void Renderer::destroy_visible(Obj *o) {
+ 	for (unsigned int i = 0; i<visibles.size(); i++) {
+		if (*(visibles[i]) == *o) {
+			std::swap(visibles[i], visibles.back());
+			visibles.pop_back();
+			i--;
+		}
+	}
+	/*
+ 	std::vector<VisibleObj>::iterator i = visibles.begin();
+	while (i != visibles.end()) {
+		if (*i == *o) {
+			i = visibles.erase(i);
+		}
+		else {
+			++i;
+		}
+	}
+	*/
+}
+
 
 /* Thanks to SiegeLord, from https://www.allegro.cc/forums/thread/612318 */
 ALLEGRO_SHADER *Renderer::create_scale_shader() {

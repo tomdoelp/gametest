@@ -30,7 +30,8 @@ void World::update() {
 }
 
 void World::register_object(Obj *o) {
-	objects.insert(objects.begin() + o->get_id(), o);
+	objects.push_back(o);
+	//objects.insert(objects.begin() + o->get_id(), o);
 }
 
 void World::set_view_focus(PhysicalObj *o) {
@@ -38,6 +39,43 @@ void World::set_view_focus(PhysicalObj *o) {
 }
 
 void World::load_map(const char* fname) {
+	for (unsigned int i = 0; i<objects.size(); i++) {
+		if (!objects[i]->is_persistent()) {
+			r->destroy_visible(objects[i]);
+
+			delete objects[i];
+			std::swap(objects[i], objects.back());
+			objects.pop_back();
+		}
+	}
+
+
+
+	/*
+	std::vector<Obj*>::iterator i = objects.begin();
+	while(i != objects.end()) {
+		if (!(*i)->is_persistent()) {
+			r->destroy_visible(*i);
+			i = objects.erase(i);
+		}
+		else {
+			++i;
+		}
+	}
+	*/
+
+
+	
+	/*for (int i = 0, max=objects.size(); i<max; i++){
+		if (!objects[i]->is_persistent()) {
+			r->destroy_visible(objects[i]);
+			objects.erase(objects.begin()+i);
+			i--;
+		}
+	}*/
+	
+
+
 	if (m) {
 		delete m;
 	}
@@ -58,18 +96,34 @@ template <class T> void World::create(float x, float y) {
 		r->register_visible(obj);
 }*/
 
-void World::destroy(Obj *o){
-	for (int i = 0, max=r->visibles.size(); i<max; i++) {
-		if (*(r->visibles[i]) == *o) {
-			r->visibles.erase(r->visibles.begin()+i);
+void World::destroy(VisibleObj *o){
+	r->destroy_visible(o);
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (*(objects[i]) == *o) {
+			delete objects[i];
+			std::swap(objects[i], objects.back());
+			objects.pop_back();
+
+			i--;
 		}
 	}
-
-
-	
 	/*
  	remove pointers to id from objects and r->visibles (if any)
 	then delete the object
 	*/
 }
 
+void World::destroy(Obj *o){
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (*(objects[i]) == *o) {
+			delete objects[i];
+			std::swap(objects[i], objects.back());
+			objects.pop_back();
+			i--;
+		}
+	}
+	/*
+ 	remove pointers to id from objects and r->visibles (if any)
+	then delete the object
+	*/
+}

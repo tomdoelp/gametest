@@ -37,6 +37,15 @@ class World {
 
 		void load_map(const char* fname);
 
+		/*
+ 		template <class T> std::weak_ptr<T> create_visible(float x=0.0f, float y=0.0f) {
+			std::shared_ptr<T> obj(make_shared<T>(this,x,y));
+
+			r->register_visible(std::weak_ptr<T>(obj));
+
+			return std::weak_ptr(obj);
+		}
+		*/
 		template <class T> T* create_visible(float x=0.0f, float y=0.0f) {
 			T *obj = new T(this,x,y);
 
@@ -46,13 +55,16 @@ class World {
 		}
 
 		void destroy(Obj *o);
+		void destroy(VisibleObj *o);
 	protected:
 		Map *m;
 		Renderer *r;
+
+		//std::vector< std::shared_ptr<Obj> > objects;
+		//std::vector< std::shared_ptr<PhysicalObj> > obj;
 		std::vector<Obj *> objects;
 		std::vector<PhysicalObj *> physicals;
 		Mode current_mode;
-
 };
 
 #endif

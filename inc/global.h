@@ -6,7 +6,7 @@
 #include <allegro5/allegro_font.h>
 #include <errno.h>
 
-#define DEBUG 0
+#define DEBUG 1
 #define DEBUG_DRAW 0
 
 #define MIN(a, b) ((a < b) ? a : b)
@@ -19,7 +19,7 @@
 #endif
 
 #if defined(DEBUG) && DEBUG > 0
-#	define LLOG(x) do { std::cerr << __FILE__ << ":" << __LINE__ << " " << x << std::endl; } while (0)
+#	define LLOG(x) do { std::cerr << __FILE__ << ":" << __LINE__ << ":" << __func__ << ": " << x << std::endl; } while (0)
 #else
 #	define LLOG(x)
 #endif	
@@ -29,7 +29,6 @@
 #else
 #	define D(x)
 #endif
-
 
 const float FPS = 60;
 const int WINDOW_W = 1024;

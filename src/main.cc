@@ -177,7 +177,7 @@ void game_loop() {
 				if (key[ALLEGRO_KEY_ESCAPE]) 
 					paused = !paused;
 
-				/* basically all these are debug and should be moved or removed */
+#if DEBUG
 				if (key[ALLEGRO_KEY_0]) {
 					screen_scale = 0;
 					redraw = true;
@@ -198,12 +198,19 @@ void game_loop() {
 					screen_scale = 4;
 					redraw = true;
 				}
+
 				if (key[ALLEGRO_KEY_PAD_PLUS]) {
 					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) + 0.1f);
 				}
 				if (key[ALLEGRO_KEY_PAD_MINUS]) {
 					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) - 0.1f);
 				}
+
+				if (key[ALLEGRO_KEY_M]) {
+					world.load_map("./res/maps/bigtest2.tmx");
+				}
+#endif
+
 				break;
 
 			case ALLEGRO_EVENT_KEY_UP:
