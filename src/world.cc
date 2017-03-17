@@ -41,8 +41,8 @@ void World::load_map(const char* fname) {
 	if (m) {
 		delete m;
 	}
-	m = new Map(this, fname);
 	LOG("loading Map " << fname);
+	m = new Map(this, fname);
 }
 
 void World::render() {

@@ -107,17 +107,14 @@ void game_loop() {
 	/* DEBUG  */
 
 #if DEBUG
-	/* FPS calculation stolen from dradtke */
 	double old_time = al_get_time(), fps = 0;
 	int frames_done = 0;
 #endif
-
 
 	/* SCREEN STUFF */
 
 	bool redraw = true;
 	al_start_timer(timer);
-
 
 	/* SOUND STUFF */
 	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
@@ -144,11 +141,11 @@ void game_loop() {
 		al_set_audio_stream_playing(song, true); 
 	}
 
-
 	/* MAP AND WORLD */	
 	View v(SCREEN_W, SCREEN_H, display);
 	Renderer r(display, v);
 	World world(&r);
+
 	/* Load a map from a file */
 	world.load_map("./res/maps/bigtest.tmx");
 
@@ -161,14 +158,17 @@ void game_loop() {
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
 				done = true;
 				break;
+
 			case ALLEGRO_EVENT_DISPLAY_EXPOSE:
 				redraw = true;
 				break;
+
 			case ALLEGRO_EVENT_DISPLAY_RESIZE:
 				/* destroy and recreate shaders? */
 				al_acknowledge_resize(event.display.source);
 				redraw = true;
 				break;
+				
 			case ALLEGRO_EVENT_KEY_DOWN:
 				/* update key array (probably slightly overkill tbh) */
 				key[event.keyboard.keycode] = true;
@@ -204,13 +204,12 @@ void game_loop() {
 				if (key[ALLEGRO_KEY_PAD_MINUS]) {
 					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) - 0.1f);
 				}
-
-
-
 				break;
+
 			case ALLEGRO_EVENT_KEY_UP:
 				key[event.keyboard.keycode] = false;
 				break;
+
 			case ALLEGRO_EVENT_TIMER:
 				redraw = true;
 				world.update();

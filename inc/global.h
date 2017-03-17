@@ -6,19 +6,25 @@
 #include <allegro5/allegro_font.h>
 #include <errno.h>
 
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG_DRAW 0
 
 #define MIN(a, b) ((a < b) ? a : b)
 #define MAX(a, b) ((a > b) ? a : b)
 
-#ifdef DEBUG
+#if defined(DEBUG) && DEBUG > 0
 #	define LOG(x) do { std::cerr << x << std::endl; } while (0)
 #else
 #	define LOG(x)
 #endif
 
-#ifdef DEBUG
+#if defined(DEBUG) && DEBUG > 0
+#	define LLOG(x) do { std::cerr << __FILE__ << ":" << __LINE__ << " " << x << std::endl; } while (0)
+#else
+#	define LLOG(x)
+#endif	
+
+#if defined(DEBUG) && DEBUG > 0
 #	define D(x) x
 #else
 #	define D(x)
