@@ -5,11 +5,11 @@
 Obj::Obj(){
 	active=true;
 	id = objtotal++;
-	LOG("object " << id << " in");
+	LOG("Object " << id << " created");
 	world = NULL;
 }
 Obj::~Obj() { 
-	LOG("object " << id << " out");
+	LOG("Object " << id << " destroyed");
 }
 void Obj::update() {}	
 void Obj::map_start() {}

@@ -28,6 +28,7 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	@$(CC) $^ -o $@ $(LDFLAGS)
 	@echo $@
+	@echo ""
 
 $(OBJDIR)/%.o: %.cc $(HEADERS)
 	@$(CC) $(CFLAGS) $< -c -o $@
@@ -37,3 +38,4 @@ $(OBJDIR)/%.o: %.cc $(HEADERS)
 
 clean:
 	@rm -f $(OBJECTS) $(EXECUTABLE)
+	@echo "done"

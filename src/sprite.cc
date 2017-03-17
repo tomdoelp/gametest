@@ -2,6 +2,7 @@
 
 /* SpriteSheet */
 SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
+	LOG("loading SpriteSheet " << fname);
 	int fx, fy, fw, fh;
 	int framenums;
 	sheet = load_bitmap(fname);
@@ -84,6 +85,7 @@ Sprite::Sprite(
 	}
 }
 Sprite::Sprite(const char *name, ALLEGRO_BITMAP *sheet, std::vector< Box > framearray, float w, float h, int n, float ox, float oy) : name(name), w(w), h(h), frames(n), x(ox), y(oy) {
+	LOG("Sprite " << name << " created");
 	if (sheet) {
 		subimages.reserve(frames);
 		/* Create an array of sub-bitmaps based on the array of boxes we've been passed */

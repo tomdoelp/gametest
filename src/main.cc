@@ -242,8 +242,10 @@ void game_loop() {
 }
 
 int main(int argc, char* argv[]) {
+	LOG("----------------\ngame start" << std::endl);
 	init();
 	game_loop();
+	LOG(std::endl << "shutting down\n----------------");
 	shutdown();
 
 	return 0;
