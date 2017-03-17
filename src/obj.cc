@@ -134,7 +134,6 @@ Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, Sheet
 		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
-	persistent = true;
 }
 Player::~Player() {}
 void Player::update() {

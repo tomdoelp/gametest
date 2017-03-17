@@ -48,6 +48,7 @@ void World::load_map(const char* fname) {
 			objects.pop_back();
 		}
 	}
+	set_view_focus(NULL);
 
 
 

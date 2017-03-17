@@ -84,13 +84,15 @@ Map::Map(World *world, const char* fname) : world(world) {
 		LOG("XML oopsie");
 }
 Map::~Map() {
+	LOG("destroying Tilesets...");
 	for (auto& ts : tilesets) {
 		al_destroy_bitmap(ts);
 	}
+	LOG("destroying Tiles...");
 	for (auto& t : tiles) {
 		al_destroy_bitmap(t);
 	}
-
+	LOG("Map destroyed");
 }
 
 int Map::numlayers() { return layers.size(); }
