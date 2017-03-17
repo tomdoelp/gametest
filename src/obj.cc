@@ -124,7 +124,6 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_sheet(SheetManager::SH_DEATH)) {
 	attach_to_world(world);
 
-	world->set_view_focus(this);
 	score = 0;
 	aspeed = 0;
 	spritenum = 6;
@@ -134,6 +133,7 @@ Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, Sheet
 		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
+	persistent = true;
 }
 Player::~Player() {}
 void Player::update() {
@@ -237,6 +237,14 @@ void Player::update() {
 	/* update position based on speed */
 	super::update();
 }
+
+void Player::map_start(){
+	world->set_view_focus(this);
+	super::map_start();
+}
+
+
+
 void Player::draw() {
 #if DEBUG_DRAW
 	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy)))

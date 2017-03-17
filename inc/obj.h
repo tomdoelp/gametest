@@ -17,16 +17,18 @@ class Obj {
 		Obj();
 		Obj(World *world);
 		virtual ~Obj();
+		void attach_to_world(World *world);
+
 		virtual void update();
 		virtual void map_start();
 		virtual void map_end();
+
 		void set_active(bool active);
 		void set_persistent(bool persistent);
 
 		bool is_active() const;
-		int get_id() const;
 		bool is_persistent() const;
-		void attach_to_world(World *world);
+		int get_id() const;
 
 		bool operator ==(const Obj &rhs);
 	protected:
@@ -102,8 +104,11 @@ class Player : public MobileObj {
 		Player(float x=0.0, float y=0.0);
 		Player(World *world, float x=0.0, float y=0.0);
 		virtual ~Player();
+
 		virtual void update();
+		virtual void map_start();
 		virtual void draw();
+
 		virtual Box get_bbox() const;
 	protected:
 		int spritenum;

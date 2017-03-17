@@ -39,6 +39,9 @@ void World::set_view_focus(PhysicalObj *o) {
 }
 
 void World::load_map(const char* fname) {
+	for (auto &o : objects) {
+		o->map_end();
+	}
 	for (unsigned int i = 0; i<objects.size(); i++) {
 		if (!objects[i]->is_persistent()) {
 			r->destroy_visible(objects[i]);
@@ -50,38 +53,15 @@ void World::load_map(const char* fname) {
 	}
 	set_view_focus(NULL);
 
-
-
-	/*
-	std::vector<Obj*>::iterator i = objects.begin();
-	while(i != objects.end()) {
-		if (!(*i)->is_persistent()) {
-			r->destroy_visible(*i);
-			i = objects.erase(i);
-		}
-		else {
-			++i;
-		}
-	}
-	*/
-
-
-	
-	/*for (int i = 0, max=objects.size(); i<max; i++){
-		if (!objects[i]->is_persistent()) {
-			r->destroy_visible(objects[i]);
-			objects.erase(objects.begin()+i);
-			i--;
-		}
-	}*/
-	
-
-
 	if (m) {
 		delete m;
 	}
 	LOG("loading Map " << fname);
 	m = new Map(this, fname);
+
+	for (auto &o : objects) {
+		o->map_start();
+	}
 }
 
 void World::render() {
