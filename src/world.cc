@@ -31,7 +31,6 @@ void World::update() {
 
 void World::register_object(Obj *o) {
 	objects.push_back(o);
-	//objects.insert(objects.begin() + o->get_id(), o);
 }
 
 void World::set_view_focus(PhysicalObj *o) {
@@ -67,15 +66,6 @@ void World::load_map(const char* fname) {
 void World::render() {
 	r->render(*m);
 }
-
-/*
-template <class T> void World::create(float x, float y) {
-	T *obj = new T(this,x,y);
-	register_object(obj);
-
-	if (std::is_base_of<T,VisibleObj>::value)
-		r->register_visible(obj);
-}*/
 
 void World::destroy(VisibleObj *o){
 	r->destroy_visible(o);

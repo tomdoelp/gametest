@@ -36,6 +36,16 @@ const int WINDOW_H = 768;
 const int SCREEN_W = 320;
 const int SCREEN_H = 240;
 
+/* Might not use these ? */
+const int KEY_UP = ALLEGRO_KEY_UP;
+const int KEY_DOWN = ALLEGRO_KEY_DOWN;
+const int KEY_LEFT = ALLEGRO_KEY_LEFT;
+const int KEY_RIGHT = ALLEGRO_KEY_RIGHT;
+const int KEY_QUIT = ALLEGRO_KEY_ESCAPE;
+const int KEY_PAUSE = ALLEGRO_KEY_ENTER;
+const int KEY_ACCEPT = ALLEGRO_KEY_X;
+const int KEY_REJECT = ALLEGRO_KEY_Z;
+
 extern bool done;
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_TIMER* timer;
@@ -50,6 +60,8 @@ extern bool key_press[ALLEGRO_KEY_MAX];
 extern bool paused;
 
 void abort(const char *format, ...);
-void alert(const char *format, ...);
+/*void alert(const char *format, ...); */
+
+bool kmap(const int key_code);
 
 #endif

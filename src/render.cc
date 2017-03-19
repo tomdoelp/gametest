@@ -19,17 +19,6 @@ void Renderer::destroy_visible(Obj *o) {
 			i--;
 		}
 	}
-	/*
- 	std::vector<VisibleObj>::iterator i = visibles.begin();
-	while (i != visibles.end()) {
-		if (*i == *o) {
-			i = visibles.erase(i);
-		}
-		else {
-			++i;
-		}
-	}
-	*/
 }
 
 

@@ -10,7 +10,7 @@ void abort(const char *format, ...) {
 	fprintf(stderr,"\n");
 	exit(1);
 }
-
+/*
 void alert(const char *format, ...) {
 	if (!DEBUG)
 		return;
@@ -19,4 +19,9 @@ void alert(const char *format, ...) {
 	vprintf(format, argptr);
 	printf("\n");
 }
+*/
 /* thanks dradtke */
+
+
+bool kmap(const int key_code) { return key[key_map[key_code]]; }
+

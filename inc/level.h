@@ -9,8 +9,23 @@
 #include "load.h"
 #include "utils.h"
 
-typedef enum layertype {LAYER_BACKGROUND, LAYER_MIXED, LAYER_FOREGROUND, LAYER_COLLISIONS} LayerType;
-typedef enum solidtype {TILE_FREE, TILE_SOLID_SQUARE} SolidType;
+typedef enum layertype {
+	LAYER_BACKGROUND, 
+	LAYER_MIXED, 
+	LAYER_FOREGROUND, 
+	LAYER_COLLISIONS
+} LayerType;
+
+typedef enum solidtype {
+	TILE_FREE, 
+	TILE_SOLID_SQUARE, 
+	TILE_SOLID_HALF_TOP, 
+	TILE_SOLID_HALF_BOTTOM,
+	TILE_SOLID_HALF_RIGHT,
+	TILE_SOLID_HALF_LEFT,
+	TILE_SOLID_DIAG_UPRIGHT,
+	TILE_SOLID_DIAG_UPLEFT
+} SolidType;
 
 class World;
 class Layer {

@@ -21,10 +21,9 @@ class View;
 class Renderer;
 */
 
-typedef enum mode {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_SCENE} Mode;
-
 class World {
 	public:
+		typedef enum mode {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_SCENE} Mode;
 		World(Renderer *r);
 		virtual ~World();
 
@@ -38,14 +37,14 @@ class World {
 		void load_map(const char* fname);
 
 		/*
- 		template <class T> std::weak_ptr<T> create_visible(float x=0.0f, float y=0.0f) {
-			std::shared_ptr<T> obj(make_shared<T>(this,x,y));
+		   template <class T> std::weak_ptr<T> create_visible(float x=0.0f, float y=0.0f) {
+		   std::shared_ptr<T> obj(make_shared<T>(this,x,y));
 
-			r->register_visible(std::weak_ptr<T>(obj));
+		   r->register_visible(std::weak_ptr<T>(obj));
 
-			return std::weak_ptr(obj);
-		}
-		*/
+		   return std::weak_ptr(obj);
+		   }
+		   */
 		template <class T> T* create_visible(float x=0.0f, float y=0.0f) {
 			T *obj = new T(this,x,y);
 

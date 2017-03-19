@@ -138,26 +138,26 @@ Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, Sheet
 Player::~Player() {}
 void Player::update() {
 	/* vertical control */
-	if (key[ALLEGRO_KEY_UP]) {
+	if (kmap(ALLEGRO_KEY_UP)) {
 		dy = -1;
-	} else if (key[ALLEGRO_KEY_DOWN]) {
+	} else if (kmap(ALLEGRO_KEY_DOWN)) {
 		dy = 1;
 	} else
 		dy = 0;
 
-	if (key[ALLEGRO_KEY_UP] && key[ALLEGRO_KEY_DOWN])
+	if (kmap(ALLEGRO_KEY_UP) && kmap(ALLEGRO_KEY_DOWN))
 		dy = 0;
 
 	/* horizontal control */
-	if (key[ALLEGRO_KEY_LEFT]) {
+	if (kmap(ALLEGRO_KEY_LEFT)) {
 		dx = -1;
-	} else if (key[ALLEGRO_KEY_RIGHT]) {
+	} else if (kmap(ALLEGRO_KEY_RIGHT)) {
 		dx = 1;
 	} else
 		dx = 0;
 
 	/* Not moving */
-	if (key[ALLEGRO_KEY_LEFT] && key[ALLEGRO_KEY_RIGHT])
+	if (kmap(ALLEGRO_KEY_LEFT) && kmap(ALLEGRO_KEY_RIGHT))
 		dx = 0;
 
 	/* which way ya facing */

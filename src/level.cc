@@ -34,30 +34,66 @@ Map::Map(World *world, const char* fname) : world(world) {
 		/* for each tileset */
 		for (pugi::xml_node t = map.child("tileset"); t; t=t.next_sibling("tileset")) {
 			int firstgid = t.attribute("firstgid").as_int();
-			int tw = t.attribute("tilewidth").as_int();
-			int th = t.attribute("tileheight").as_int();
-			int tilecount = t.attribute("tilecount").as_int();
-			int columns = t.attribute("columns").as_int();
-			ALLEGRO_BITMAP *ts = load_bitmap((std::string("./res/maps/") + t.child("image").attribute("source").value()).c_str());
-			int spacing = 0;
+			if (pugi::xml_attribute source = t.attribute("source")) {
+				pugi::xml_document sourcedoc;
+				std::string tilesetfile = std::string("./res/maps/") + source.value();
+				LOG("HERE " << tilesetfile);
+				pugi::xml_parse_result sourceres = sourcedoc.load_file(tilesetfile.c_str());
+				if (sourceres) {
+					pugi::xml_node tileset = sourcedoc.child("tileset");
+					int tw = tileset.attribute("tilewidth").as_int();
+					int th = tileset.attribute("tileheight").as_int();
+					int tilecount = tileset.attribute("tilecount").as_int();
+					int columns = tileset.attribute("columns").as_int();
+					ALLEGRO_BITMAP *ts_bitmap = load_bitmap((std::string("./res/maps/") + tileset.child("image").attribute("source").value()).c_str());
+					int spacing = 0;
 
-			tilesets.push_back(ts);
-			for(int i = 0; i < tilecount; i++) {
-				/* make a sub-bitmap */
-				tiles.emplace_back(al_create_sub_bitmap(
-							ts, 
-							(i % columns)*(tw + spacing),
-							(i / columns)*(th + spacing),
-							tw,
-							th));
-				tiletype.push_back(TILE_FREE);
+					tilesets.push_back(ts_bitmap);
+					for (int i = 0; i < tilecount; i++) {
+						tiles.emplace_back(al_create_sub_bitmap(
+									ts_bitmap,
+									(i % columns)*(tw + spacing),
+									(i / columns)*(th + spacing),
+									tw,
+									th));
+						tiletype.push_back(TILE_FREE);
+					}
+					for (pugi::xml_node tile = tileset.child("tile"); tile; tile=tile.next_sibling("tile")) {
+						int id = tile.attribute("id").as_int();
+						if (tile.child("properties").child("property").attribute("name").value() == std::string("type")) {
+							tiletype[id + firstgid] = static_cast<SolidType>(tile.child("properties").child("property").attribute("value").as_int());
+						}
+					}
+				}
+				else
+					LOG("XML tileset oops");
 			}
+			else {
+				int tw = t.attribute("tilewidth").as_int();
+				int th = t.attribute("tileheight").as_int();
+				int tilecount = t.attribute("tilecount").as_int();
+				int columns = t.attribute("columns").as_int();
+				ALLEGRO_BITMAP *ts = load_bitmap((std::string("./res/maps/") + t.child("image").attribute("source").value()).c_str());
+				int spacing = 0;
+
+				tilesets.push_back(ts);
+				for(int i = 0; i < tilecount; i++) {
+					/* make a sub-bitmap */
+					tiles.emplace_back(al_create_sub_bitmap(
+								ts, 
+								(i % columns)*(tw + spacing),
+								(i / columns)*(th + spacing),
+								tw,
+								th));
+					tiletype.push_back(TILE_FREE);
+				}
 
 
-			for (pugi::xml_node tile = t.child("tile"); tile; tile=tile.next_sibling("tile")) {
-				int id = tile.attribute("id").as_int();
-				if (tile.child("properties").child("property").attribute("name").value() == std::string("type")) {
-					tiletype[id + firstgid] = static_cast<SolidType>(tile.child("properties").child("property").attribute("value").as_int());
+				for (pugi::xml_node tile = t.child("tile"); tile; tile=tile.next_sibling("tile")) {
+					int id = tile.attribute("id").as_int();
+					if (tile.child("properties").child("property").attribute("name").value() == std::string("type")) {
+						tiletype[id + firstgid] = static_cast<SolidType>(tile.child("properties").child("property").attribute("value").as_int());
+					}
 				}
 			}
 		}
@@ -258,7 +294,6 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 		}
 		if ((intersect_h == intersect_v || -intersect_h == intersect_v ) && intersect_h != 0.0f){
 			intersect.set_y(0.0f);
-			alert("!");
 		}
 	}
 
