@@ -249,7 +249,16 @@ void Map::draw_layer_region_from_row(float x, float y, int r, int l, Box b) {
 	}
 }
 
-
+/*
+   TILE_FREE, 
+   TILE_SOLID_SQUARE, 
+   TILE_SOLID_HALF_TOP, 
+   TILE_SOLID_HALF_BOTTOM,
+   TILE_SOLID_HALF_RIGHT,
+   TILE_SOLID_HALF_LEFT,
+   TILE_SOLID_DIAG_UPRIGHT,
+   TILE_SOLID_DIAG_UPLEFT
+   */
 std::vector<Box> Map::get_collision_box(const Box &bbox) {
 	int firstcol = (bbox.get_x()) / tilew;
 	int lastcol = (bbox.get_x() + bbox.get_w()-1) / tilew;
@@ -261,9 +270,29 @@ std::vector<Box> Map::get_collision_box(const Box &bbox) {
 
 	for (int i = firstcol; i <= lastcol; i++) {
 		for (int j = firstrow; j <= lastrow; j++) {
-			if (i+j*w > 0 && i+j*w < totaltiles &&
-					tiletype[tilemap[i+j*w]] == TILE_SOLID_SQUARE){
-				boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
+			if (i+j*w > 0 && i+j*w < totaltiles){
+				switch (tiletype[tilemap[i+j*w]]) {
+					case TILE_FREE:
+						break;
+					case TILE_SOLID_SQUARE:
+						boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
+						break;
+					case TILE_SOLID_HALF_TOP:
+						boxes.emplace_back(i*tilew, j*tileh, tilew, tileh/2);
+						break;
+					case TILE_SOLID_HALF_BOTTOM:
+						boxes.emplace_back(i*tilew, j*tileh+(tileh/2), tilew, tileh/2);
+						break;
+					case TILE_SOLID_HALF_RIGHT:
+						boxes.emplace_back(i*tilew+(tilew/2), j*tileh, tilew/2, tileh);
+						break;
+					case TILE_SOLID_HALF_LEFT:
+						boxes.emplace_back(i*tilew, j*tileh, tilew/2, tileh);
+						break;
+					default:
+						boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
+						break;
+				}
 			}
 		}
 	}
@@ -293,7 +322,8 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 			intersect.set_y(intersect_v); 
 		}
 		if ((intersect_h == intersect_v || -intersect_h == intersect_v ) && intersect_h != 0.0f){
-			intersect.set_y(0.0f);
+			intersect.set_x(0.0f);
+			LOG("!");
 		}
 	}
 
