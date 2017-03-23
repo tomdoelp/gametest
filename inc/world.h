@@ -10,7 +10,6 @@
 #include "global.h"
 #include "level.h"
 #include "obj.h"
-#include "view.h"
 #include "render.h"
 
 /*
@@ -34,6 +33,12 @@ class World {
 		void render();
 		void set_view_focus(PhysicalObj *o);
 
+		Player *get_player();
+		void set_player(Player *p);
+
+		bool obj_collision(Obj *a, Obj *b);
+		bool obj_collision(PhysicalObj *a, PhysicalObj *b);
+
 		void load_map(const char* fname);
 
 		/*
@@ -46,23 +51,29 @@ class World {
 		   }
 		   */
 		template <class T> T* create_visible(float x=0.0f, float y=0.0f) {
-			T *obj = new T(this,x,y);
+			T *obj = new T(x,y);
+			obj->attach_to_world(this);
 
 			r->register_visible(obj);
 
 			return obj;
 		}
 
-		void destroy(Obj *o);
-		void destroy(VisibleObj *o);
+		void clear_dead_objects();
+		void queue_destroy(Obj *o);
+		void queue_destroy_visible(VisibleObj *o);
 	protected:
 		Map *m;
 		Renderer *r;
+
+		Player *player;
 
 		//std::vector< std::shared_ptr<Obj> > objects;
 		//std::vector< std::shared_ptr<PhysicalObj> > obj;
 		std::vector<Obj *> objects;
 		std::vector<PhysicalObj *> physicals;
+		std::vector<Obj *> dead_objects;
+		std::vector<VisibleObj *> dead_visibles;
 		Mode current_mode;
 };
 

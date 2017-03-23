@@ -63,13 +63,16 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 		case SH_DEATH:
 			SheetList[sheet] = new SpriteSheet("./res/sprites/death/death2.png", "./res/sprites/death/death2.json");
 			break;
+		case SH_DUMMY:
+			SheetList[sheet] = new SpriteSheet("./res/sprites/dummy/dummy.png", "./res/sprites/dummy/dummy.json");
+			break;
 		default:
 			break;
 	}
 	return SheetList[sheet];
 }
 
-void SheetManager::clear_sheets(){
+void SheetManager::clear_sheets() {
 	for (auto &s : SheetList)
 		delete s;
 }

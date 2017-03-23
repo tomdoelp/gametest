@@ -21,16 +21,15 @@ options += "--sheet-pack --sheet " + sys.argv[-1:][0] + " --data " + jfile + " -
 command=["/home/tom/software/bin/aseprite"]
 command.extend(options.split(' '))
 
-
 #print("\n\n exactly this:\n" + ' '.join([command, options]) + "\n\n")
 
 call(command)
-sprites = []
+spritefiles = []
 for filename in sys.argv[1:-1]:
-    sprites.append(re.sub('[^a-zA-Z0-9]', '', filename.split('/')[-1:][0][:-4]))
+    spritefiles.append(re.sub('[^a-zA-Z0-9]', '', filename.split('/')[-1:][0][:-4]))
 
-sprnum = len(sprites)
-print("found " + str(sprnum) + " sprites:\n" + '\n'.join(sprites))
+sprnum = len(spritefiles)
+print("found " + str(sprnum) + " sprites:\n" + '\n'.join(spritefiles))
 
 print("opening " + jfile)
 with open(jfile) as infile:
@@ -38,18 +37,15 @@ with open(jfile) as infile:
 
 
 j = {"sprites":[], "meta":{}}
-for i in range(len(sprites)):
+for i in range(len(spritefiles)):
     j['sprites'].append({})
-    j['sprites'][i]['name'] = sprites[i]
+    j['sprites'][i]['name'] = spritefiles[i]
     j['sprites'][i]['frames'] = []
     for frame in data['frames']:
-        if sprites[i] == re.sub(' [0-9]+\.ase|[^a-zA-Z0-9]','', frame['filename']):
+        if spritefiles[i] == re.sub(' [0-9]+\.ase|.ase|[^a-zA-Z0-9]','', frame['filename']):
             j['sprites'][i]['frames'].append(frame)
 j['meta'] = data['meta']
 j['meta']['sprnum'] = sprnum
-
-#print("Okay, here's the json result:")
-#print(json.dumps(j, indent=4))
 
 with open(jfile, 'w') as outfile:
     json.dump(j, outfile)

@@ -37,7 +37,7 @@ Map::Map(World *world, const char* fname) : world(world) {
 			if (pugi::xml_attribute source = t.attribute("source")) {
 				pugi::xml_document sourcedoc;
 				std::string tilesetfile = std::string("./res/maps/") + source.value();
-				LOG("HERE " << tilesetfile);
+/*				LOG("HERE " << tilesetfile); */
 				pugi::xml_parse_result sourceres = sourcedoc.load_file(tilesetfile.c_str());
 				if (sourceres) {
 					pugi::xml_node tileset = sourcedoc.child("tileset");
@@ -113,6 +113,11 @@ Map::Map(World *world, const char* fname) : world(world) {
 							o.attribute("x").as_float(),	
 							o.attribute("y").as_float());
 				}
+				if (otype == std::string("Dummy")) {
+					world->create_visible<Dummy>(
+							o.attribute("x").as_float(),	
+							o.attribute("y").as_float());
+				}
 			}
 		}
 	} 
@@ -134,6 +139,19 @@ Map::~Map() {
 int Map::numlayers() { return layers.size(); }
 
 void Map::draw_layer(float x, float y, int n) {
+	/* Okay let me explain this debug stuff
+ 	 * If debug is on, then the game can still run when something cant be loaded
+	 * But we don't waste time checking that if we're in production build. 
+	 * I could check once and cache it so it wouldn't take time
+	 * but w/e this is easier
+	 * I mean it's constant time anyway because I'm guaranteeing only four layers
+	 * But I'm paranoid about being too slow even though there's no reason to optimize yet.
+	 * Also, constant time doesn't mean fast. 
+	 */
+#if DEBUG
+	if (layers.size() == 0)
+		return;
+#endif
 	int temp = 0;
 	std::vector<int> gids = layers[n].get_gids();
 
@@ -146,6 +164,10 @@ void Map::draw_layer(float x, float y, int n) {
 }
 
 void Map::draw_layer_region(float x, float y, int n, Box b) {
+#if DEBUG
+	if (layers.size() == 0)
+		return;
+#endif
 	int firstcol, lastcol, firstrow, lastrow;
 	int firstcol_b = b.get_x() / tilew;
 	int lastcol_b = (b.get_x() + b.get_w()-1) / tilew +1;
@@ -171,6 +193,10 @@ void Map::draw_layer_region(float x, float y, int n, Box b) {
 }
 
 void Map::draw_row(float x, float y, int r, int l) {
+#if DEBUG
+	if (layers.size() == 0)
+		return;
+#endif
 	if (r < 0 || r >= h) 
 		return;
 	int temp = 0;
@@ -186,6 +212,10 @@ void Map::draw_row(float x, float y, int r, int l) {
 }
 
 void Map::draw_row_region(float x, float y, int r, int l, Box b) {
+#if DEBUG
+	if (layers.size() == 0)
+		return;
+#endif
 	if (r < 0 || r >= h)
 		return;
 
@@ -206,6 +236,10 @@ void Map::draw_row_region(float x, float y, int r, int l, Box b) {
 }
 
 void Map::draw_layer_from_row(float x, float y, int r, int l) {
+#if DEBUG
+	if (layers.size() == 0)
+		return;
+#endif
 	if (r < 0 || r >= h) 
 		return;
 
@@ -222,6 +256,10 @@ void Map::draw_layer_from_row(float x, float y, int r, int l) {
 }
 
 void Map::draw_layer_region_from_row(float x, float y, int r, int l, Box b) {
+#if DEBUG
+	if (layers.size() == 0)
+		return;
+#endif
 	if (r < 0 || r >= h)
 		return;
 
@@ -259,12 +297,13 @@ void Map::draw_layer_region_from_row(float x, float y, int r, int l, Box b) {
    TILE_SOLID_DIAG_UPRIGHT,
    TILE_SOLID_DIAG_UPLEFT
    */
-std::vector<Box> Map::get_collision_box(const Box &bbox) {
+
+std::vector<Box_Diag> Map::get_collision_box(const Box &bbox) {
 	int firstcol = (bbox.get_x()) / tilew;
 	int lastcol = (bbox.get_x() + bbox.get_w()-1) / tilew;
 	int firstrow = (bbox.get_y()) / tileh;
 	int lastrow = (bbox.get_y() + bbox.get_h()-1) / tileh;
-	std::vector<Box> boxes;
+	std::vector<Box_Diag> boxes;
 	std::vector<int> tilemap = layers[LAYER_COLLISIONS].get_gids();
 	int totaltiles = tilemap.size();
 
@@ -273,9 +312,6 @@ std::vector<Box> Map::get_collision_box(const Box &bbox) {
 			if (i+j*w > 0 && i+j*w < totaltiles){
 				switch (tiletype[tilemap[i+j*w]]) {
 					case TILE_FREE:
-						break;
-					case TILE_SOLID_SQUARE:
-						boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
 						break;
 					case TILE_SOLID_HALF_TOP:
 						boxes.emplace_back(i*tilew, j*tileh, tilew, tileh/2);
@@ -289,6 +325,13 @@ std::vector<Box> Map::get_collision_box(const Box &bbox) {
 					case TILE_SOLID_HALF_LEFT:
 						boxes.emplace_back(i*tilew, j*tileh, tilew/2, tileh);
 						break;
+					case TILE_SOLID_DIAG_UPRIGHT:
+						boxes.push_back(Box_Diag(i*tilew, j*tileh, tilew, tileh, Box_Diag::DIAG_UPRIGHT));
+						break;
+					case TILE_SOLID_DIAG_UPLEFT:
+						boxes.push_back(Box_Diag(i*tilew, j*tileh, tilew, tileh, Box_Diag::DIAG_UPLEFT));
+						break;
+					case TILE_SOLID_SQUARE:
 					default:
 						boxes.emplace_back(i*tilew, j*tileh, tilew, tileh);
 						break;
@@ -301,7 +344,7 @@ std::vector<Box> Map::get_collision_box(const Box &bbox) {
 
 Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 	/* get all boxes that have a solid type */
-	std::vector<Box> coltiles = get_collision_box(next);
+	std::vector<Box_Diag> coltiles = get_collision_box(next);
 
 	Vec2f intersect;
 
@@ -309,11 +352,9 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 	float boxh = next.get_h();
 
 	for (auto &b : coltiles) {
-		/*		alert("me  [%.2f - %.2f]\nyou [%.2f - %.2f]", 
-				next.get_y(), next.get_y()+next.get_h(),
-				b.get_y(), b.get_y()+b.get_h());
-				*/
+		b.set_velocity(Vec2f(next.get_x() - now.get_x(), 0.0f));
 		float intersect_h = Box(next.get_x(), now.get_y(), boxw, boxh).get_collision_vec(b).get_x();
+		b.set_velocity(Vec2f(0.0f, next.get_y() - now.get_y()));
 		float intersect_v = Box(now.get_x(), next.get_y(), boxw, boxh).get_collision_vec(b).get_y();
 		if (intersect_h != 0.0f) {
 			intersect.set_x(intersect_h);
@@ -323,7 +364,6 @@ Vec2f Map::get_collision_vec(const Box &now, const Box &next) {
 		}
 		if ((intersect_h == intersect_v || -intersect_h == intersect_v ) && intersect_h != 0.0f){
 			intersect.set_x(0.0f);
-			LOG("!");
 		}
 	}
 

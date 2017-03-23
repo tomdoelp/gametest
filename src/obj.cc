@@ -15,6 +15,14 @@ Obj::~Obj() {
 void Obj::update() {}	
 void Obj::map_start() {}
 void Obj::map_end() {}
+bool Obj::destroy() {
+	if (!world)
+		return false;
+
+	world->queue_destroy(this);
+	return true;
+}
+/*void Obj::collide(Obj *other) {} */
 void Obj::set_active(bool active) { this->active = active; }
 bool Obj::is_active() const { return active; }
 void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
@@ -23,6 +31,7 @@ bool Obj::is_persistent() const { return persistent; }
 int Obj::objtotal = 0;
 
 int Obj::get_id() const { return id; }
+Box Obj::get_bbox() const { return Box(0.0f, 0.0f, 0.0f, 0.0f); }
 void Obj::attach_to_world(World *world) { 
 	this->world = world; 
 	world->register_object(this);
@@ -30,17 +39,31 @@ void Obj::attach_to_world(World *world) {
 bool Obj::operator ==(const Obj &rhs) {
 	return this->get_id() == rhs.get_id();
 }
+bool Obj::operator !=(const Obj &rhs) {
+	return this->get_id() != rhs.get_id();
+}
 
 
 
 /* Physical Object */
-PhysicalObj::PhysicalObj(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
+PhysicalObj::PhysicalObj(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {
+	LOG(get_bbox());
+}
 PhysicalObj::~PhysicalObj() {}
 float PhysicalObj::get_x() const { return x; }
 float PhysicalObj::get_y() const { return y; }
 float PhysicalObj::get_w() const { return w; }
 float PhysicalObj::get_h() const { return h; }
 Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
+
+void PhysicalObj::set_position(float x, float y) {
+	this->x = x;
+	this->y = y;
+}
+void PhysicalObj::displace(float dx, float dy) {
+	this->x += dx;
+	this->y += dy;
+}
 
 
 
@@ -50,6 +73,8 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteShee
 		sprite = (*sheet)[0];
 		sprite->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM); 
 	}
+	else 
+		sprite = NULL;
 
 	aspeed = 2.0 / 60.0;
 	loop = true;
@@ -87,6 +112,13 @@ void VisibleObj::draw() {
 	al_draw_filled_rectangle(x-1,y-1,x+1,y+1,al_map_rgb(0,0,0));
 #endif
 }
+bool VisibleObj::destroy() {
+	if (!world)
+		return false;
+
+	world->queue_destroy_visible(this);
+	return true;
+}
 bool VisibleObj::operator<(const VisibleObj &rhs) {
 	return depth > rhs.depth; //reverse order, since we draw depth high to low
 }
@@ -106,6 +138,17 @@ void MobileObj::update() {
 	depth = y; 
 }
 
+/* Dummy Object */
+Dummy::Dummy(float x, float y) : MobileObj(x, y, 16, 16, 0, SheetManager::get_sheet(SheetManager::SH_DUMMY)) {}
+Dummy::~Dummy() {}
+
+void Dummy::update() {
+	if (get_bbox().check_collision(world->get_player()->get_bbox())) {
+		destroy();
+	}
+}
+Box Dummy::get_bbox() const { return Box(x-w/2, y-h, w, h); }
+
 
 
 /* Player Object */
@@ -119,23 +162,16 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
-
-}
-Player::Player(World *world, float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_sheet(SheetManager::SH_DEATH)) {
-	attach_to_world(world);
-
-	score = 0;
-	aspeed = 0;
-	spritenum = 6;
-
-	for (int i = 0; i < spritenum; i++) {
-		sprites[i] = (*sheet)[i];
-		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
-	}
-	sprite = sprites[0];
 	persistent = true;
+
 }
-Player::~Player() {}
+Player::~Player() {
+	if (world) {
+		world->set_player(NULL);
+		world->set_view_focus(NULL);
+	}
+}
+
 void Player::update() {
 	/* vertical control */
 	if (kmap(ALLEGRO_KEY_UP)) {
@@ -214,6 +250,7 @@ void Player::update() {
 			break;
 	}
 	/* always start a walkcycle from the same place */
+	/* (trust me it looks nicer) */
 	if (sprite != temp){
 		frame_index = 2;
 	}
@@ -240,6 +277,7 @@ void Player::update() {
 
 void Player::map_start(){
 	world->set_view_focus(this);
+	world->set_player(this);
 	super::map_start();
 }
 
@@ -248,7 +286,7 @@ void Player::map_start(){
 void Player::draw() {
 #if DEBUG_DRAW
 	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy)))
-		b.draw(al_map_rgb(255,0,0));
+		b.draw(al_map_rgb(128,0,0));
 #endif
 
 	if (sprite) {

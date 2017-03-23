@@ -19,7 +19,7 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers=4, int samples=
 
 class SheetManager{
 	public:
-		typedef enum SHNAME { SH_DEATH, SH_NUM } SheetName;
+typedef enum SHNAME { SH_DEATH, SH_DUMMY, SH_NUM } SheetName;
 		SheetManager();
 		~SheetManager();
 
@@ -28,6 +28,22 @@ class SheetManager{
 	protected:
 		static std::vector<SpriteSheet *> SheetList;
 
+};
+
+/* Unlike SpriteSheets, we're just going to load all sounds at the beginning. */
+/* Streams could go either way */
+class SoundManager {
+	public:
+typedef enum MUSNAME { MUS_TEST, MUS_NUM } MusicName;
+typedef enum SNDNAME { SND_ACCEPT, SND_SELECT, SND_REJECT, SND_PAUSE, SND_NUM } SoundName;
+		SoundManager();
+		~SoundManager();
+
+		static void play_music(MusicName music);
+		static void stop_music();
+		static void clear_sounds();
+	protected:
+		static std::vector<ALLEGRO_AUDIO_STREAM *> MusicStreams;
 };
 
 #endif

@@ -24,7 +24,11 @@ typedef enum solidtype {
 	TILE_SOLID_HALF_RIGHT,
 	TILE_SOLID_HALF_LEFT,
 	TILE_SOLID_DIAG_UPRIGHT,
-	TILE_SOLID_DIAG_UPLEFT
+	TILE_SOLID_DIAG_UPLEFT,
+	TILE_SOLID_TRI_TOPLEFT,
+	TILE_SOLID_TRI_TOPRIGHT,
+	TILE_SOLID_TRI_BOTLEFT,
+	TILE_SOLID_TRI_BOTRIGHT
 } SolidType;
 
 class World;
@@ -51,7 +55,7 @@ class Map {
 		void draw_row(float x, float y, int r, int l);
 		void draw_layer_from_row(float x, float y, int r, int l);
 		int numlayers();
-		std::vector<Box> get_collision_box(const Box &bbox);
+		std::vector<Box_Diag> get_collision_box(const Box &bbox);
 		Vec2f get_collision_vec(const Box &now, const Box &next);
 
 		void draw_layer_region(float x, float y, int n, Box b);

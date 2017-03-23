@@ -11,7 +11,6 @@
 #include "sprite.h"
 #include "load.h"
 #include "level.h"
-#include "view.h"
 #include "render.h"
 #include "world.h"
 
@@ -42,6 +41,10 @@ void init() {
 	/* Keyboard */
 	if (!al_install_keyboard())
 		abort("Failed to install keyboard");
+
+	/* Mouse */
+	if (!al_install_mouse())
+		abort("Failed to install mouse");
 
 	/* Timer */
 	timer = al_create_timer(1.0 / FPS);
@@ -82,6 +85,7 @@ void init() {
 
 	/* Event sources */
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
+	al_register_event_source(event_queue, al_get_mouse_event_source());
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 
@@ -152,6 +156,7 @@ void game_loop() {
 	while (!done) {
 		ALLEGRO_EVENT event;
 		al_wait_for_event(event_queue, &event);
+		Vec2f mouse_coord = world.get_renderer()->window2world(event.mouse.x, event.mouse.y);
 
 		switch(event.type){
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -167,7 +172,7 @@ void game_loop() {
 				al_acknowledge_resize(event.display.source);
 				redraw = true;
 				break;
-				
+
 			case ALLEGRO_EVENT_KEY_DOWN:
 				/* update key array (probably slightly overkill tbh) */
 				key[event.keyboard.keycode] = true;
@@ -209,6 +214,11 @@ void game_loop() {
 					world.load_map("./res/maps/bigtest2.tmx");
 				}
 #endif
+				break;
+
+			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+				LOG("click");
+				world.create_visible<Dummy>(mouse_coord.get_x(), mouse_coord.get_y());
 
 				break;
 

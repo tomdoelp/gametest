@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
+#include <algorithm>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -14,8 +15,36 @@
 #include "sprite.h"
 #include "load.h"
 #include "level.h"
-#include "view.h"
 #include "menu.h"
+
+class PhysicalObj;
+class View {
+	public:
+		View();
+		View(float w, float h, ALLEGRO_DISPLAY *d);
+		~View();
+
+		ALLEGRO_BITMAP *get_buffer();
+		float get_x();
+		float get_y();
+		float get_w() const;
+		float get_h() const;
+		float get_scale(float dispw, float disph);
+		Box get_view_box();
+
+		void set_focus(PhysicalObj *o);
+	private:
+		float w, h;
+		ALLEGRO_BITMAP *buffer;
+		ALLEGRO_DISPLAY *display;
+		float x, y;
+		float scale;
+		float scale_w, scale_h, scale_x, scale_y;
+		PhysicalObj *focus;
+
+		float dispw, disph;
+
+};
 
 class Renderer {
 	friend class World;
@@ -30,6 +59,8 @@ class Renderer {
 		void render(Map &m);
 
 		void set_view_focus(PhysicalObj *o);
+
+		Vec2f window2world(float x, float y);
 	private:
 		ALLEGRO_TRANSFORM trans;
 		ALLEGRO_DISPLAY *display;
