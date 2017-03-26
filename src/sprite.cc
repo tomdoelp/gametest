@@ -42,6 +42,7 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 SpriteSheet::~SpriteSheet(){
 	if (sheet)
 		al_destroy_bitmap(sheet);
+	sheet = NULL;
 	LOG("Sheet destroyed");
 }
 Sprite *SpriteSheet::getsprite(int i) {

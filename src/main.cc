@@ -27,6 +27,9 @@ int key_map[ALLEGRO_KEY_MAX];
 int screen_scale = 0;
 bool paused = false;
 
+/*SoundManager snd(AUDIO_DEPTH_GOOD); */
+/*SoundManager snd(AUDIO_DEPTH_SHIT); */
+
 void init() {
 	/* fill keyboard array with false */
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
@@ -115,8 +118,8 @@ void shutdown() {
 
 	D(if (debug_font) al_destroy_font(debug_font);)
 
-	SheetManager::clear_sheets();
-	/* destoy mixers and such */
+/*	snd.cleanup(); */
+	SheetManager::cleanup();
 }
 
 void game_loop() {
@@ -133,11 +136,9 @@ void game_loop() {
 	al_start_timer(timer);
 
 	/* SOUND STUFF */
-	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav");
-	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+/*	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav"); */
+/*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL); */
 
-	int audiodepth = 44100; 
-/*	int audiodepth = 11025;  */
 /*
 	ALLEGRO_VOICE *voice = al_create_voice(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
 	ALLEGRO_MIXER *music_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
@@ -162,6 +163,7 @@ void game_loop() {
 
 	/* Load a map from a file */
 	world.load_map("./res/maps/bigtest.tmx");
+	world.sndmgr->play_music(SoundManager::MUS_TEST);
 
 	/* Events */
 	while (!done) {

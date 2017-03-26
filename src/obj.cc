@@ -147,6 +147,7 @@ Dummy::~Dummy() {}
 
 void Dummy::update() {
 	if (get_bbox().check_collision(world->get_player()->get_bbox())) {
+		world->sndmgr->play_sound(SoundManager::SND_ACCEPT);
 		destroy();
 	}
 }

@@ -30,11 +30,16 @@
 #	define D(x)
 #endif
 
+class SoundManager;
+class SheetManager;
+
 const float FPS = 60;
 const int WINDOW_W = 1024;
 const int WINDOW_H = 768;
 const int SCREEN_W = 320;
 const int SCREEN_H = 240;
+const unsigned int AUDIO_DEPTH_GOOD = 44100;
+const unsigned int AUDIO_DEPTH_SHIT = 11025;
 
 /* Might not use these ? */
 const int KEY_UP = ALLEGRO_KEY_UP;
@@ -58,6 +63,8 @@ extern int key_map[ALLEGRO_KEY_MAX];
 extern bool key_press[ALLEGRO_KEY_MAX];
 
 extern bool paused;
+
+/*extern SoundManager snd; */
 
 void abort(const char *format, ...);
 /*void alert(const char *format, ...); */

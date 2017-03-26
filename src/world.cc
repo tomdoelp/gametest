@@ -4,6 +4,8 @@ World::World(Renderer *r) : r(r) {
 	LOG("World created");
 	m = NULL;
 	player = NULL;
+	sndmgr = new SoundManager(AUDIO_DEPTH_GOOD);
+	sndmgr->init();
 }
 World::~World(){
  	for (auto &o : objects) {
@@ -13,6 +15,11 @@ World::~World(){
 	if (m) {
 		delete m;
 		m = NULL;
+	}
+
+	if (sndmgr){
+		delete sndmgr;
+		sndmgr = NULL;
 	}
 
 	LOG("World destroyed");

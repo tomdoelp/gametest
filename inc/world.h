@@ -62,6 +62,8 @@ class World {
 		void clear_dead_objects();
 		void queue_destroy(Obj *o);
 		void queue_destroy_visible(VisibleObj *o);
+
+		SoundManager *sndmgr;
 	protected:
 		Map *m;
 		Renderer *r;
