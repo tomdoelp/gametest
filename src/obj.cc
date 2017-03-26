@@ -139,7 +139,10 @@ void MobileObj::update() {
 }
 
 /* Dummy Object */
-Dummy::Dummy(float x, float y) : MobileObj(x, y, 16, 16, 0, SheetManager::get_sheet(SheetManager::SH_DUMMY)) {}
+Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SheetManager::SH_DUMMY)) {
+	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
+	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
+}
 Dummy::~Dummy() {}
 
 void Dummy::update() {
@@ -148,6 +151,11 @@ void Dummy::update() {
 	}
 }
 Box Dummy::get_bbox() const { return Box(x-w/2, y-h, w, h); }
+void Dummy::draw() {
+		spr_shadow->sprite_draw(x,y+1,0.0f);
+		super::draw();
+}
+
 
 
 
@@ -163,6 +171,9 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	}
 	sprite = sprites[0];
 	persistent = true;
+
+	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
+	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
 
 }
 Player::~Player() {
@@ -292,6 +303,9 @@ void Player::draw() {
 	if (sprite) {
 		if (aspeed == 0)
 			frame_index = direction;
+
+		spr_shadow->sprite_draw(x,y+1,0.0f);
+
 		super::draw();
 	}
 	else

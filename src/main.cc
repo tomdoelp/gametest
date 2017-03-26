@@ -20,6 +20,7 @@ ALLEGRO_EVENT_QUEUE* event_queue;
 ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
 ALLEGRO_FONT *font;
+D(ALLEGRO_FONT *debug_font;)
 bool key[ALLEGRO_KEY_MAX];
 bool key_press[ALLEGRO_KEY_MAX];
 int key_map[ALLEGRO_KEY_MAX];
@@ -79,9 +80,16 @@ void init() {
 	/* Fonts */
 	if (!al_init_font_addon())
 		abort("Failed to initialize font addon");
-	font = al_create_builtin_font(); 
-	if (!font)
-		abort("Failed to load font");
+/*	font = al_create_builtin_font();  */
+	int ranges[] = {32, 126};
+	ALLEGRO_BITMAP *temp = al_load_bitmap("./res/fonts/Tamsyn12b.tga");
+	font = al_grab_font_from_bitmap(temp, 1, ranges);
+	D(debug_font = al_create_builtin_font();)
+	al_destroy_bitmap(temp);
+	if (!font){
+		LOG("Failed to load font");
+		font = al_create_builtin_font();  
+	}
 
 	/* Event sources */
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
@@ -101,6 +109,11 @@ void shutdown() {
 
 	if (event_queue)
 		al_destroy_event_queue(event_queue);
+
+	if (font) 
+		al_destroy_font(font);
+
+	D(if (debug_font) al_destroy_font(debug_font);)
 
 	SheetManager::clear_sheets();
 	/* destoy mixers and such */
@@ -125,16 +138,13 @@ void game_loop() {
 
 	int audiodepth = 44100; 
 /*	int audiodepth = 11025;  */
-
-	/* load and play an xm music file */
+/*
 	ALLEGRO_VOICE *voice = al_create_voice(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
 	ALLEGRO_MIXER *music_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
-	/* and one for sound */
 	ALLEGRO_MIXER *master_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
 	al_attach_mixer_to_mixer(music_mixer, master_mixer); 
 	al_attach_mixer_to_voice(master_mixer, voice); 
 
-/*	ALLEGRO_AUDIO_STREAM *worry = load_stream( "/home/tom/songs/milkytracker/Theme2.xm", 4, 2048);  */
 	ALLEGRO_AUDIO_STREAM *song = load_stream( "./res/music/offbeat.xm", 8, 4096); 
 
 	if (song) {
@@ -143,6 +153,7 @@ void game_loop() {
 		al_set_audio_stream_gain(song, 0.7f);
 		al_set_audio_stream_playing(song, true); 
 	}
+*/
 
 	/* MAP AND WORLD */	
 	View v(SCREEN_W, SCREEN_H, display);
@@ -203,13 +214,14 @@ void game_loop() {
 					redraw = true;
 				}
 
+				/*
 				if (key[ALLEGRO_KEY_PAD_PLUS]) {
 					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) + 0.1f);
 				}
 				if (key[ALLEGRO_KEY_PAD_MINUS]) {
 					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) - 0.1f);
 				}
-
+*/
 				if (key[ALLEGRO_KEY_M]) {
 					world.load_map("./res/maps/bigtest2.tmx");
 				}
@@ -227,6 +239,7 @@ void game_loop() {
 				break;
 
 			case ALLEGRO_EVENT_TIMER:
+
 				redraw = true;
 				world.update();
 
@@ -248,7 +261,7 @@ void game_loop() {
 				old_time = game_time;
 			}
 			frames_done++;
-			al_draw_textf(font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %.2f", fps);
+			al_draw_textf(debug_font, al_map_rgb(0,255,0), 10, 10, 0, "FPS: %.2f", fps);
 #endif
 
 			al_flip_display();
@@ -263,5 +276,5 @@ int main(int argc, char* argv[]) {
 	LOG(std::endl << "shutting down\n----------------");
 	shutdown();
 
-	return 0;
+	/*	return 0; */
 }

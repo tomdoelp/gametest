@@ -1,5 +1,5 @@
-#ifndef _LOAD_H_
-#define _LOAD_H_
+#ifndef LOAD_H
+#define LOAD_H
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_audio.h>
@@ -19,7 +19,7 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers=4, int samples=
 
 class SheetManager{
 	public:
-typedef enum SHNAME { SH_DEATH, SH_DUMMY, SH_NUM } SheetName;
+typedef enum SHNAME { SH_DEATH, SH_SHADOW, SH_DUMMY, SH_NUM } SheetName;
 		SheetManager();
 		~SheetManager();
 
@@ -39,11 +39,11 @@ typedef enum SNDNAME { SND_ACCEPT, SND_SELECT, SND_REJECT, SND_PAUSE, SND_NUM } 
 		SoundManager();
 		~SoundManager();
 
-		static void play_music(MusicName music);
-		static void stop_music();
-		static void clear_sounds();
+		void play_music(MusicName music);
+		void stop_music();
+		void clear_sounds();
 	protected:
-		static std::vector<ALLEGRO_AUDIO_STREAM *> MusicStreams;
+		std::vector<ALLEGRO_AUDIO_STREAM *> MusicStreams;
 };
 
 #endif

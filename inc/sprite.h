@@ -1,5 +1,5 @@
-#ifndef _SPRITE_H_
-#define _SPRITE_H_
+#ifndef SPRITE_H
+#define SPRITE_H
 
 #include <stdio.h>
 #include <stdlib.h>

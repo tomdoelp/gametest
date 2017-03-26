@@ -1,5 +1,5 @@
-#ifndef _LEVEL_H_
-#define _LEVEL_H_
+#ifndef LEVEL_H
+#define LEVEL_H
 
 #include <stdlib.h>
 #include <allegro5/allegro_image.h>

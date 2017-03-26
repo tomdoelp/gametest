@@ -1,5 +1,5 @@
-#ifndef _GLOBAL_H_
-#define _GLOBAL_H_
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
 #include <stdio.h>
 #include <allegro5/allegro.h>
@@ -63,5 +63,38 @@ void abort(const char *format, ...);
 /*void alert(const char *format, ...); */
 
 bool kmap(const int key_code);
-
+/*
+const ALLEGRO_COLOR DB_BLACK = al_map_rgb(0, 0, 0);
+const ALLEGRO_COLOR DB_MIDNIGHT = al_map_rgb(34, 32, 52);
+const ALLEGRO_COLOR DB_DKVIOLET = al_map_rgb(69, 40, 60);
+const ALLEGRO_COLOR DB_DKBROWN = al_map_rgb(102, 57, 49);
+const ALLEGRO_COLOR DB_BROWN = al_map_rgb(143, 86, 59);
+const ALLEGRO_COLOR DB_ORANGE = al_map_rgb(223, 113, 38);
+const ALLEGRO_COLOR DB_LTORANGE = al_map_rgb(217, 160, 102);
+const ALLEGRO_COLOR DB_PEACH = al_map_rgb(238, 195, 154);
+const ALLEGRO_COLOR DB_YELLOW = al_map_rgb(251, 241, 54);
+const ALLEGRO_COLOR DB_LTGREEN = al_map_rgb(153, 229, 80);
+const ALLEGRO_COLOR DB_GREEN = al_map_rgb(106, 190, 48);
+const ALLEGRO_COLOR DB_GREENYBLUE = al_map_rgb(55, 148, 110);
+const ALLEGRO_COLOR DB_DKGREEN = al_map_rgb(75, 105, 47);
+const ALLEGRO_COLOR DB_DKOLIVE = al_map_rgb(82, 75, 36);
+const ALLEGRO_COLOR DB_DKBLAY = al_map_rgb(50, 60, 57);
+const ALLEGRO_COLOR DB_BLVIOLET = al_map_rgb(63, 63, 116);
+const ALLEGRO_COLOR DB_DKBLUE = al_map_rgb(48, 96, 130);
+const ALLEGRO_COLOR DB_BLUE = al_map_rgb(91, 110, 225);
+const ALLEGRO_COLOR DB_SKYBLUE = al_map_rgb(99, 155, 255);
+const ALLEGRO_COLOR DB_TURQUOISE = al_map_rgb(95, 205, 228);
+const ALLEGRO_COLOR DB_LTBLUE = al_map_rgb(203, 219, 252);
+const ALLEGRO_COLOR DB_WHITE = al_map_rgb(255, 255, 255);
+const ALLEGRO_COLOR DB_BLAY = al_map_rgb(155, 173, 183);
+const ALLEGRO_COLOR DB_VIOLETGRAY = al_map_rgb(132, 126, 135);
+const ALLEGRO_COLOR DB_GRAY = al_map_rgb(105, 106, 106);
+const ALLEGRO_COLOR DB_DKGRAY = al_map_rgb(89, 86, 82);
+const ALLEGRO_COLOR DB_PURPLE = al_map_rgb(118, 66, 138);
+const ALLEGRO_COLOR DB_RED = al_map_rgb(172, 50, 50);
+const ALLEGRO_COLOR DB_LIGHTISHRED = al_map_rgb(217, 87, 99);
+const ALLEGRO_COLOR DB_PINK = al_map_rgb(215, 123, 186);
+const ALLEGRO_COLOR DB_OLIVE = al_map_rgb(143, 151, 74);
+const ALLEGRO_COLOR DB_DKYELLOW = al_map_rgb(138, 111, 48);
+*/
 #endif

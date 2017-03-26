@@ -87,7 +87,10 @@ Vec2f Renderer::window2world(float x, float y){
 	float dispw = al_get_display_width(display);
 	float disph = al_get_display_height(display);
 	float scale = v.get_scale(dispw, disph);
-	return Vec2f(x - (dispw/2-(v.get_w()*scale)/2) + v.get_x(), y - (disph/2-(v.get_h()*scale)/2) + v.get_y()); 
+	return Vec2f(
+			(x - (dispw/2-(v.get_w()*scale/2)))/scale + v.get_x(),
+			(y - (disph/2-(v.get_h()*scale/2)))/scale + v.get_y()
+			);
 }
 
 

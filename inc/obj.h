@@ -1,5 +1,5 @@
-#ifndef __OBJ_H__
-#define __OBJ_H__
+#ifndef OBJ_H
+#define OBJ_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -111,7 +111,10 @@ class Dummy : public MobileObj {
 		virtual ~Dummy();
 		virtual void update();
 		virtual Box get_bbox() const;
+		virtual void draw();
 	protected:
+		typedef MobileObj super;
+		Sprite *spr_shadow;
 		
 };
 
@@ -137,6 +140,7 @@ class Player : public MobileObj {
 		typedef MobileObj super;
 		int score;
 		Sprite *sprites[6];
+		Sprite *spr_shadow;
 };
 
 #endif
