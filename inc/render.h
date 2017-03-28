@@ -15,7 +15,7 @@
 #include "sprite.h"
 #include "load.h"
 #include "level.h"
-#include "menu.h"
+
 
 class PhysicalObj;
 class View {
@@ -65,14 +65,14 @@ class Renderer {
 		ALLEGRO_TRANSFORM trans;
 		ALLEGRO_DISPLAY *display;
 		View v;
-		Pause pmenu;
+		World *world;
 
 		std::vector<VisibleObj*> visibles;
 		ALLEGRO_SHADER *scale_shader;
 
 		void depth_sort();
 		ALLEGRO_SHADER *create_scale_shader();
-		ALLEGRO_BITMAP *temp;
+		ALLEGRO_BITMAP *temp_buffer;
 };
 
 #endif

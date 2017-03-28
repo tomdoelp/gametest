@@ -43,7 +43,6 @@ typedef enum SNDNAME { SND_ACCEPT, SND_SELECT, SND_REJECT, SND_PAUSE, SND_TICK, 
 		void stop_music();
 		void clear_sounds();
 		void init();
-		void cleanup();
 	protected:
 		unsigned int depth;
 		ALLEGRO_VOICE *voice;

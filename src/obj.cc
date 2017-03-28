@@ -64,6 +64,10 @@ void PhysicalObj::displace(float dx, float dy) {
 	this->x += dx;
 	this->y += dy;
 }
+void PhysicalObj::displace(Vec2f disp) {
+	this->x += disp.get_x();
+	this->y += disp.get_y();
+}
 
 
 
@@ -98,7 +102,7 @@ void VisibleObj::draw() {
 			flags = flags | ALLEGRO_FLIP_VERTICAL;
 
 		sprite->sprite_draw(x,y,frame_index, flags);
-		if (!paused)
+		if (world && world->get_mode() == World::MODE_OVERWORLD)
 			frame_index += aspeed;
 		if (frame_index >= sprite->getframes() && !loop) {
 			aspeed = 0;
@@ -137,6 +141,9 @@ void MobileObj::update() {
 	y += dy;
 	depth = y; 
 }
+float MobileObj::get_dx() const { return dx; }
+float MobileObj::get_dy() const { return dy; }
+
 
 /* Dummy Object */
 Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SheetManager::SH_DUMMY)) {
@@ -146,9 +153,11 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 Dummy::~Dummy() {}
 
 void Dummy::update() {
-	if (get_bbox().check_collision(world->get_player()->get_bbox())) {
-		world->sndmgr->play_sound(SoundManager::SND_ACCEPT);
-		destroy();
+	Player *p = world->get_player();
+	if (get_bbox().check_collision(p->get_bbox())) {
+		world->sndmgr->play_sound(SoundManager::SND_ACCEPT); 
+		destroy(); 
+		
 	}
 }
 Box Dummy::get_bbox() const { return Box(x-w/2, y-h, w, h); }

@@ -1,4 +1,5 @@
 #include "render.h"
+#include "world.h"
 
 View::View() {}
 View::~View() {}
@@ -66,7 +67,7 @@ Renderer::Renderer() {}
 Renderer::~Renderer() {}
 Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 	scale_shader = create_scale_shader();
-	temp = NULL;
+	temp_buffer = NULL;
 }
 
 void Renderer::register_visible(VisibleObj *o) {
@@ -90,7 +91,7 @@ Vec2f Renderer::window2world(float x, float y){
 	return Vec2f(
 			(x - (dispw/2-(v.get_w()*scale/2)))/scale + v.get_x(),
 			(y - (disph/2-(v.get_h()*scale/2)))/scale + v.get_y()
-			);
+	);
 }
 
 
@@ -125,9 +126,9 @@ void Renderer::render(Map &m) {
 	al_translate_transform(&trans, -v.get_x(), -v.get_y());
 	al_use_transform(&trans);
 
-	if (temp) {
-		al_destroy_bitmap(temp);
-		temp = NULL;
+	if (temp_buffer) {
+		al_destroy_bitmap(temp_buffer);
+		temp_buffer = NULL;
 	}
 	al_clear_to_color(al_map_rgb(0,0,0));
 
@@ -139,16 +140,23 @@ void Renderer::render(Map &m) {
 	depth_sort();
 	int row = 0;
 	int tileh = m.tileh;
-	for (auto &o : visibles) {
-		int objrow = o->depth / tileh;
-		if (row < objrow) {
-			for (int i = row; i <= objrow; i++) {
-				m.draw_row_region(0,0,i,LAYER_MIXED, vbox);
+
+	/* Don't draw overworld objects during a battle */
+	if (world->mode == World::MODE_BATTLE) {
+		m.draw_layer_region(0,0,LAYER_MIXED, vbox);
+	}
+	else {
+		for (auto &o : visibles) {
+			int objrow = o->depth / tileh;
+			if (row < objrow) {
+				for (int i = row; i <= objrow; i++) {
+					m.draw_row_region(0,0,i,LAYER_MIXED, vbox);
+				}
+				o->draw();
+				row = objrow;
+			} else {
+				o->draw();
 			}
-			o->draw();
-			row = objrow;
-		} else {
-			o->draw();
 		}
 	}
 	/* draw the rest of the mixed layer */
@@ -158,8 +166,20 @@ void Renderer::render(Map &m) {
 	/* draw the entire forground layer afterwards */
 	m.draw_layer(0,0,LAYER_FOREGROUND);
 
-	if (paused)
-		pmenu.draw(v.get_x()+v.get_w()/2, v.get_y()+v.get_h()/2);
+	/* Draw the overlay, if there should be one. */
+	switch(world->mode){
+		case World::MODE_PAUSE:
+			world->pmenu.draw(v.get_x()+v.get_w()/2, v.get_y()+v.get_h()/2);
+			break;
+		case World::MODE_TEXT:
+			world->textbox.draw(v.get_x(), v.get_y());
+			break;
+		case World::MODE_BATTLE:
+			/* world->battle.draw(v.get_x(), v.get_y()) */
+			break;
+		default:
+			break;
+	}
 
 	al_set_target_backbuffer(display);
 	al_clear_to_color(al_map_rgb(0,0,0));

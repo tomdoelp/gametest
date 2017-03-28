@@ -11,6 +11,7 @@
 #include "level.h"
 #include "obj.h"
 #include "render.h"
+#include "menu.h"
 
 /*
 class Map;
@@ -21,8 +22,9 @@ class Renderer;
 */
 
 class World {
+	friend class Renderer;
 	public:
-		typedef enum mode {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_SCENE} Mode;
+		typedef enum WORLD_MODE {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_TEXT, MODE_SCENE} WorldMode;
 		World(Renderer *r);
 		virtual ~World();
 
@@ -32,6 +34,8 @@ class World {
 		void register_object(Obj *o);
 		void render();
 		void set_view_focus(PhysicalObj *o);
+		void set_mode(WorldMode mode);
+		WorldMode get_mode();
 
 		Player *get_player();
 		void set_player(Player *p);
@@ -63,6 +67,9 @@ class World {
 		void queue_destroy(Obj *o);
 		void queue_destroy_visible(VisibleObj *o);
 
+		void show_text(const char *msg);
+		void stop_text();
+
 		SoundManager *sndmgr;
 	protected:
 		Map *m;
@@ -76,7 +83,11 @@ class World {
 		std::vector<PhysicalObj *> physicals;
 		std::vector<Obj *> dead_objects;
 		std::vector<VisibleObj *> dead_visibles;
-		Mode current_mode;
+		WorldMode mode;
+
+		Pause pmenu;
+		Textbox textbox;
+
 };
 
 #endif

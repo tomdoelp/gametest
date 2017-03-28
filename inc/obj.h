@@ -52,14 +52,15 @@ class PhysicalObj : public Obj {
 		PhysicalObj(float x=0.0f, float y=0.0f, float w=0, float h=0);
 /*		PhysicalObj(World *world, float x=0.0f, float y=0.0f, float w=0, float h=0); */
 		virtual ~PhysicalObj();
-		virtual float get_x() const;
-		virtual float get_y() const;
-		virtual float get_w() const;
-		virtual float get_h() const;
+		float get_x() const;
+		float get_y() const;
+		float get_w() const;
+		float get_h() const;
 		virtual Box get_bbox() const;
 
-		virtual void set_position(float x=0.0f, float y=0.0f);
-		virtual void displace(float dx=0.0f, float dy=0.0f);
+		void set_position(float x=0.0f, float y=0.0f);
+		void displace(float dx=0.0f, float dy=0.0f);
+		void displace(Vec2f disp);
 	protected:
 		typedef Obj super;
 		float x, y;
@@ -74,6 +75,7 @@ class VisibleObj : public PhysicalObj {
 		VisibleObj(float x=0.0f, float y=0.0f, float w=16.0f, float h=16.0f, int depth=0, SpriteSheet *s=NULL);
 /*		VisibleObj(World *world, float x=0.0f, float y=0.0f, float w=0.0f, float h=0.0f, int depth=0, SpriteSheet *s=NULL); */
 		virtual ~VisibleObj();
+
 		virtual void draw();
 		virtual bool destroy();
 		bool operator<(const VisibleObj &rhs);
@@ -97,6 +99,8 @@ class MobileObj : public VisibleObj {
 		MobileObj(float x=0.0f, float y=0.0f, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL);
 /*		MobileObj(World *world, float x=0.0f, float y=0.0f, float w=0, float h=0, int depth=0, SpriteSheet *s=NULL); */
 		virtual ~MobileObj();
+		float get_dx() const;
+		float get_dy() const;
 		virtual void update();
 	protected:
 		typedef enum compassdirs {DIR_N, DIR_NE, DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW} CompassDir;

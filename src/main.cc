@@ -19,16 +19,13 @@ bool done;
 ALLEGRO_EVENT_QUEUE* event_queue;
 ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
-ALLEGRO_FONT *font;
+ALLEGRO_FONT *font_tamsyn12;
 D(ALLEGRO_FONT *debug_font;)
 bool key[ALLEGRO_KEY_MAX];
 bool key_press[ALLEGRO_KEY_MAX];
 int key_map[ALLEGRO_KEY_MAX];
 int screen_scale = 0;
 bool paused = false;
-
-/*SoundManager snd(AUDIO_DEPTH_GOOD); */
-/*SoundManager snd(AUDIO_DEPTH_SHIT); */
 
 void init() {
 	/* fill keyboard array with false */
@@ -77,7 +74,7 @@ void init() {
 		abort("Failed to install audio");
 	if (!al_init_acodec_addon())
 		abort("Failed to initialize audio codecs");
-	if (!al_reserve_samples(4)) 
+	if (!al_reserve_samples(8)) 
 		abort("Failed to reserve samples"); 
 
 	/* Fonts */
@@ -86,12 +83,12 @@ void init() {
 /*	font = al_create_builtin_font();  */
 	int ranges[] = {32, 126};
 	ALLEGRO_BITMAP *temp = al_load_bitmap("./res/fonts/Tamsyn12b.tga");
-	font = al_grab_font_from_bitmap(temp, 1, ranges);
+	font_tamsyn12 = al_grab_font_from_bitmap(temp, 1, ranges);
 	D(debug_font = al_create_builtin_font();)
 	al_destroy_bitmap(temp);
-	if (!font){
+	if (!font_tamsyn12){
 		LOG("Failed to load font");
-		font = al_create_builtin_font();  
+		font_tamsyn12 = al_create_builtin_font();  
 	}
 
 	/* Event sources */
@@ -113,8 +110,8 @@ void shutdown() {
 	if (event_queue)
 		al_destroy_event_queue(event_queue);
 
-	if (font) 
-		al_destroy_font(font);
+	if (font_tamsyn12) 
+		al_destroy_font(font_tamsyn12);
 
 	D(if (debug_font) al_destroy_font(debug_font);)
 
@@ -134,27 +131,6 @@ void game_loop() {
 
 	bool redraw = true;
 	al_start_timer(timer);
-
-	/* SOUND STUFF */
-/*	ALLEGRO_SAMPLE *sample = load_sound("./res/okdesuka.wav"); */
-/*	al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL); */
-
-/*
-	ALLEGRO_VOICE *voice = al_create_voice(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
-	ALLEGRO_MIXER *music_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
-	ALLEGRO_MIXER *master_mixer = al_create_mixer(audiodepth, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2); 
-	al_attach_mixer_to_mixer(music_mixer, master_mixer); 
-	al_attach_mixer_to_voice(master_mixer, voice); 
-
-	ALLEGRO_AUDIO_STREAM *song = load_stream( "./res/music/offbeat.xm", 8, 4096); 
-
-	if (song) {
-		al_attach_audio_stream_to_mixer(song, music_mixer);
-		al_set_audio_stream_playmode(song, ALLEGRO_PLAYMODE_LOOP);
-		al_set_audio_stream_gain(song, 0.7f);
-		al_set_audio_stream_playing(song, true); 
-	}
-*/
 
 	/* MAP AND WORLD */	
 	View v(SCREEN_W, SCREEN_H, display);
@@ -191,8 +167,6 @@ void game_loop() {
 				key[event.keyboard.keycode] = true;
 				key_press[event.keyboard.keycode] = true;
 
-				if (key[ALLEGRO_KEY_ESCAPE]) 
-					paused = !paused;
 
 #if DEBUG
 				if (key[ALLEGRO_KEY_0]) {
@@ -217,15 +191,19 @@ void game_loop() {
 				}
 
 				/*
-				if (key[ALLEGRO_KEY_PAD_PLUS]) {
-					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) + 0.1f);
-				}
-				if (key[ALLEGRO_KEY_PAD_MINUS]) {
-					al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) - 0.1f);
-				}
-*/
+				   if (key[ALLEGRO_KEY_PAD_PLUS]) {
+				   al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) + 0.1f);
+				   }
+				   if (key[ALLEGRO_KEY_PAD_MINUS]) {
+				   al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) - 0.1f);
+				   }
+				   */
 				if (key[ALLEGRO_KEY_M]) {
 					world.load_map("./res/maps/bigtest2.tmx");
+				}
+
+				if (key_press[ALLEGRO_KEY_N]) {
+					world.show_text("This is a test of the emergency broadcast system. Hopefully, the text will pause a little bit at commas and a longer bit at the end of sentences. Will it work? I hope so!");
 				}
 #endif
 				break;
@@ -278,5 +256,5 @@ int main(int argc, char* argv[]) {
 	LOG(std::endl << "shutting down\n----------------");
 	shutdown();
 
-	/*	return 0; */
+	return 0;
 }

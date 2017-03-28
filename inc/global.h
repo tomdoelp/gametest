@@ -55,7 +55,7 @@ extern bool done;
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_DISPLAY* display;
-extern ALLEGRO_FONT *font;
+extern ALLEGRO_FONT *font_tamsyn12;
 extern int screen_scale;
 
 extern bool key[ALLEGRO_KEY_MAX];
@@ -65,6 +65,7 @@ extern bool key_press[ALLEGRO_KEY_MAX];
 extern bool paused;
 
 /*extern SoundManager snd; */
+/* something is fucky with externs so let's try to avoid */
 
 void abort(const char *format, ...);
 /*void alert(const char *format, ...); */
