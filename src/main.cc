@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -19,7 +20,8 @@ bool done;
 ALLEGRO_EVENT_QUEUE* event_queue;
 ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
-ALLEGRO_FONT *font_tamsyn12;
+ALLEGRO_FONT *font_tamsyn;
+ALLEGRO_FONT *font_tamsynb;
 D(ALLEGRO_FONT *debug_font;)
 bool key[ALLEGRO_KEY_MAX];
 bool key_press[ALLEGRO_KEY_MAX];
@@ -28,6 +30,10 @@ int screen_scale = 0;
 bool paused = false;
 
 void init() {
+	/* ranomd seed */
+	srand(time(NULL));
+
+
 	/* fill keyboard array with false */
 	for (int i = 0; i < ALLEGRO_KEY_MAX; i++) {
 		key[i] = false;
@@ -80,15 +86,16 @@ void init() {
 	/* Fonts */
 	if (!al_init_font_addon())
 		abort("Failed to initialize font addon");
-/*	font = al_create_builtin_font();  */
-	int ranges[] = {32, 126};
-	ALLEGRO_BITMAP *temp = al_load_bitmap("./res/fonts/Tamsyn12b.tga");
-	font_tamsyn12 = al_grab_font_from_bitmap(temp, 1, ranges);
+/*	int ranges[] = {32, 126}; */
+/*	ALLEGRO_BITMAP *temp = al_load_bitmap("./res/fonts/Tamsyn12b.tga"); */
+/*	font_tamsyn = al_grab_font_from_bitmap(temp, 1, ranges); */
+	font_tamsyn = al_load_font("./res/fonts/Tamsyn14.tga", 0, 0);
+	font_tamsynb = al_load_font("./res/fonts/Tamsyn14b.tga", 0, 0);
 	D(debug_font = al_create_builtin_font();)
-	al_destroy_bitmap(temp);
-	if (!font_tamsyn12){
+/*	al_destroy_bitmap(temp); */
+	if (!font_tamsyn){
 		LOG("Failed to load font");
-		font_tamsyn12 = al_create_builtin_font();  
+		font_tamsyn = al_create_builtin_font();  
 	}
 
 	/* Event sources */
@@ -110,8 +117,8 @@ void shutdown() {
 	if (event_queue)
 		al_destroy_event_queue(event_queue);
 
-	if (font_tamsyn12) 
-		al_destroy_font(font_tamsyn12);
+	if (font_tamsyn) 
+		al_destroy_font(font_tamsyn);
 
 	D(if (debug_font) al_destroy_font(debug_font);)
 
@@ -139,7 +146,7 @@ void game_loop() {
 
 	/* Load a map from a file */
 	world.load_map("./res/maps/bigtest.tmx");
-	world.sndmgr->play_music(SoundManager::MUS_TEST);
+	world.sndmgr->play_music(SoundManager::MUS_TEST); 
 
 	/* Events */
 	while (!done) {
@@ -203,7 +210,7 @@ void game_loop() {
 				}
 
 				if (key_press[ALLEGRO_KEY_N]) {
-					world.show_text("This is a test of the emergency broadcast system. Hopefully, the text will pause a little bit at commas and a longer bit at the end of sentences. Will it work? I hope so!");
+					world.show_text("This is a test of the emergency broadcast system. Hopefully, the text will pause a little bit at commas and a longer bit at the end of sentences. Will it work? I hope so!"); 
 				}
 #endif
 				break;

@@ -106,14 +106,14 @@ void SoundManager::init(){
 /*	al_set_default_mixer(sound_mixer); */
 
 	const char *fnames[] = {
-		"./res/samples/okdesuka.wav",
-/*		"./res/samples/accept.wav", */
+		"./res/samples/accept.wav", 
 		"./res/samples/select.wav",
 		"./res/samples/reject.wav",
 		"/home/tom/sounds/earthbound/itemget1.wav",
 /*		"./res/samples/pause.wav", */
 		"./res/samples/tick.wav",
-		"./res/samples/collect.wav"
+		"./res/samples/okdesuka.wav",
+/*		"./res/samples/collect.wav" */
 	};
 
 	for(int i =0; i < SND_NUM; i++){
@@ -143,15 +143,16 @@ ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music) {
 	if (current_song) {
 		al_attach_audio_stream_to_mixer(current_song, music_mixer);
 		al_set_audio_stream_playmode(current_song, ALLEGRO_PLAYMODE_LOOP);
-		al_set_audio_stream_gain(current_song, 0.7f);
+		al_set_audio_stream_gain(current_song, 0.4f);
 		al_set_audio_stream_playing(current_song, true);
 	}
 
 	return current_song;
 }
-ALLEGRO_SAMPLE_INSTANCE *SoundManager::play_sound(SoundName sound, float pan) {
-	al_play_sample(samples[sound], 1.0f, pan, 1.0f, ALLEGRO_PLAYMODE_ONCE, NULL);
-	return NULL;
+ALLEGRO_SAMPLE_ID SoundManager::play_sound(SoundName sound, float speed, float pan) {
+	ALLEGRO_SAMPLE_ID id;
+	al_play_sample(samples[sound], 1.0f, pan, speed, ALLEGRO_PLAYMODE_ONCE, &id);
+	return id;
 	/*
 	ALLEGRO_SAMPLE_INSTANCE *instance = al_create_sample_instance(samples[sound]);
 	if (instance) {
@@ -170,8 +171,11 @@ void SoundManager::stop_music(){
 }
 
 SoundManager::~SoundManager() {
-	al_drain_audio_stream(current_song); 
-	al_destroy_audio_stream(current_song);
+	if (current_song) {
+		al_drain_audio_stream(current_song); 
+		al_destroy_audio_stream(current_song);
+		current_song = NULL;
+	}
 
 	for (auto& s : samples) {
 		al_destroy_sample(s);

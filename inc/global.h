@@ -55,7 +55,8 @@ extern bool done;
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_DISPLAY* display;
-extern ALLEGRO_FONT *font_tamsyn12;
+extern ALLEGRO_FONT *font_tamsyn;
+extern ALLEGRO_FONT *font_tamsynb;
 extern int screen_scale;
 
 extern bool key[ALLEGRO_KEY_MAX];
