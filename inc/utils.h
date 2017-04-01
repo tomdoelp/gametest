@@ -5,11 +5,15 @@
 #include <stdio.h>
 #include <iostream>
 #include <math.h> // link with -lm ?
+#include <vector>
+#include <string>
 
 	#include <allegro5/allegro.h>
 	#include <allegro5/allegro_primitives.h>
 
 #include "global.h"
+
+std::vector<std::string> split(const char *str, char c=' ');
 
 class Vec2f {
 	public:

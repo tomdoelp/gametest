@@ -111,7 +111,7 @@ void SoundManager::init(){
 		"./res/samples/reject.wav",
 		"/home/tom/sounds/earthbound/itemget1.wav",
 /*		"./res/samples/pause.wav", */
-		"./res/samples/tick.wav",
+		"./res/samples/tick2.wav",
 		"./res/samples/okdesuka.wav",
 /*		"./res/samples/collect.wav" */
 	};

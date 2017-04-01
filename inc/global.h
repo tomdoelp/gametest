@@ -25,6 +25,12 @@
 #endif	
 
 #if defined(DEBUG) && DEBUG > 0
+#	define LOGF(...) do { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while(0)
+#else
+#	define LOGF(...)
+#endif
+
+#if defined(DEBUG) && DEBUG > 0
 #	define D(x) x
 #else
 #	define D(x)

@@ -89,8 +89,8 @@ void init() {
 /*	int ranges[] = {32, 126}; */
 /*	ALLEGRO_BITMAP *temp = al_load_bitmap("./res/fonts/Tamsyn12b.tga"); */
 /*	font_tamsyn = al_grab_font_from_bitmap(temp, 1, ranges); */
-	font_tamsyn = al_load_font("./res/fonts/Tamsyn14.tga", 0, 0);
-	font_tamsynb = al_load_font("./res/fonts/Tamsyn14b.tga", 0, 0);
+	font_tamsyn = al_load_font("./res/fonts/Tamsyn15.tga", 0, 0);
+	font_tamsynb = al_load_font("./res/fonts/Tamsyn15b.tga", 0, 0);
 	D(debug_font = al_create_builtin_font();)
 /*	al_destroy_bitmap(temp); */
 	if (!font_tamsyn){
@@ -146,7 +146,7 @@ void game_loop() {
 
 	/* Load a map from a file */
 	world.load_map("./res/maps/bigtest.tmx");
-	world.sndmgr->play_music(SoundManager::MUS_TEST); 
+/*	world.sndmgr->play_music(SoundManager::MUS_TEST);  */
 
 	/* Events */
 	while (!done) {
@@ -210,7 +210,7 @@ void game_loop() {
 				}
 
 				if (key_press[ALLEGRO_KEY_N]) {
-					world.show_text("This is a test of the emergency broadcast system. Hopefully, the text will pause a little bit at commas and a longer bit at the end of sentences. Will it work? I hope so!"); 
+					world.show_text("Lorem ipsum, yo. This is a test of the emergency broadcast system. Hopefully, this will work. I have to write a lot of text to make sure, so this is just some FILLER to make sure that this text is long enough to require multiple parts to display all of it!!!"); 
 				}
 #endif
 				break;

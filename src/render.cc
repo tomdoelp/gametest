@@ -67,7 +67,7 @@ Renderer::Renderer() {}
 Renderer::~Renderer() {}
 Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 	scale_shader = create_scale_shader();
-	temp_buffer = NULL;
+	temp_buffer = al_create_bitmap(v.get_w(), v.get_h());
 }
 
 void Renderer::register_visible(VisibleObj *o) {
@@ -119,6 +119,9 @@ void Renderer::set_view_focus(PhysicalObj *o) {
 }
 
 void Renderer::render(Map &m) {
+	al_set_target_bitmap(temp_buffer);
+	al_draw_bitmap(v.get_buffer(), 0.0f, 0.0f, 0);
+
 /*	std::vector<VisibleObj*> row_objs; */
 	al_set_target_bitmap(v.get_buffer());
 
@@ -126,10 +129,6 @@ void Renderer::render(Map &m) {
 	al_translate_transform(&trans, -v.get_x(), -v.get_y());
 	al_use_transform(&trans);
 
-	if (temp_buffer) {
-		al_destroy_bitmap(temp_buffer);
-		temp_buffer = NULL;
-	}
 	al_clear_to_color(al_map_rgb(0,0,0));
 
 	Box vbox = v.get_view_box();
@@ -180,6 +179,9 @@ void Renderer::render(Map &m) {
 		default:
 			break;
 	}
+
+/*	float a = 0.5; */
+/*	al_draw_tinted_bitmap(temp_buffer, al_map_rgba_f(a,a,a,a), v.get_x(), v.get_y(), 0); */
 
 	al_set_target_backbuffer(display);
 	al_clear_to_color(al_map_rgb(0,0,0));
