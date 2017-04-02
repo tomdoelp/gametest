@@ -71,7 +71,7 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 			break;
 
 		case SH_DUMMY:
-			SheetList[sheet] = new SpriteSheet("./res/sprites/dummy/dummy.png", "./res/sprites/dummy/dummy.json");
+			SheetList[sheet] = new SpriteSheet("./res/sprites/dummy/dummy2.png", "./res/sprites/dummy/dummy2.json");
 			break;
 		default:
 			break;

@@ -114,7 +114,7 @@ class MobileObj : public VisibleObj {
 		float get_dy() const;
 		virtual void update();
 
-		void face_point(float x, float y);
+		void face_point(float ox, float oy);
 
 		virtual ObjType get_type() const;
 	protected:
@@ -161,10 +161,10 @@ class Player : public MobileObj {
 		virtual ObjType get_type() const;
 	protected:
 		int spritenum;
-		typedef enum pose {SPR_STAND, SPR_WALK_DOWN, SPR_WALK_DOWN_RIGHT, SPR_WALK_RIGHT, SPR_WALK_UP, SPR_WALK_UP_RIGHT} Pose;
+		typedef enum pose {SPR_STAND, SPR_WALK_DOWN, SPR_WALK_DOWN_RIGHT, SPR_WALK_RIGHT, SPR_WALK_UP, SPR_WALK_UP_RIGHT, SPRNUM} Pose;
 		typedef MobileObj super;
 		int score;
-		Sprite *sprites[6];
+		Sprite *sprites[SPRNUM];
 		Sprite *spr_shadow;
 };
 

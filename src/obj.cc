@@ -147,12 +147,55 @@ void MobileObj::update() {
 float MobileObj::get_dx() const { return dx; }
 float MobileObj::get_dy() const { return dy; }
 ObjType MobileObj::get_type() const { return OBJ_MOBILE; }
+void MobileObj::face_point(float ox, float oy) {
+	float slope = ((oy-y)/(ox-x));
+	bool right = ox > x;
+
+	if ((slope < 0.57f && slope > 0) ||
+		(slope > -0.57f && slope < 0)) {
+		if (right)
+			direction = DIR_E;
+		else
+			direction = DIR_W;
+	}
+
+	if (slope > 0.57f && slope < 1.73f) {
+			if (right)
+				direction = DIR_SE;
+			else
+				direction = DIR_NW;
+	}
+
+	if (slope > 1.73f) {
+		if (right)
+			direction = DIR_S;
+		else
+			direction = DIR_N;
+	}
+
+	if (slope < -1.73f) {
+		if (right)
+			direction = DIR_N;
+		else
+			direction = DIR_S;
+	}
+
+	if (slope < -0.57f && slope > -1.73f) {
+		if (right)
+			direction = DIR_NE;
+		else
+			direction = DIR_SW;
+	}
+}
+
+
 
 
 /* Dummy Object */
 Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SheetManager::SH_DUMMY)) {
 	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
+	aspeed = 0;
 }
 Dummy::~Dummy() {}
 
@@ -168,13 +211,25 @@ void Dummy::update() {
 }
 Box Dummy::get_bbox() const { return Box(x-w/2, y-h, w, h); }
 void Dummy::draw() {
+	if (sprite) {
+		if (aspeed == 0)
+			frame_index = direction;
+
 		spr_shadow->sprite_draw(x,y+1,0.0f);
+
 		super::draw();
+	}
+	else
+		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
 }
 ObjType Dummy::get_type() const { return OBJ_DUMMY; }
 void Dummy::interact() {
-	if (world)
+	if (world) {
+		Player *p = world->get_player();
+		face_point(p->get_x(), p->get_y());
+		p->face_point(x,y);
 		world->show_text(mymsg);
+	}
 }
 
 
