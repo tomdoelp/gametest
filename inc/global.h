@@ -7,7 +7,7 @@
 #include <errno.h>
 
 #define DEBUG 1
-#define DEBUG_DRAW 1
+#define DEBUG_DRAW 0
 
 #define MIN(a, b) ((a < b) ? a : b)
 #define MAX(a, b) ((a > b) ? a : b)

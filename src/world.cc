@@ -41,7 +41,6 @@ bool World::obj_collision(PhysicalObj *a, PhysicalObj *b) {
 Vec2f World::get_object_collision_vec(Box now, Box next, ObjType t) {
 	for (auto& o : objects) {
 		if (o->is_active() && o->get_type() == t) {
-			LOG("BAD TOUCH");
 			Vec2f intersect;
 
 			float boxw = next.get_w();
@@ -58,7 +57,8 @@ Vec2f World::get_object_collision_vec(Box now, Box next, ObjType t) {
 				intersect.set_x(0.0f);
 			}
 
-			return intersect;
+			if (intersect != 0.0f)
+				return intersect;
 		}
 	}
 
