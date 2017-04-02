@@ -10,6 +10,8 @@
 #include "sprite.h"
 #include "level.h"
 
+typedef enum OBJTYPE { OBJ, OBJ_PHYSICAL, OBJ_VISIBLE, OBJ_MOBILE, OBJ_DUMMY, OBJ_PLAYER, OBJNUM} ObjType;
+
 class World;
 class VisibleObj;
 /* Basic object. Holds the total number of instances, an id, and can update (nop) */
@@ -37,6 +39,9 @@ class Obj {
 
 		bool operator ==(const Obj &rhs);
 		bool operator !=(const Obj &rhs);
+
+		virtual ObjType get_type() const;
+
 	protected:
 		World *world;
 		bool active;
@@ -61,6 +66,8 @@ class PhysicalObj : public Obj {
 		void set_position(float x=0.0f, float y=0.0f);
 		void displace(float dx=0.0f, float dy=0.0f);
 		void displace(Vec2f disp);
+
+		virtual ObjType get_type() const;
 	protected:
 		typedef Obj super;
 		float x, y;
@@ -80,6 +87,8 @@ class VisibleObj : public PhysicalObj {
 		virtual bool destroy();
 		bool operator<(const VisibleObj &rhs);
 		int depth;
+
+		virtual ObjType get_type() const;
 	protected:
 		typedef PhysicalObj super;
 		bool loop;
@@ -102,6 +111,10 @@ class MobileObj : public VisibleObj {
 		float get_dx() const;
 		float get_dy() const;
 		virtual void update();
+
+		void face_point(float x, float y);
+
+		virtual ObjType get_type() const;
 	protected:
 		typedef enum compassdirs {DIR_N, DIR_NE, DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW} CompassDir;
 		CompassDir direction;
@@ -116,6 +129,8 @@ class Dummy : public MobileObj {
 		virtual void update();
 		virtual Box get_bbox() const;
 		virtual void draw();
+
+		virtual ObjType get_type() const;
 	protected:
 		typedef MobileObj super;
 		Sprite *spr_shadow;
@@ -138,6 +153,7 @@ class Player : public MobileObj {
 
 		virtual Box get_bbox() const;
 
+		virtual ObjType get_type() const;
 	protected:
 		int spritenum;
 		typedef enum pose {SPR_STAND, SPR_WALK_DOWN, SPR_WALK_DOWN_RIGHT, SPR_WALK_RIGHT, SPR_WALK_UP, SPR_WALK_UP_RIGHT} Pose;

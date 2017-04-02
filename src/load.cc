@@ -149,9 +149,9 @@ ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music) {
 
 	return current_song;
 }
-ALLEGRO_SAMPLE_ID SoundManager::play_sound(SoundName sound, float speed, float pan) {
+ALLEGRO_SAMPLE_ID SoundManager::play_sound(SoundName sound, float gain, float speed, float pan) {
 	ALLEGRO_SAMPLE_ID id;
-	al_play_sample(samples[sound], 1.0f, pan, speed, ALLEGRO_PLAYMODE_ONCE, &id);
+	al_play_sample(samples[sound], gain, pan, speed, ALLEGRO_PLAYMODE_ONCE, &id);
 	return id;
 	/*
 	ALLEGRO_SAMPLE_INSTANCE *instance = al_create_sample_instance(samples[sound]);

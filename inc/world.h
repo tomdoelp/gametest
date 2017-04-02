@@ -43,6 +43,8 @@ class World {
 		bool obj_collision(Obj *a, Obj *b);
 		bool obj_collision(PhysicalObj *a, PhysicalObj *b);
 
+		Vec2f get_object_collision_vec(Box now, Box next, ObjType t);
+
 		void load_map(const char* fname);
 
 		/*

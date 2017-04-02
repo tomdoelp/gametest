@@ -146,7 +146,7 @@ void game_loop() {
 
 	/* Load a map from a file */
 	world.load_map("./res/maps/bigtest.tmx");
-/*	world.sndmgr->play_music(SoundManager::MUS_TEST);  */
+	world.sndmgr->play_music(SoundManager::MUS_TEST);  
 
 	/* Events */
 	while (!done) {

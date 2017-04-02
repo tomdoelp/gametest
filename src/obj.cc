@@ -28,6 +28,8 @@ bool Obj::is_active() const { return active; }
 void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
 bool Obj::is_persistent() const { return persistent; }
 
+ObjType Obj::get_type() const { return OBJ; }
+
 int Obj::objtotal = 0;
 
 int Obj::get_id() const { return id; }
@@ -55,6 +57,7 @@ float PhysicalObj::get_y() const { return y; }
 float PhysicalObj::get_w() const { return w; }
 float PhysicalObj::get_h() const { return h; }
 Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
+ObjType PhysicalObj::get_type() const { return OBJ_PHYSICAL; }
 
 void PhysicalObj::set_position(float x, float y) {
 	this->x = x;
@@ -89,10 +92,8 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteShee
 }
 
 VisibleObj::~VisibleObj() {}
+ObjType VisibleObj::get_type() const { return OBJ_VISIBLE; }
 void VisibleObj::draw() {
-#if DEBUG_DRAW
-	get_bbox().draw(al_map_rgb(0,255,0));
-#endif
 
 	if (sprite){
 		int flags = 0;
@@ -113,6 +114,7 @@ void VisibleObj::draw() {
 		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,0,125));	
 
 #if DEBUG_DRAW
+	get_bbox().draw(al_map_rgb(0,255,0));
 	al_draw_filled_rectangle(x-1,y-1,x+1,y+1,al_map_rgb(0,0,0));
 #endif
 }
@@ -143,6 +145,7 @@ void MobileObj::update() {
 }
 float MobileObj::get_dx() const { return dx; }
 float MobileObj::get_dy() const { return dy; }
+ObjType MobileObj::get_type() const { return OBJ_MOBILE; }
 
 
 /* Dummy Object */
@@ -153,18 +156,21 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 Dummy::~Dummy() {}
 
 void Dummy::update() {
+	/*
 	Player *p = world->get_player();
 	if (get_bbox().check_collision(p->get_bbox())) {
 		world->sndmgr->play_sound(SoundManager::SND_ACCEPT); 
 		destroy(); 
 		
 	}
+	*/
 }
 Box Dummy::get_bbox() const { return Box(x-w/2, y-h, w, h); }
 void Dummy::draw() {
 		spr_shadow->sprite_draw(x,y+1,0.0f);
 		super::draw();
 }
+ObjType Dummy::get_type() const { return OBJ_DUMMY; }
 
 
 
@@ -186,6 +192,7 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
 
 }
+ObjType Player::get_type() const { return OBJ_PLAYER; }
 Player::~Player() {
 	if (world) {
 		world->set_player(NULL);
@@ -288,6 +295,9 @@ void Player::update() {
 	/* Tile collision handling */
 	if (world && (dx != 0 || dy != 0)) {
 		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
+		if (intersection.get_x() == 0 && intersection.get_y() == 0) {
+			intersection = world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY);
+		}
 		dx += intersection.get_x();
 		dy += intersection.get_y();
 	}
@@ -306,8 +316,8 @@ void Player::map_start(){
 
 void Player::draw() {
 #if DEBUG_DRAW
-	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy)))
-		b.draw(al_map_rgb(128,0,0));
+/*	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy))) */
+/*		b.draw(al_map_rgb(128,0,0)); */
 #endif
 
 	if (sprite) {

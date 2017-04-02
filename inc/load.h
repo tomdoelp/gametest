@@ -38,7 +38,7 @@ typedef enum SNDNAME { SND_ACCEPT, SND_SELECT, SND_REJECT, SND_PAUSE, SND_TICK, 
 		SoundManager(unsigned int depth);
 		~SoundManager();
 
-		ALLEGRO_SAMPLE_ID play_sound(SoundName sound, float speed=1.0f, float pan = ALLEGRO_AUDIO_PAN_NONE);
+		ALLEGRO_SAMPLE_ID play_sound(SoundName sound, float gain=1.0f, float speed=1.0f, float pan = ALLEGRO_AUDIO_PAN_NONE);
 		ALLEGRO_AUDIO_STREAM *play_music(MusicName music);
 		void stop_music();
 		void clear_sounds();

@@ -38,6 +38,34 @@ bool World::obj_collision(PhysicalObj *a, PhysicalObj *b) {
 	return a->get_bbox().check_collision(b->get_bbox());
 }
 
+Vec2f World::get_object_collision_vec(Box now, Box next, ObjType t) {
+	for (auto& o : objects) {
+		if (o->is_active() && o->get_type() == t) {
+			LOG("BAD TOUCH");
+			Vec2f intersect;
+
+			float boxw = next.get_w();
+			float boxh = next.get_h();
+			float intersect_h = Box(next.get_x(), now.get_y(), boxw, boxh).get_collision_vec(o->get_bbox()).get_x();
+			float intersect_v = Box(now.get_x(), next.get_y(), boxw, boxh).get_collision_vec(o->get_bbox()).get_y();
+			if (intersect_h != 0.0f) {
+				intersect.set_x(intersect_h);
+			}
+			if (intersect_v != 0.0f) {
+				intersect.set_y(intersect_v); 
+			}
+			if ((intersect_h == intersect_v || -intersect_h == intersect_v ) && intersect_h != 0.0f){
+				intersect.set_x(0.0f);
+			}
+
+			return intersect;
+		}
+	}
+
+	return Vec2f(0.0f, 0.0f);
+}
+
+
 void World::update() {
 	if (key_press[ALLEGRO_KEY_ESCAPE]) {
 		if (mode == World::MODE_OVERWORLD) {
@@ -65,19 +93,19 @@ void World::update() {
 		default:
 			break;
 	}
-		
-/*		for (auto &o : objects) { 
-			if (o->is_active()){
-				for (auto &other : objects) {
-					if (other->is_active() && *o != *other && obj_collision(o,other)) {
-						other->collide(o);
-					}
-				}
-			}
-		}
-		*/
 
-		/* double dispatch ? ? ? */
+	/*		for (auto &o : objects) { 
+			if (o->is_active()){
+			for (auto &other : objects) {
+			if (other->is_active() && *o != *other && obj_collision(o,other)) {
+			other->collide(o);
+			}
+			}
+			}
+			}
+			*/
+
+	/* double dispatch ? ? ? */
 
 }
 
