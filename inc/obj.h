@@ -27,6 +27,7 @@ class Obj {
 		virtual void map_end();
 		virtual bool destroy();
 /*		virtual void collide(Obj *other); */
+		virtual void interact();
 		
 
 		void set_active(bool active);
@@ -36,6 +37,7 @@ class Obj {
 		bool is_persistent() const;
 		int get_id() const;
 		virtual Box get_bbox() const;
+		float distance_from_point(float x, float y);
 
 		bool operator ==(const Obj &rhs);
 		bool operator !=(const Obj &rhs);
@@ -131,9 +133,12 @@ class Dummy : public MobileObj {
 		virtual void draw();
 
 		virtual ObjType get_type() const;
+
+		virtual void interact();
 	protected:
 		typedef MobileObj super;
 		Sprite *spr_shadow;
+		const char *mymsg = "If you can read this, then object interaction is working!";
 		
 };
 

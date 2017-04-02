@@ -43,6 +43,7 @@ class World {
 		bool obj_collision(Obj *a, Obj *b);
 		bool obj_collision(PhysicalObj *a, PhysicalObj *b);
 
+		void interact_with_object(Box b);
 		Vec2f get_object_collision_vec(Box now, Box next, ObjType t);
 
 		void load_map(const char* fname);
@@ -69,7 +70,7 @@ class World {
 		void queue_destroy(Obj *o);
 		void queue_destroy_visible(VisibleObj *o);
 
-		void show_text(const char *msg);
+		Textbox *show_text(const char *msg);
 		void stop_text();
 
 		SoundManager *sndmgr;

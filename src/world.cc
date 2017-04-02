@@ -38,6 +38,15 @@ bool World::obj_collision(PhysicalObj *a, PhysicalObj *b) {
 	return a->get_bbox().check_collision(b->get_bbox());
 }
 
+void World::interact_with_object(Box b) {
+	for (auto& o : objects) {
+		if (o->is_active() && b.get_collision_vec(o->get_bbox()) != 0) {
+			o->interact();
+			return;
+		}
+	}
+}
+
 Vec2f World::get_object_collision_vec(Box now, Box next, ObjType t) {
 	for (auto& o : objects) {
 		if (o->is_active() && o->get_type() == t) {
@@ -153,10 +162,10 @@ void World::load_map(const char* fname) {
 	}
 }
 
-void World::show_text(const char *msg) {
+Textbox *World::show_text(const char *msg) {
 	mode = World::MODE_TEXT;
 	textbox.set_msg(msg);
-
+	return &textbox;
 }
 
 void World::stop_text() {

@@ -27,6 +27,7 @@ void Obj::set_active(bool active) { this->active = active; }
 bool Obj::is_active() const { return active; }
 void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
 bool Obj::is_persistent() const { return persistent; }
+void Obj::interact() {}
 
 ObjType Obj::get_type() const { return OBJ; }
 
@@ -171,6 +172,10 @@ void Dummy::draw() {
 		super::draw();
 }
 ObjType Dummy::get_type() const { return OBJ_DUMMY; }
+void Dummy::interact() {
+	if (world)
+		world->show_text(mymsg);
+}
 
 
 
@@ -201,6 +206,39 @@ Player::~Player() {
 }
 
 void Player::update() {
+	if (key_press[ALLEGRO_KEY_X] && world) {
+		Box bbox = get_bbox();
+		switch(direction) {
+			case DIR_S:
+			case DIR_SE:
+			case DIR_SW:
+				world->interact_with_object(
+						bbox+Vec2f(0.0f,bbox.get_h()));
+				key_press[ALLEGRO_KEY_X] = false;
+				break;
+			case DIR_E:
+				world->interact_with_object(
+						bbox+Vec2f(bbox.get_w(),0.0f));
+				key_press[ALLEGRO_KEY_X] = false;
+				break;
+			case DIR_NW:
+			case DIR_NE:
+			case DIR_N:
+				world->interact_with_object(
+						bbox+Vec2f(0.0f,-bbox.get_h()));
+				key_press[ALLEGRO_KEY_X] = false;
+				break;
+			case DIR_W:
+				world->interact_with_object(
+						bbox+Vec2f(-bbox.get_w(),0.0f));
+				key_press[ALLEGRO_KEY_X] = false;
+				break;
+			default:
+				break;
+		}
+	}
+
+
 	/* vertical control */
 	if (kmap(ALLEGRO_KEY_UP)) {
 		dy = -1;
@@ -316,8 +354,8 @@ void Player::map_start(){
 
 void Player::draw() {
 #if DEBUG_DRAW
-/*	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy))) */
-/*		b.draw(al_map_rgb(128,0,0)); */
+	/*	for (auto &b : world->get_map()->get_collision_box(get_bbox()+Vec2f(dx,dy))) */
+	/*		b.draw(al_map_rgb(128,0,0)); */
 #endif
 
 	if (sprite) {
