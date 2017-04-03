@@ -46,7 +46,7 @@ typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER
 		void sprite_center_origin(Origin o, float offsetx=0, float offsety=0);
 		void sprite_set_origin(float ox, float oy);
 
-		void sprite_draw(float destx, float desty, int f=0, int flags=0, float angle=0, float xscale=1, float yscale=1);
+		void sprite_draw(float destx, float desty, int f=0, int flags=0, ALLEGRO_COLOR blend=al_map_rgba_f(1.0f,1.0f,1.0f,1.0f), float angle=0, float xscale=1, float yscale=1);
 	protected:
 		const char *name;
 		std::vector< ALLEGRO_BITMAP* > subimages;

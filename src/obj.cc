@@ -49,12 +49,13 @@ bool Obj::operator !=(const Obj &rhs) {
 
 
 /* Physical Object */
-PhysicalObj::PhysicalObj(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {
+PhysicalObj::PhysicalObj(float x, float y, float w, float h) : x(x), y(y), z(0.0f), w(w), h(h) {
 	LOG(get_bbox());
 }
 PhysicalObj::~PhysicalObj() {}
 float PhysicalObj::get_x() const { return x; }
 float PhysicalObj::get_y() const { return y; }
+float PhysicalObj::get_z() const { return z; }
 float PhysicalObj::get_w() const { return w; }
 float PhysicalObj::get_h() const { return h; }
 Box PhysicalObj::get_bbox() const { return Box(x,y,w,h); }
@@ -103,7 +104,7 @@ void VisibleObj::draw() {
 		if (vflip)
 			flags = flags | ALLEGRO_FLIP_VERTICAL;
 
-		sprite->sprite_draw(x,y,frame_index, flags);
+		sprite->sprite_draw(x,y+z,frame_index, flags);
 		if (world && world->get_mode() == World::MODE_OVERWORLD)
 			frame_index += aspeed;
 		if (frame_index >= sprite->getframes() && !loop) {
@@ -151,7 +152,7 @@ void MobileObj::face_point(float ox, float oy) {
 	float slope = ((oy-y)/(ox-x));
 	bool right = ox > x;
 
-	if ((slope < 0.57f && slope > 0) ||
+	if ((slope < 0.57f && slope >= 0) ||
 		(slope > -0.57f && slope < 0)) {
 		if (right)
 			direction = DIR_E;
@@ -178,6 +179,12 @@ void MobileObj::face_point(float ox, float oy) {
 			direction = DIR_N;
 		else
 			direction = DIR_S;
+	}
+	if (slope == (1.0f / 0.0f)) {
+		if (y < oy)
+			direction = DIR_S;
+		else
+			direction = DIR_N;
 	}
 
 	if (slope < -0.57f && slope > -1.73f) {
@@ -419,10 +426,15 @@ void Player::draw() {
 
 		spr_shadow->sprite_draw(x,y+1,0.0f);
 
-		super::draw();
+		super::draw(); 
+
+/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE); */
+/*		float a = 0.1f; */
+/*		sprite->sprite_draw(x,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
+/*		sprite->sprite_draw(x+1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
+/*		sprite->sprite_draw(x-1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
+/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA); */
 	}
-	else
-		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0,255,0));	
 }
 
 Box Player::get_bbox() const { return Box(x-w/2, y-h+2, w, h); }

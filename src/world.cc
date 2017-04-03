@@ -4,7 +4,7 @@ World::World(Renderer *r) : r(r) {
 	LOG("World created");
 	m = NULL;
 	player = NULL;
-	sndmgr = new SoundManager(AUDIO_DEPTH_GOOD);
+	sndmgr = new SoundManager(AUDIO_DEPTH);
 	sndmgr->init();
 	mode = MODE_OVERWORLD;
 	r->world = this;
@@ -139,7 +139,12 @@ void World::set_player(Player *p) {
 void World::load_map(const char* fname) {
 	for (auto &o : objects) {
 		o->map_end();
+		if (!o->is_persistent())
+			o->destroy();
 	}
+	clear_dead_objects();
+
+	/*
 	for (unsigned int i = 0; i<objects.size(); i++) {
 		if (!objects[i]->is_persistent()) {
 			r->destroy_visible(objects[i]);
@@ -149,6 +154,7 @@ void World::load_map(const char* fname) {
 			objects.pop_back();
 		}
 	}
+	*/
 	set_view_focus(NULL);
 
 	if (m) {

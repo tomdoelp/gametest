@@ -61,6 +61,7 @@ class PhysicalObj : public Obj {
 		virtual ~PhysicalObj();
 		float get_x() const;
 		float get_y() const;
+		float get_z() const;
 		float get_w() const;
 		float get_h() const;
 		virtual Box get_bbox() const;
@@ -72,7 +73,7 @@ class PhysicalObj : public Obj {
 		virtual ObjType get_type() const;
 	protected:
 		typedef Obj super;
-		float x, y;
+		float x, y, z;
 		float w, h;
 };
 

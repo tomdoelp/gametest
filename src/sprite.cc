@@ -140,10 +140,10 @@ void Sprite::sprite_center_origin(Origin o, float offsetx, float offsety) {
 	y += offsety;
 }
 
-void Sprite::sprite_draw(float destx, float desty, int f, int flags, float angle, float xscale, float yscale) {
+void Sprite::sprite_draw(float destx, float desty, int f, int flags, ALLEGRO_COLOR blend, float angle, float xscale, float yscale) {
 	int n = f % frames;
 	if (subimages[n]) {
-		al_draw_scaled_rotated_bitmap(subimages[n], round_nearest(x), round_nearest(y), round_nearest(destx), round_nearest(desty), xscale, yscale, angle, flags);
+		al_draw_tinted_scaled_rotated_bitmap(subimages[n], blend, round_nearest(x), round_nearest(y), round_nearest(destx), round_nearest(desty), xscale, yscale, angle, flags);
 	}
 
 	else if (w != 0 && h != 0) {

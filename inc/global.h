@@ -46,6 +46,7 @@ const int SCREEN_W = 320;
 const int SCREEN_H = 240;
 const unsigned int AUDIO_DEPTH_GOOD = 44100;
 const unsigned int AUDIO_DEPTH_SHIT = 11025;
+const unsigned int AUDIO_DEPTH = AUDIO_DEPTH_GOOD;
 
 /* Might not use these ? */
 const int KEY_UP = ALLEGRO_KEY_UP;
