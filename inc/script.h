@@ -13,16 +13,17 @@ template <class T> class Tween : public GenericTween {
 	public:
 		Tween<T>(T *var, T val, int frames, T threshold) : var(var), val(val), frames(frames), threshold(threshold) {
 			amount = (val - *var) / frames;
-			LOG("initial: " << *var << " final: " << val << " frames: " << frames << " amt: " << amount);
 		}
 		~Tween<T>() {}
 		bool step() {
-			if (val - *var < threshold) {
+			T diff = MAX(val, *var) - MIN(val, *var);
+			if (diff > threshold) {
 				*var += amount;
 				return true;
 			}
-			else
+			else { 
 				return false;
+			}
 		}
 
 

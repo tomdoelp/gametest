@@ -228,8 +228,9 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
+	alpha = 0.0f;
 
-	tweens.push(new Tween<float>(&alpha, 0.0f, 120, 0.01f));
+	tweens.push(new Tween<float>(&alpha, 1.0f, 10, 0.01f));
 }
 Dummy::~Dummy() {}
 
