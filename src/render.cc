@@ -103,7 +103,7 @@ ALLEGRO_SHADER *Renderer::create_scale_shader() {
 		printf("%s\n", al_get_shader_log(shader));
 		return NULL;
 	}
-	if(!al_attach_shader_source_file(shader, ALLEGRO_PIXEL_SHADER, al_get_shader_platform(shader) == ALLEGRO_SHADER_GLSL ? "./res/shaders/coverage_pixel.glsl" : "./res/shaders/coverage_pixel.hlsl")) {
+	if(!al_attach_shader_source_file(shader, ALLEGRO_PIXEL_SHADER, al_get_shader_platform(shader) == ALLEGRO_SHADER_GLSL ? "shaders/coverage_pixel.glsl" : "shaders/coverage_pixel.hlsl")) {
 		printf("%s\n", al_get_shader_log(shader));
 		return NULL;
 	}

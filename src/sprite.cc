@@ -12,8 +12,17 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 	}
 
 	/* open and parse the metadata file associated with the bitmap */
+	/*
+	char *fbuf;
+	PHYSFS_file *f = PHYSFS_openRead(fname);
+	fbuf = new char[PHYSFS_fileLength(f)+1];
+	int length_read = PHYSFS_read(f, fbuf, sizeof(char), PHYSFS_fileLength(f));
+	fbuf[length_read] = '\0';
+	*/
+
 	json data;
 
+/*	data = json::parse(fbuf); */
 	data = load_json(jname);
 	sprnum = data["meta"]["sprnum"].get<int>();
 	sprites.reserve(sprnum);
@@ -38,6 +47,10 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 				strips[i][0].get_h(), 
 				framenums); 
 	}
+	/*
+	delete fbuf;
+	PHYSFS_close(f);
+	*/
 }
 SpriteSheet::~SpriteSheet(){
 	if (sheet)

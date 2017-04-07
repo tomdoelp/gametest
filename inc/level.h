@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <allegro5/allegro_image.h>
 #include <pugixml.hpp>
+#include <physfs.h>
 
 #include "global.h"
 #include "load.h"

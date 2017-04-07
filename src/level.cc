@@ -20,7 +20,16 @@ std::vector<int> Layer::get_gids() { return gids; }
 Map::Map(){}
 
 Map::Map(World *world, const char* fname) : world(world) {
+	/*
+	char *fbuf;
+	PHYSFS_file *f = PHYSFS_openRead(fname);
+	fbuf = new char[PHYSFS_fileLength(f)];
+	int length_read = PHYSFS_read(f, fbuf, sizeof(char), PHYSFS_fileLength(f));
+	*/
+	
+
 	pugi::xml_document doc;
+/*	pugi::xml_parse_result result = doc.load_buffer_inplace(fbuf, length_read); */
 	pugi::xml_parse_result result = doc.load_file(fname);
 
 	if (result){
@@ -36,7 +45,7 @@ Map::Map(World *world, const char* fname) : world(world) {
 			int firstgid = t.attribute("firstgid").as_int();
 			if (pugi::xml_attribute source = t.attribute("source")) {
 				pugi::xml_document sourcedoc;
-				std::string tilesetfile = std::string("./res/maps/") + source.value();
+				std::string tilesetfile = std::string("maps/") + source.value();
 /*				LOG("HERE " << tilesetfile); */
 				pugi::xml_parse_result sourceres = sourcedoc.load_file(tilesetfile.c_str());
 				if (sourceres) {
@@ -45,7 +54,7 @@ Map::Map(World *world, const char* fname) : world(world) {
 					int th = tileset.attribute("tileheight").as_int();
 					int tilecount = tileset.attribute("tilecount").as_int();
 					int columns = tileset.attribute("columns").as_int();
-					ALLEGRO_BITMAP *ts_bitmap = load_bitmap((std::string("./res/maps/") + tileset.child("image").attribute("source").value()).c_str());
+					ALLEGRO_BITMAP *ts_bitmap = load_bitmap((std::string("maps/") + tileset.child("image").attribute("source").value()).c_str());
 					int spacing = 0;
 
 					tilesets.push_back(ts_bitmap);
@@ -73,7 +82,7 @@ Map::Map(World *world, const char* fname) : world(world) {
 				int th = t.attribute("tileheight").as_int();
 				int tilecount = t.attribute("tilecount").as_int();
 				int columns = t.attribute("columns").as_int();
-				ALLEGRO_BITMAP *ts = load_bitmap((std::string("./res/maps/") + t.child("image").attribute("source").value()).c_str());
+				ALLEGRO_BITMAP *ts = load_bitmap((std::string("maps/") + t.child("image").attribute("source").value()).c_str());
 				int spacing = 0;
 
 				tilesets.push_back(ts);
@@ -123,6 +132,11 @@ Map::Map(World *world, const char* fname) : world(world) {
 	} 
 	else 
 		LOG("XML oopsie");
+
+/*	
+	delete fbuf;
+	PHYSFS_close(f);
+	*/
 }
 Map::~Map() {
 	LOG("destroying Tilesets...");

@@ -38,6 +38,7 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers, int samples) {
 }
 
 
+
 std::vector<SpriteSheet *> SheetManager::SheetList; 
 SheetManager::SheetManager() {}
 SheetManager::~SheetManager() {
@@ -64,14 +65,14 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 
 	switch (sheet) {
 		case SH_DEATH:
-			SheetList[sheet] = new SpriteSheet("./res/sprites/death/death2.png", "./res/sprites/death/death2.json");
+			SheetList[sheet] = new SpriteSheet("sprites/death/death2.png", "sprites/death/death2.json");
 			break;
 		case SH_SHADOW:
-			SheetList[sheet] = new SpriteSheet("./res/sprites/shadow.png", "./res/sprites/shadow.json");
+			SheetList[sheet] = new SpriteSheet("sprites/shadow.png", "sprites/shadow.json");
 			break;
 
 		case SH_DUMMY:
-			SheetList[sheet] = new SpriteSheet("./res/sprites/dummy/dummy2.png", "./res/sprites/dummy/dummy2.json");
+			SheetList[sheet] = new SpriteSheet("sprites/dummy/dummy2.png", "sprites/dummy/dummy2.json");
 			break;
 		default:
 			break;
@@ -106,14 +107,14 @@ void SoundManager::init(){
 /*	al_set_default_mixer(sound_mixer); */
 
 	const char *fnames[] = {
-		"./res/samples/accept.wav", 
-		"./res/samples/select.wav",
-		"./res/samples/reject.wav",
+		"samples/accept.wav", 
+		"samples/select.wav",
+		"samples/reject.wav",
 		"/home/tom/sounds/earthbound/itemget1.wav",
-/*		"./res/samples/pause.wav", */
-		"./res/samples/tick2.wav",
-		"./res/samples/okdesuka.wav",
-/*		"./res/samples/collect.wav" */
+/*		"samples/pause.wav", */
+		"samples/tick2.wav",
+		"samples/okdesuka.wav",
+/*		"samples/collect.wav" */
 	};
 
 	for(int i =0; i < SND_NUM; i++){
@@ -134,7 +135,7 @@ void SoundManager::init(){
 
 ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music) {
 	const char *fnames[] = {
-		"./res/music/offbeat.xm"
+		"music/offbeat.xm"
 	};
 	if (current_song)
 		al_destroy_audio_stream(current_song);

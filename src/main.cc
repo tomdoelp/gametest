@@ -6,6 +6,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
+#include <allegro5/allegro_physfs.h>
+#include <physfs.h>
 
 #include "global.h"
 #include "obj.h"
@@ -29,7 +31,7 @@ int key_map[ALLEGRO_KEY_MAX];
 int screen_scale = 0;
 bool paused = false;
 
-void init() {
+void init(int argc, char* argv[]) {
 	/* ranomd seed */
 	srand(time(NULL));
 
@@ -83,14 +85,29 @@ void init() {
 	if (!al_reserve_samples(8)) 
 		abort("Failed to reserve samples"); 
 
+	/* Set working directory */
+	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	al_append_path_component(path, "res");
+	al_change_directory(al_path_cstr(path, '/')); 
+
+	/* PhysFS archive */
+	/*
+	PHYSFS_init(argv[0]);
+	if (!PHYSFS_addToSearchPath(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP), 1)) {
+		abort("PhysFS failed");
+	}
+	al_set_physfs_file_interface();
+	*/
+	al_destroy_path(path);
+
 	/* Fonts */
 	if (!al_init_font_addon())
 		abort("Failed to initialize font addon");
 /*	int ranges[] = {32, 126}; */
 /*	ALLEGRO_BITMAP *temp = al_load_bitmap("./res/fonts/Tamsyn12b.tga"); */
 /*	font_tamsyn = al_grab_font_from_bitmap(temp, 1, ranges); */
-	font_tamsyn = al_load_font("./res/fonts/Tamsyn15.tga", 0, 0);
-	font_tamsynb = al_load_font("./res/fonts/Tamsyn15b.tga", 0, 0);
+	font_tamsyn = al_load_font("fonts/Tamsyn15.tga", 0, 0);
+	font_tamsynb = al_load_font("fonts/Tamsyn15b.tga", 0, 0);
 	D(debug_font = al_create_builtin_font();)
 /*	al_destroy_bitmap(temp); */
 	if (!font_tamsyn){
@@ -145,7 +162,7 @@ void game_loop() {
 	World world(&r);
 
 	/* Load a map from a file */
-	world.load_map("./res/maps/bigtest.tmx");
+	world.load_map("maps/dungeon1.tmx");
 	world.sndmgr->play_music(SoundManager::MUS_TEST);  
 
 	/* Events */
@@ -206,7 +223,7 @@ void game_loop() {
 				   }
 				   */
 				if (key[ALLEGRO_KEY_M]) {
-					world.load_map("./res/maps/bigtest2.tmx");
+					world.load_map("maps/bigtest2.tmx");
 				}
 
 				if (key_press[ALLEGRO_KEY_N]) {
@@ -258,7 +275,7 @@ void game_loop() {
 
 int main(int argc, char* argv[]) {
 	LOG("----------------\ngame start" << std::endl);
-	init();
+	init(argc, argv);
 	game_loop();
 	LOG(std::endl << "shutting down\n----------------");
 	shutdown();

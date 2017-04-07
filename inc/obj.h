@@ -3,18 +3,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <queue>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 
 #include "global.h"
 #include "sprite.h"
 #include "level.h"
+#include "script.h"
 
 typedef enum OBJTYPE { OBJ, OBJ_PHYSICAL, OBJ_VISIBLE, OBJ_MOBILE, OBJ_DUMMY, OBJ_PLAYER, OBJNUM} ObjType;
 
 class World;
 class VisibleObj;
-/* Basic object. Holds the total number of instances, an id, and can update (nop) */
+/* Basic object. Holds the total number of instances, an id, and can update */
 class Obj {
 	public:
 		Obj();
@@ -29,7 +31,6 @@ class Obj {
 /*		virtual void collide(Obj *other); */
 		virtual void interact();
 		
-
 		void set_active(bool active);
 		void set_persistent(bool persistent);
 
@@ -50,6 +51,7 @@ class Obj {
 		int id;
 		static int objtotal;
 		bool persistent;
+		std::queue<GenericTween*> tweens;
 };
 
 
@@ -101,6 +103,7 @@ class VisibleObj : public PhysicalObj {
 		float frame_index;
 		bool visible;
 		bool hflip, vflip;
+		float alpha;
 };
 
 

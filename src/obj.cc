@@ -10,9 +10,31 @@ Obj::Obj(){
 	persistent = false;
 }
 Obj::~Obj() { 
+	while (!tweens.empty()) {
+		delete tweens.front();
+		tweens.pop();
+		LOG("Object " << id << " destroyed active tween");
+	}
+
 	LOG("Object " << id << " destroyed");
 }
-void Obj::update() {}	
+void Obj::update() {
+	if (tweens.size() > 0) {
+		std::queue<GenericTween*> tempqueue;
+		while (!tweens.empty()) {
+			if (tweens.front()->step()) {
+				tempqueue.push(tweens.front());
+				tweens.pop();
+			}
+			else {
+				delete tweens.front();
+				tweens.pop();
+				LOG("tween finished and destroyed");
+			}
+		}
+		swap(tweens, tempqueue);
+	}
+}	
 void Obj::map_start() {}
 void Obj::map_end() {}
 bool Obj::destroy() {
@@ -91,6 +113,7 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteShee
 	visible = true;
 	hflip = false;
 	vflip = false;
+	alpha = 1.0f;
 }
 
 VisibleObj::~VisibleObj() {}
@@ -104,7 +127,7 @@ void VisibleObj::draw() {
 		if (vflip)
 			flags = flags | ALLEGRO_FLIP_VERTICAL;
 
-		sprite->sprite_draw(x,y+z,frame_index, flags);
+		sprite->sprite_draw(x,y+z,frame_index, flags, al_map_rgba_f(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha));
 		if (world && world->get_mode() == World::MODE_OVERWORLD)
 			frame_index += aspeed;
 		if (frame_index >= sprite->getframes() && !loop) {
@@ -144,6 +167,8 @@ void MobileObj::update() {
 	x += dx;
 	y += dy;
 	depth = y; 
+
+	super::update();
 }
 float MobileObj::get_dx() const { return dx; }
 float MobileObj::get_dy() const { return dy; }
@@ -203,6 +228,8 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
+
+	tweens.push(new Tween<float>(&alpha, 0.0f, 120, 0.01f));
 }
 Dummy::~Dummy() {}
 
@@ -215,7 +242,10 @@ void Dummy::update() {
 		
 	}
 	*/
+
+	super::update();
 }
+
 Box Dummy::get_bbox() const { return Box(x-w/2, y-h, w, h); }
 void Dummy::draw() {
 	if (sprite) {
