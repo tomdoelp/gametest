@@ -12,7 +12,8 @@
 #include "level.h"
 #include "script.h"
 
-typedef enum OBJTYPE { OBJ, OBJ_PHYSICAL, OBJ_VISIBLE, OBJ_MOBILE, OBJ_DUMMY, OBJ_PLAYER, OBJNUM} ObjType;
+typedef enum OBJTYPE { OBJ, OBJ_PHYSICAL, OBJ_VISIBLE, OBJ_MOBILE, OBJ_DUMMY, OBJ_PLAYER, OBJ_PROP, OBJNUM} ObjType;
+typedef enum PROPTYPE { PROP_CANDELABRUM, PROP_CANDELABRUM_LIT, PROP_NUM } PropType;
 
 class World;
 class VisibleObj;
@@ -36,6 +37,7 @@ class Obj {
 
 		bool is_active() const;
 		bool is_persistent() const;
+		bool is_solid() const;
 		int get_id() const;
 		virtual Box get_bbox() const;
 		float distance_from_point(float x, float y);
@@ -52,6 +54,7 @@ class Obj {
 		static int objtotal;
 		bool persistent;
 		std::queue<GenericTween*> tweens;
+		bool solid = false;
 };
 
 
@@ -87,6 +90,9 @@ class VisibleObj : public PhysicalObj {
 		VisibleObj(float x=0.0f, float y=0.0f, float w=16.0f, float h=16.0f, int depth=0, SpriteSheet *s=NULL);
 /*		VisibleObj(World *world, float x=0.0f, float y=0.0f, float w=0.0f, float h=0.0f, int depth=0, SpriteSheet *s=NULL); */
 		virtual ~VisibleObj();
+
+		virtual void set_sprite(SpriteSheet *s, int index=0);
+		virtual void set_sprite(Sprite *sprite);
 
 		virtual void draw();
 		virtual bool destroy();
@@ -128,6 +134,25 @@ class MobileObj : public VisibleObj {
 		float dx, dy;
 };
 
+
+/* Prop. Static object (not C++ static), sprite determined by map file. Possibly solid. */
+
+class Prop : public VisibleObj {
+	public:
+		Prop(float x, float y, PropType t);
+		virtual void update();
+		virtual Box get_bbox() const;
+
+		virtual ObjType get_type() const;
+		virtual void interact();
+
+	protected:
+		typedef VisibleObj super;
+		const char *mymsg;
+};
+
+
+/* Dummy, for testing stuff */
 class Dummy : public MobileObj {
 	public:
 		Dummy(float x=0.0f, float y=0.0f);

@@ -49,6 +49,7 @@ void Obj::set_active(bool active) { this->active = active; }
 bool Obj::is_active() const { return active; }
 void Obj::set_persistent(bool persistent) { this->persistent = persistent; }
 bool Obj::is_persistent() const { return persistent; }
+bool Obj::is_solid() const { return solid; }
 void Obj::interact() {}
 
 ObjType Obj::get_type() const { return OBJ; }
@@ -118,6 +119,19 @@ VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteShee
 
 VisibleObj::~VisibleObj() {}
 ObjType VisibleObj::get_type() const { return OBJ_VISIBLE; }
+
+void VisibleObj::set_sprite(SpriteSheet *s, int index) {
+	sheet = s;
+	if (sheet) {
+		sprite = (*sheet)[index];
+		sprite->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
+	}
+	else
+		sprite = NULL;
+}
+
+void VisibleObj::set_sprite(Sprite *sprite) { this->sprite = sprite; }
+
 void VisibleObj::draw() {
 
 	if (sprite){
@@ -127,7 +141,7 @@ void VisibleObj::draw() {
 		if (vflip)
 			flags = flags | ALLEGRO_FLIP_VERTICAL;
 
-		sprite->sprite_draw(x,y+z,frame_index, flags, al_map_rgba_f(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha));
+		sprite->sprite_draw(x,y-z,frame_index, flags, al_map_rgba_f(1.0f * alpha, 1.0f * alpha, 1.0f * alpha, alpha));
 		if (world && world->get_mode() == World::MODE_OVERWORLD)
 			frame_index += aspeed;
 		if (frame_index >= sprite->getframes() && !loop) {
@@ -221,6 +235,42 @@ void MobileObj::face_point(float ox, float oy) {
 }
 
 
+/* Prop object */
+Prop::Prop(float x, float y, PropType t) : VisibleObj(x,y,0.0f,0.0f) {
+	solid = true;
+	switch (t) {
+		case PROP_CANDELABRUM:
+			set_sprite(SheetManager::get_sheet(SheetManager::SH_CASTLE_PROPS), 0);
+			w = 12;
+			h = 8;
+			aspeed = 0.1;
+			break;
+		case PROP_CANDELABRUM_LIT:
+			set_sprite(SheetManager::get_sheet(SheetManager::SH_CASTLE_PROPS), 1);
+			w = 12;
+			h = 8;
+			aspeed = 0.1;
+			break;
+
+		default:
+			sheet=NULL;
+			sprite=NULL;
+			break;
+	}
+}
+void Prop::update(){
+	super::update();
+}
+ObjType Prop::get_type() const { return OBJ_PROP; }
+void Prop::interact() {
+	if (world && mymsg) {
+		Player *p = world->get_player();
+		p->face_point(x,y);
+		world->show_text(mymsg);
+	}
+}
+Box Prop::get_bbox() const { return Box(x-w/2, y-h, w, h); }
+
 
 
 /* Dummy Object */
@@ -228,9 +278,12 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
-	alpha = 0.0f;
+	alpha = 1.0f;
+	solid = true;
 
-	tweens.push(new Tween<float>(&alpha, 1.0f, 10, 0.01f));
+	tweens.push(new Tween<float>(&z, 16.0f, 120, 0.01f));
+/*	tweens.push(new Tween<float>(&y, y+10.0f, 20, 0.01f)); */
+	// TODO simultaneous tweens
 }
 Dummy::~Dummy() {}
 
@@ -299,6 +352,7 @@ Player::~Player() {
 }
 
 void Player::update() {
+	/* interact with x */
 	if (key_press[ALLEGRO_KEY_X] && world) {
 		Box bbox = get_bbox();
 		switch(direction) {
@@ -330,7 +384,6 @@ void Player::update() {
 				break;
 		}
 	}
-
 
 	/* vertical control */
 	if (kmap(ALLEGRO_KEY_UP)) {
@@ -426,9 +479,30 @@ void Player::update() {
 	/* Tile collision handling */
 	if (world && (dx != 0 || dy != 0)) {
 		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
-		if (intersection.get_x() == 0 && intersection.get_y() == 0) {
-			intersection = world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY);
-		}
+
+		if (intersection.get_x() == 0)
+			intersection.set_x(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_x());
+		if (intersection.get_y() == 0)
+			intersection.set_y(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_y());
+		
+		/*
+		if (intersection.get_x() == 0)
+			intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_x());
+		if (intersection.get_y() == 0)
+			intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_y());
+		if (intersection.get_x() == 0)
+			intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_x());
+		if (intersection.get_y() == 0)
+			intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_y());
+			*/
+
+
+
+		/*
+		   if (intersection.get_x() == 0 && intersection.get_y() == 0) {
+		   intersection = world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP);
+		   }
+		   */
 		dx += intersection.get_x();
 		dy += intersection.get_y();
 	}
@@ -459,12 +533,12 @@ void Player::draw() {
 
 		super::draw(); 
 
-/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE); */
-/*		float a = 0.1f; */
-/*		sprite->sprite_draw(x,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
-/*		sprite->sprite_draw(x+1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
-/*		sprite->sprite_draw(x-1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
-/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA); */
+		/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE); */
+		/*		float a = 0.1f; */
+		/*		sprite->sprite_draw(x,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
+		/*		sprite->sprite_draw(x+1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
+		/*		sprite->sprite_draw(x-1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
+		/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA); */
 	}
 }
 

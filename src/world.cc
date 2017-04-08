@@ -74,6 +74,33 @@ Vec2f World::get_object_collision_vec(Box now, Box next, ObjType t) {
 	return Vec2f(0.0f, 0.0f);
 }
 
+Vec2f World::get_object_collision_solid(Box now, Box next) {
+	Vec2f intersect;
+	for (auto& o : objects) {
+		if (o->is_active() && o->is_solid()) {
+
+			float boxw = next.get_w();
+			float boxh = next.get_h();
+			float intersect_h = Box(next.get_x(), now.get_y(), boxw, boxh).get_collision_vec(o->get_bbox()).get_x();
+			float intersect_v = Box(now.get_x(), next.get_y(), boxw, boxh).get_collision_vec(o->get_bbox()).get_y();
+			if (intersect_h != 0.0f) {
+				intersect.set_x(intersect_h);
+			}
+			if (intersect_v != 0.0f) {
+				intersect.set_y(intersect_v); 
+			}
+			if ((intersect_h == intersect_v || -intersect_h == intersect_v ) && intersect_h != 0.0f){
+				intersect.set_x(0.0f);
+			}
+
+			if (intersect.get_x() != 0.0f && intersect.get_y() != 0.0f)
+				return intersect;
+		}
+	}
+
+	return intersect;
+}
+
 
 void World::update() {
 	if (key_press[ALLEGRO_KEY_ESCAPE]) {

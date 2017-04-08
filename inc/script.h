@@ -11,6 +11,7 @@ class GenericTween {
 
 template <class T> class Tween : public GenericTween {
 	public:
+		/* yeah this breaks encapsulation sue me */
 		Tween<T>(T *var, T val, int frames, T threshold) : var(var), val(val), frames(frames), threshold(threshold) {
 			amount = (val - *var) / frames;
 		}
@@ -36,5 +37,7 @@ template <class T> class Tween : public GenericTween {
 		T threshold;
 		int timer;
 };
+
+/* LoopTween with stop function, pingpong, norepeatends, loop points separate from starting value, etc */
 
 #endif

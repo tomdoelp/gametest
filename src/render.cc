@@ -136,6 +136,8 @@ void Renderer::render(Map &m) {
 	/* Draw the entire background layer first */
 	m.draw_layer_region(0,0,LAYER_BACKGROUND, vbox);
 
+
+
 	depth_sort();
 	int row = 0;
 	int tileh = m.tileh;
@@ -164,6 +166,10 @@ void Renderer::render(Map &m) {
 
 	/* draw the entire forground layer afterwards */
 	m.draw_layer(0,0,LAYER_FOREGROUND);
+
+#if DEBUG_DRAW
+	m.draw_layer_region(0,0, LAYER_COLLISIONS, vbox);
+#endif
 
 	/* Draw the overlay, if there should be one. */
 	switch(world->mode){

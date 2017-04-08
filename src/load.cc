@@ -74,6 +74,10 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 		case SH_DUMMY:
 			SheetList[sheet] = new SpriteSheet("sprites/dummy/dummy2.png", "sprites/dummy/dummy2.json");
 			break;
+
+		case SH_CASTLE_PROPS:
+			SheetList[sheet] = new SpriteSheet("sprites/props/castleprops.png", "sprites/props/castleprops.json");
+			break;
 		default:
 			break;
 	}

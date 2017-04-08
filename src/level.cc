@@ -119,13 +119,22 @@ Map::Map(World *world, const char* fname) : world(world) {
 
 				if (otype == std::string("Player")) {
 					world->create_visible<Player>(
-							o.attribute("x").as_float(),	
+							o.attribute("x").as_float()+tilew/2,	
 							o.attribute("y").as_float());
 				}
-				if (otype == std::string("Dummy")) {
+				else if (otype == std::string("Dummy")) {
 					world->create_visible<Dummy>(
-							o.attribute("x").as_float(),	
+							o.attribute("x").as_float()+tilew/2,	
 							o.attribute("y").as_float());
+				}
+				else if (otype == std::string("Candelabrum")) {
+					world->create_prop<Prop>(
+							o.attribute("x").as_float()+tilew/2,
+							o.attribute("y").as_float()-tileh/2,
+							PROP_CANDELABRUM);
+				}
+				else {
+					LOG("Unknown object type in map file");
 				}
 			}
 		}

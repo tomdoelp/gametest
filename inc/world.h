@@ -45,6 +45,7 @@ class World {
 
 		void interact_with_object(Box b);
 		Vec2f get_object_collision_vec(Box now, Box next, ObjType t);
+		Vec2f get_object_collision_solid(Box now, Box next);
 
 		void load_map(const char* fname);
 
@@ -57,8 +58,16 @@ class World {
 		   return std::weak_ptr(obj);
 		   }
 		   */
-		template <class T> T* create_visible(float x=0.0f, float y=0.0f) {
+		template <class T> T* create_visible(float x, float y) {
 			T *obj = new T(x,y);
+			obj->attach_to_world(this);
+
+			r->register_visible(obj);
+
+			return obj;
+		}
+		template <class T> T* create_prop(float x, float y, PropType t) {
+			T *obj = new T(x,y,t);
 			obj->attach_to_world(this);
 
 			r->register_visible(obj);

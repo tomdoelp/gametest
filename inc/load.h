@@ -19,7 +19,7 @@ ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers=4, int samples=
 
 class SheetManager{
 	public:
-typedef enum SHNAME { SH_DEATH, SH_SHADOW, SH_DUMMY, SH_NUM } SheetName;
+typedef enum SHNAME { SH_DEATH, SH_SHADOW, SH_DUMMY, SH_CASTLE_PROPS, SH_NUM } SheetName;
 		SheetManager();
 		~SheetManager();
 
