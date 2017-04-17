@@ -30,6 +30,10 @@ class Vec2f {
 		char *c_str();
 
 
+		Vec2f operator + (const Vec2f &rhs);
+		Vec2f operator - (const Vec2f &rhs);
+		Vec2f operator * (float scalar);
+		Vec2f operator / (float scalar);
 		bool operator < (const Vec2f &rhs);
 		bool operator == (float diag);
 		bool operator != (float diag);
@@ -39,6 +43,8 @@ class Vec2f {
 		float x, y;
 
 };
+
+Vec2f vec_to_point(float ax, float ay, float bx, float by, float l=1);
 
 class Box_Diag;
 class Box {

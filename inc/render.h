@@ -73,6 +73,9 @@ class Renderer {
 		void depth_sort();
 		ALLEGRO_SHADER *create_scale_shader();
 		ALLEGRO_BITMAP *temp_buffer;
+		ALLEGRO_BITMAP *battle_buffer;
+
+		void render_scene(Map &m, bool draw_objects=true);
 };
 
 #endif

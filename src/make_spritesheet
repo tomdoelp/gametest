@@ -9,6 +9,10 @@ from subprocess import call
 
 # aseprite -b *.ase --sheet-pack --sheet atlas-bestfit.png --data atlas-bestfit.json
 
+if sys.argv[-1:][0][-3:] != "png":
+    print("You didn't specify a PNG image as the output.")
+    sys.exit()
+
 
 jfile = sys.argv[-1:][0][:-4] + ".json"
 print("using json file " + jfile)

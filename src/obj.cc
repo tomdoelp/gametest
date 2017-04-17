@@ -103,7 +103,7 @@ void PhysicalObj::displace(Vec2f disp) {
 VisibleObj::VisibleObj(float x, float y, float w, float h, int depth, SpriteSheet *s) : PhysicalObj(x, y, w, h), depth(y), sheet(s) {
 	if (sheet) {
 		sprite = (*sheet)[0];
-		sprite->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM); 
+		sprite->sprite_center_origin(ORIGIN_CENTER_BOTTOM); 
 	}
 	else 
 		sprite = NULL;
@@ -124,7 +124,7 @@ void VisibleObj::set_sprite(SpriteSheet *s, int index) {
 	sheet = s;
 	if (sheet) {
 		sprite = (*sheet)[index];
-		sprite->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
+		sprite->sprite_center_origin(ORIGIN_CENTER_BOTTOM);
 	}
 	else
 		sprite = NULL;
@@ -190,43 +190,45 @@ ObjType MobileObj::get_type() const { return OBJ_MOBILE; }
 void MobileObj::face_point(float ox, float oy) {
 	float slope = ((oy-y)/(ox-x));
 	bool right = ox > x;
+	float angle_low = 0.57f;
+	float angle_high = 1.73f;
 
-	if ((slope < 0.57f && slope >= 0) ||
-		(slope > -0.57f && slope < 0)) {
+	if ((slope < angle_low && slope >= 0) ||
+		(slope > -angle_low && slope < 0)) {
 		if (right)
 			direction = DIR_E;
 		else
 			direction = DIR_W;
 	}
 
-	if (slope > 0.57f && slope < 1.73f) {
+	if (slope > angle_low && slope < angle_high) {
 			if (right)
 				direction = DIR_SE;
 			else
 				direction = DIR_NW;
 	}
 
-	if (slope > 1.73f) {
+	if (slope > angle_high) {
 		if (right)
 			direction = DIR_S;
 		else
 			direction = DIR_N;
 	}
 
-	if (slope < -1.73f) {
+	if (slope < -angle_high) {
 		if (right)
 			direction = DIR_N;
 		else
 			direction = DIR_S;
 	}
-	if (slope == (1.0f / 0.0f)) {
+	if (int(x) == int(ox)) {
 		if (y < oy)
 			direction = DIR_S;
 		else
 			direction = DIR_N;
 	}
 
-	if (slope < -0.57f && slope > -1.73f) {
+	if (slope < -angle_low && slope > -angle_high) {
 		if (right)
 			direction = DIR_NE;
 		else
@@ -236,17 +238,16 @@ void MobileObj::face_point(float ox, float oy) {
 
 
 /* Prop object */
-Prop::Prop(float x, float y, PropType t) : VisibleObj(x,y,0.0f,0.0f) {
+Prop::Prop(float x, float y, PropType t) : VisibleObj(x,y,0.0f,0.0f), t(t) {
 	solid = true;
 	switch (t) {
 		case PROP_CANDELABRUM:
-			set_sprite(SheetManager::get_sheet(SheetManager::SH_CASTLE_PROPS), 0);
+			set_sprite(SheetManager::get_sheet(SH_CASTLE_PROPS), 0);
 			w = 12;
 			h = 8;
-			aspeed = 0.1;
 			break;
 		case PROP_CANDELABRUM_LIT:
-			set_sprite(SheetManager::get_sheet(SheetManager::SH_CASTLE_PROPS), 1);
+			set_sprite(SheetManager::get_sheet(SH_CASTLE_PROPS), 1);
 			w = 12;
 			h = 8;
 			aspeed = 0.1;
@@ -263,39 +264,65 @@ void Prop::update(){
 }
 ObjType Prop::get_type() const { return OBJ_PROP; }
 void Prop::interact() {
-	if (world && mymsg) {
-		Player *p = world->get_player();
-		p->face_point(x,y);
-		world->show_text(mymsg);
+	switch (t) {
+		case PROP_CANDELABRUM:
+			if (world) {
+				world->sndmgr->play_sound(SND_IGNITE);
+				Player *p = world->get_player();
+				p->face_point(x,y);
+			}
+			set_sprite(SheetManager::get_sheet(SH_CASTLE_PROPS), 1);
+			aspeed = 0.1;
+			t = PROP_CANDELABRUM_LIT;
+			break;
+		case PROP_CANDELABRUM_LIT:
+			break;
+		default:
+			break;
 	}
+	/*
+	   if (world && mymsg) {
+	   Player *p = world->get_player();
+	   p->face_point(x,y);
+	   world->show_text(mymsg);
+	   }
+	   */
 }
 Box Prop::get_bbox() const { return Box(x-w/2, y-h, w, h); }
 
 
 
 /* Dummy Object */
-Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SheetManager::SH_DUMMY)) {
-	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
-	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
+Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SH_DUMMY)) {
+	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
+	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
-	alpha = 1.0f;
+	alpha = 0.0f;
 	solid = true;
+	z = 0.0f;
 
-	tweens.push(new Tween<float>(&z, 16.0f, 120, 0.01f));
-/*	tweens.push(new Tween<float>(&y, y+10.0f, 20, 0.01f)); */
+	set_sprite(sheet, 5);
+
+	tweens.push(new Tween<float>(&alpha, 1.0f, 60, 0.01f)); 
+	tweens.push(new Tween<float>(&z, 8.0f, 60, 0.01f)); 
 	// TODO simultaneous tweens
+	// OR they work? Check this out further.
 }
 Dummy::~Dummy() {}
 
 void Dummy::update() {
 	/*
-	Player *p = world->get_player();
-	if (get_bbox().check_collision(p->get_bbox())) {
-		world->sndmgr->play_sound(SoundManager::SND_ACCEPT); 
-		destroy(); 
-		
+	   Player *p = world->get_player();
+	   if (get_bbox().check_collision(p->get_bbox())) {
+	   world->sndmgr->play_sound(SoundManager::SND_ACCEPT); 
+	   destroy(); 
+
+	   }
+	   */
+	if (world) {
+		Player *p = world->get_player();
+		face_point(p->get_x(), p->get_y());
 	}
-	*/
 
 	super::update();
 }
@@ -319,7 +346,7 @@ void Dummy::interact() {
 		Player *p = world->get_player();
 		face_point(p->get_x(), p->get_y());
 		p->face_point(x,y);
-		world->show_text(mymsg);
+		/*		world->show_text(mymsg); */
 	}
 }
 
@@ -327,20 +354,20 @@ void Dummy::interact() {
 
 
 /* Player Object */
-Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_sheet(SheetManager::SH_DEATH)) {
+Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_sheet(SH_DEATH)) {
 	score = 0;
 	aspeed = 0;
 	spritenum = 6;
 
 	for (int i = 0; i < spritenum; i++) {
 		sprites[i] = (*sheet)[i];
-		sprites[i]->sprite_center_origin(Sprite::ORIGIN_CENTER_BOTTOM);
+		sprites[i]->sprite_center_origin(ORIGIN_CENTER_BOTTOM);
 	}
 	sprite = sprites[0];
 	persistent = true;
 
-	spr_shadow = (*SheetManager::get_sheet(SheetManager::SH_SHADOW))[0];
-	spr_shadow->sprite_center_origin(Sprite::ORIGIN_CENTER_MIDDLE);
+	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
+	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
 
 }
 ObjType Player::get_type() const { return OBJ_PLAYER; }
@@ -484,17 +511,17 @@ void Player::update() {
 			intersection.set_x(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_x());
 		if (intersection.get_y() == 0)
 			intersection.set_y(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_y());
-		
+
 		/*
-		if (intersection.get_x() == 0)
-			intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_x());
-		if (intersection.get_y() == 0)
-			intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_y());
-		if (intersection.get_x() == 0)
-			intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_x());
-		if (intersection.get_y() == 0)
-			intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_y());
-			*/
+		   if (intersection.get_x() == 0)
+		   intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_x());
+		   if (intersection.get_y() == 0)
+		   intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_y());
+		   if (intersection.get_x() == 0)
+		   intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_x());
+		   if (intersection.get_y() == 0)
+		   intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_y());
+		   */
 
 
 

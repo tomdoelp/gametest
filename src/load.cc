@@ -52,14 +52,13 @@ SheetManager::~SheetManager() {
 
 SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 	if (SheetList.empty()) {
-		for (int i = 0; i < SheetManager::SH_NUM; i++) { 
+		for (int i = 0; i < SH_NUM; i++) { 
 			SheetList.push_back(NULL); 
 		} 
 	}
 
 
 	if (SheetList[sheet]){
-		LOG("dup sprite sheet");
 		return SheetList[sheet];
 	}
 
@@ -119,6 +118,7 @@ void SoundManager::init(){
 		"samples/tick2.wav",
 		"samples/okdesuka.wav",
 /*		"samples/collect.wav" */
+		"samples/ignite.wav"
 	};
 
 	for(int i =0; i < SND_NUM; i++){

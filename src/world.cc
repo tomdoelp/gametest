@@ -106,7 +106,7 @@ void World::update() {
 	if (key_press[ALLEGRO_KEY_ESCAPE]) {
 		if (mode == World::MODE_OVERWORLD) {
 			mode = World::MODE_PAUSE;
-			sndmgr->play_sound(SoundManager::SND_PAUSE);
+			sndmgr->play_sound(SND_PAUSE);
 		}
 		else if (mode == World::MODE_PAUSE) {
 			mode = World::MODE_OVERWORLD;

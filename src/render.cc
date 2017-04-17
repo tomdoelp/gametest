@@ -68,6 +68,7 @@ Renderer::~Renderer() {}
 Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 	scale_shader = create_scale_shader();
 	temp_buffer = al_create_bitmap(v.get_w(), v.get_h());
+	battle_buffer = NULL;
 }
 
 void Renderer::register_visible(VisibleObj *o) {
@@ -118,13 +119,7 @@ void Renderer::set_view_focus(PhysicalObj *o) {
 	v.set_focus(o);
 }
 
-void Renderer::render(Map &m) {
-	al_set_target_bitmap(temp_buffer);
-	al_draw_bitmap(v.get_buffer(), 0.0f, 0.0f, 0);
-
-/*	std::vector<VisibleObj*> row_objs; */
-	al_set_target_bitmap(v.get_buffer());
-
+void Renderer::render_scene(Map &m, bool draw_objects) {
 	al_identity_transform(&trans);
 	al_translate_transform(&trans, -v.get_x(), -v.get_y());
 	al_use_transform(&trans);
@@ -143,7 +138,7 @@ void Renderer::render(Map &m) {
 	int tileh = m.tileh;
 
 	/* Don't draw overworld objects during a battle */
-	if (world->mode == World::MODE_BATTLE) {
+	if (!draw_objects) {
 		m.draw_layer_region(0,0,LAYER_MIXED, vbox);
 	}
 	else {
@@ -171,6 +166,43 @@ void Renderer::render(Map &m) {
 	m.draw_layer_region(0,0, LAYER_COLLISIONS, vbox);
 #endif
 
+}
+
+
+void Renderer::render(Map &m) {
+/*	al_set_target_bitmap(temp_buffer);  */
+/*	al_draw_bitmap(v.get_buffer(), 0.0f, 0.0f, 0);  */
+
+	if (world->mode == World::MODE_BATTLE) {
+		if (battle_buffer == NULL) {
+			battle_buffer = al_create_bitmap(v.get_w(), v.get_h());
+			al_set_target_bitmap(battle_buffer);
+			render_scene(m, false);
+		}
+		al_set_target_bitmap(v.get_buffer());
+		al_clear_to_color(al_map_rgb(0,0,0));
+		float a = 0.05f;
+		float r = 1.0f;
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y()-r, 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()-r, 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y()-r, 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y(), 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y(), 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y(), 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y()+r, 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()+r, 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y()+r, 0);
+/*		al_clear_to_color(al_map_rgba_f(0.0f,0.0f,0.0f,0.1f));  */
+	}
+	else {
+		if (battle_buffer) {
+			al_destroy_bitmap(battle_buffer);
+			battle_buffer = NULL;
+		}
+		al_set_target_bitmap(v.get_buffer());
+		render_scene(m, true);
+	}
+
 	/* Draw the overlay, if there should be one. */
 	switch(world->mode){
 		case World::MODE_PAUSE:
@@ -186,8 +218,9 @@ void Renderer::render(Map &m) {
 			break;
 	}
 
-/*	float a = 0.5; */
-/*	al_draw_tinted_bitmap(temp_buffer, al_map_rgba_f(a,a,a,a), v.get_x(), v.get_y(), 0); */
+
+	/*	float a = 0.5; */
+	/*	al_draw_tinted_bitmap(temp_buffer, al_map_rgba_f(a,a,a,a), v.get_x(), v.get_y(), 0); */
 
 	al_set_target_backbuffer(display);
 	al_clear_to_color(al_map_rgb(0,0,0));

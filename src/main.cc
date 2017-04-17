@@ -163,7 +163,7 @@ void game_loop() {
 
 	/* Load a map from a file */
 	world.load_map("maps/dungeon1.tmx");
-	world.sndmgr->play_music(SoundManager::MUS_TEST);  
+	world.sndmgr->play_music(MUS_TEST);  
 
 	/* Events */
 	while (!done) {
@@ -212,6 +212,13 @@ void game_loop() {
 				if (key[ALLEGRO_KEY_4]) {
 					screen_scale = 4;
 					redraw = true;
+				}
+
+				if (key[ALLEGRO_KEY_B]) {
+					if (world.get_mode() == World::MODE_OVERWORLD)
+						world.set_mode(World::MODE_BATTLE);
+					else if (world.get_mode() == World::MODE_BATTLE)
+						world.set_mode(World::MODE_OVERWORLD);
 				}
 
 				/*

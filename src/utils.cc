@@ -26,6 +26,11 @@ float Vec2f::get_diagonal() const { return sqrt(x*x+y*y); }
 void Vec2f::set_x(float x) { this->x = x; }
 void Vec2f::set_y(float y) { this->y = y; }
 
+Vec2f Vec2f::operator + (const Vec2f &rhs) { return Vec2f(x+rhs.get_x(), y+rhs.get_y()); }
+Vec2f Vec2f::operator - (const Vec2f &rhs) { return Vec2f(x-rhs.get_x(), y-rhs.get_y()); }
+Vec2f Vec2f::operator * (float scalar) { return Vec2f(x*scalar, y*scalar); }
+Vec2f Vec2f::operator / (float scalar) { return Vec2f(x/scalar, y/scalar); }
+
 bool Vec2f::operator < (const Vec2f &rhs) {
 	return (get_diagonal() < rhs.get_diagonal());
 }
@@ -40,6 +45,13 @@ Vec2f& Vec2f::operator = (const Vec2f& rhs) {
 	y = rhs.get_y();
 	return *this;
 }
+
+Vec2f vec_to_point(float ax, float ay, float bx, float by, float l) {
+	Vec2f vector = Vec2f(bx,by)-Vec2f(ax,ay);
+	
+	return vector/(vector.get_diagonal() * l);
+}
+
 
 Box::Box(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 Box::~Box() {}

@@ -29,9 +29,9 @@ using json = nlohmann::json;
 
 
 /* Sprite. Holds bitmap & data, bounding box, and a strip for information */
+typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
 class Sprite {
 	public:
-typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER_BOTTOM, ORIGIN_CENTER_TOP } Origin;
 		Sprite(ALLEGRO_BITMAP *sheet, float w, float h, int frames=1, float gap=0, float offx=0, float offy=0, float ox=0, float oy=0);
 		Sprite(const char* name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
 		~Sprite();

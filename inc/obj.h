@@ -147,6 +147,7 @@ class Prop : public VisibleObj {
 		virtual void interact();
 
 	protected:
+		PropType t;
 		typedef VisibleObj super;
 		const char *mymsg;
 };

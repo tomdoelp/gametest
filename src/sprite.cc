@@ -121,7 +121,7 @@ Sprite::~Sprite() {
 		al_destroy_bitmap(i);
 		i = NULL;
 	}
-	LOG("Sprite destroyed");
+/*	LOG("Sprite destroyed"); */
 }
 
 float Sprite::get_x() { return x; }
