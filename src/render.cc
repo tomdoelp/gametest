@@ -1,5 +1,6 @@
 #include "render.h"
 #include "world.h"
+#include "obj.h"
 
 View::View() {}
 View::~View() {}
@@ -180,18 +181,22 @@ void Renderer::render(Map &m) {
 			render_scene(m, false);
 		}
 		al_set_target_bitmap(v.get_buffer());
-		al_clear_to_color(al_map_rgb(0,0,0));
+		al_clear_to_color(al_map_rgb(9,9,9));
 		float a = 0.05f;
-		float r = 1.0f;
+		float r = 16.0f;
 		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y()-r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()-r, 0);
 		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y()-r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y(), 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y(), 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y(), 0);
 		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y()+r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()+r, 0);
 		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y()+r, 0);
+
+
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y(), 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y(), 0);
+
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()+r, 0);
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()-r, 0);
+
+		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y(), 0);
 /*		al_clear_to_color(al_map_rgba_f(0.0f,0.0f,0.0f,0.1f));  */
 	}
 	else {

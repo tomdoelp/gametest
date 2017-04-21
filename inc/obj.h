@@ -12,8 +12,6 @@
 #include "level.h"
 #include "script.h"
 
-typedef enum OBJTYPE { OBJ, OBJ_PHYSICAL, OBJ_VISIBLE, OBJ_MOBILE, OBJ_DUMMY, OBJ_PLAYER, OBJ_PROP, OBJNUM} ObjType;
-typedef enum PROPTYPE { PROP_CANDELABRUM, PROP_CANDELABRUM_LIT, PROP_NUM } PropType;
 
 class World;
 class VisibleObj;
@@ -173,6 +171,7 @@ class Dummy : public MobileObj {
 };
 
 
+class Combatant;
 /* Player object. Has a score. Horizontal and vertical motion controlled with arrow keys. */
 /* Just a scratchpad for ideas, really */
 class Player : public MobileObj {
@@ -189,6 +188,7 @@ class Player : public MobileObj {
 		virtual Box get_bbox() const;
 
 		virtual ObjType get_type() const;
+		virtual Combatant *get_combatant() const;
 	protected:
 		int spritenum;
 		typedef enum pose {SPR_STAND, SPR_WALK_DOWN, SPR_WALK_DOWN_RIGHT, SPR_WALK_RIGHT, SPR_WALK_UP, SPR_WALK_UP_RIGHT, SPRNUM} Pose;
@@ -196,6 +196,7 @@ class Player : public MobileObj {
 		int score;
 		Sprite *sprites[SPRNUM];
 		Sprite *spr_shadow;
+		Combatant *combatant;
 };
 
 #endif

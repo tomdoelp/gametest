@@ -1,5 +1,6 @@
 #include "obj.h"
 #include "world.h"
+#include "battle.h" 
 
 /* Basic Object */
 Obj::Obj(){
@@ -297,14 +298,15 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
-	alpha = 0.0f;
+/*	alpha = 0.0f; */
 	solid = true;
-	z = 0.0f;
+/*	z = 0.0f; */
 
 	set_sprite(sheet, 5);
 
-	tweens.push(new Tween<float>(&alpha, 1.0f, 60, 0.01f)); 
-	tweens.push(new Tween<float>(&z, 8.0f, 60, 0.01f)); 
+	tweens.push(new Tween<float>(&alpha, 0.0f, 1.0f, 60, 0.01f)); 
+/*	tweens.push(new Tween<float>(&z, 0.0f, 8.0f, 60, 0.01f));  */
+	tweens.push(new BounceTween<float>(&z, 8.0f, 4.0f, 60, 0.01f)); 
 	// TODO simultaneous tweens
 	// OR they work? Check this out further.
 }
@@ -358,6 +360,8 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	score = 0;
 	aspeed = 0;
 	spritenum = 6;
+	combatant = new Combatant("Death");
+	combatant->add_action(ACT_RUN);
 
 	for (int i = 0; i < spritenum; i++) {
 		sprites[i] = (*sheet)[i];
@@ -375,6 +379,11 @@ Player::~Player() {
 	if (world) {
 		world->set_player(NULL);
 		world->set_view_focus(NULL);
+	}
+
+	if (combatant) {
+		delete combatant;
+		combatant = NULL;
 	}
 }
 
@@ -512,24 +521,6 @@ void Player::update() {
 		if (intersection.get_y() == 0)
 			intersection.set_y(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_y());
 
-		/*
-		   if (intersection.get_x() == 0)
-		   intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_x());
-		   if (intersection.get_y() == 0)
-		   intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP).get_y());
-		   if (intersection.get_x() == 0)
-		   intersection.set_x(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_x());
-		   if (intersection.get_y() == 0)
-		   intersection.set_y(world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_DUMMY).get_y());
-		   */
-
-
-
-		/*
-		   if (intersection.get_x() == 0 && intersection.get_y() == 0) {
-		   intersection = world->get_object_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy), OBJ_PROP);
-		   }
-		   */
 		dx += intersection.get_x();
 		dy += intersection.get_y();
 	}
@@ -570,3 +561,5 @@ void Player::draw() {
 }
 
 Box Player::get_bbox() const { return Box(x-w/2, y-h+2, w, h); }
+
+Combatant *Player::get_combatant() const { return this->combatant; }

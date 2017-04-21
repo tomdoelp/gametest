@@ -11,13 +11,15 @@
 #include <allegro5/allegro_ttf.h>
 
 #include "global.h"
-#include "obj.h"
+/*#include "obj.h" */
 #include "sprite.h"
 #include "load.h"
 #include "level.h"
 
 
+class Obj;
 class PhysicalObj;
+class VisibleObj;
 class View {
 	public:
 		View();

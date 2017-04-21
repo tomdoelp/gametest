@@ -1,15 +1,20 @@
 #include "world.h"
+#include "battle.h"
 
 World::World(Renderer *r) : r(r) {
 	LOG("World created");
 	m = NULL;
 	player = NULL;
+	battle = NULL;
 	sndmgr = new SoundManager(AUDIO_DEPTH);
 	sndmgr->init();
 	mode = MODE_OVERWORLD;
 	r->world = this;
 	textbox.world = this;
 	pmenu.world = this;
+
+	for (int i = 0; i < TIMERNUM; i++) 
+		timer[i] = 0;
 }
 World::~World(){
  	for (auto &o : objects) {
@@ -24,6 +29,11 @@ World::~World(){
 	if (sndmgr){
 		delete sndmgr;
 		sndmgr = NULL;
+	}
+
+	if (battle) {
+		delete battle;
+		battle = NULL;
 	}
 
 	LOG("World destroyed");
@@ -114,18 +124,21 @@ void World::update() {
 	}
 
 	switch(mode) {
-		case World::MODE_OVERWORLD:
+		case MODE_OVERWORLD:
 			for (auto &o : objects) {
 				o->update();
 			}
 			clear_dead_objects();
 			break;
-		case World::MODE_PAUSE:
+		case MODE_PAUSE:
 			pmenu.update();
 			break;
-		case World::MODE_TEXT:
+		case MODE_TEXT:
 			textbox.update();
 			break;
+		case MODE_BATTLE:
+			if (battle)
+				battle->update();
 		default:
 			break;
 	}
@@ -143,6 +156,21 @@ void World::update() {
 
 	/* double dispatch ? ? ? */
 
+	/* timers */
+	for (int i = 0; i < TIMERNUM; i++) {
+		if (timer[i] > 0) {
+			if (--timer[i] == 0) {
+				switch (i) {
+					case TIMER_TEST:
+						LOG("Test timer ding ding!");
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
 }
 
 void World::register_object(Obj *o) {
@@ -154,6 +182,23 @@ void World::set_view_focus(PhysicalObj *o) {
 }
 Player *World::get_player(){
 	return player;
+}
+
+void World::start_battle() {
+	mode = MODE_BATTLE;
+
+	if (!battle) {
+		battle = new Battle();
+		battle->world = this;
+	}
+}
+void World::end_battle() {
+	mode = MODE_OVERWORLD;
+
+	if (battle) {
+		delete battle;
+		battle = NULL;
+	}
 }
 
 void World::set_mode(WorldMode mode) { this->mode = mode; }

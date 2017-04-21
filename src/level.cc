@@ -1,5 +1,6 @@
 #include "level.h"
 #include "world.h"
+#include "obj.h"
 
 Layer::Layer(const char *name, int w, int h, std::vector<int> gids) : name(name), w(w), h(h), gids(gids) {}
 

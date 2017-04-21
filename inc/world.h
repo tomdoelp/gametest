@@ -21,10 +21,11 @@ class View;
 class Renderer;
 */
 
+class Battle;
 class World {
 	friend class Renderer;
 	public:
-		typedef enum WORLD_MODE {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_TEXT, MODE_SCENE} WorldMode;
+		typedef enum WORLD_MODE {MODE_OVERWORLD, MODE_BATTLE, MODE_PAUSE, MODE_TEXT, MODE_SCENE, MODE_DELAY, MODENUM} WorldMode;
 		World(Renderer *r);
 		virtual ~World();
 
@@ -35,6 +36,8 @@ class World {
 		void render();
 		void set_view_focus(PhysicalObj *o);
 		void set_mode(WorldMode mode);
+		void start_battle(/*...*/);
+		void end_battle();
 		WorldMode get_mode();
 
 		Player *get_player();
@@ -86,6 +89,7 @@ class World {
 	protected:
 		Map *m;
 		Renderer *r;
+		Battle *battle;
 
 		Player *player;
 
@@ -99,6 +103,9 @@ class World {
 
 		Pause pmenu;
 		Textbox textbox;
+
+		typedef enum TIMERINDEX { TIMER_TEST, TIMERNUM } TimerIndex;
+		int timer[TIMERNUM];
 
 };
 

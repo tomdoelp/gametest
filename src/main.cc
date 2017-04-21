@@ -216,9 +216,7 @@ void game_loop() {
 
 				if (key[ALLEGRO_KEY_B]) {
 					if (world.get_mode() == World::MODE_OVERWORLD)
-						world.set_mode(World::MODE_BATTLE);
-					else if (world.get_mode() == World::MODE_BATTLE)
-						world.set_mode(World::MODE_OVERWORLD);
+						world.start_battle();
 				}
 
 				/*
@@ -234,7 +232,9 @@ void game_loop() {
 				}
 
 				if (key_press[ALLEGRO_KEY_N]) {
-					world.show_text("Lorem ipsum, yo. This is a test of the emergency broadcast system. Hopefully, this will work. I have to write a lot of text to make sure, so this is just some FILLER to make sure that this text is long enough to require multiple parts to display all of it!!!"); 
+					if (world.get_mode() == World::MODE_OVERWORLD) {
+						world.show_text("Lorem ipsum, yo. This is a test of the emergency broadcast system. Hopefully, this will work. I have to write a lot of text to make sure, so this is just some FILLER to make sure that this text is long enough to require multiple parts to display all of it!!!"); 
+					}
 				}
 #endif
 				break;
