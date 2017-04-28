@@ -14,7 +14,7 @@ Obj::~Obj() {
 	while (!tweens.empty()) {
 		delete tweens.front();
 		tweens.pop();
-		LOG("Object " << id << " destroyed active tween");
+		LOG(id << " destroyed active tween");
 	}
 
 	LOG("Object " << id << " destroyed");
@@ -298,9 +298,7 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
-/*	alpha = 0.0f; */
 	solid = true;
-/*	z = 0.0f; */
 
 	set_sprite(sheet, 5);
 
@@ -353,6 +351,42 @@ void Dummy::interact() {
 }
 
 
+Enemy::Enemy(float x, float y, float w, float h, SpriteSheet *s) : MobileObj(x,y,w,h,0, SheetManager::get_sheet(SH_DUMMY)) {
+	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
+	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
+	aspeed = 0;
+	
+	set_sprite(sheet, 5);
+	combatant = new Combatant("Enemy");
+	combatant->set_parent(this);
+}
+Enemy::~Enemy() {
+	if (combatant) {
+		delete combatant;
+		combatant = NULL;
+	}
+}
+void Enemy::update() {
+	if (world) {
+		Player *p = world->get_player();
+		if (get_bbox().check_collision(p->get_bbox())) {
+			if (!invincible) {
+				invincible=true;
+				world->start_battle(combatant);
+			}
+			else {
+				invincible = false;
+			}
+		}
+	}
+
+	super::update();
+}
+Box Enemy::get_bbox() const { return Box(x-w/2, y-h+2, w, h); }
+ObjType Enemy::get_type() const { return OBJ_ENEMY; }
+void Enemy::draw() {
+	super::draw();
+}
 
 
 /* Player Object */
@@ -361,7 +395,11 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	aspeed = 0;
 	spritenum = 6;
 	combatant = new Combatant("Death");
+	combatant->set_parent(this);
+	/*	combatant->add_action<Act_Run>(combatant); */
+	/*	combatant->add_action<Act_Attack>(combatant); */
 	combatant->add_action(ACT_RUN);
+	combatant->add_action(ACT_ATT);
 
 	for (int i = 0; i < spritenum; i++) {
 		sprites[i] = (*sheet)[i];

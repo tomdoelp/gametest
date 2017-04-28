@@ -36,7 +36,9 @@ class World {
 		void render();
 		void set_view_focus(PhysicalObj *o);
 		void set_mode(WorldMode mode);
-		void start_battle(/*...*/);
+		void start_battle();
+		void start_battle(Combatant *enemy);
+		void start_battle(std::vector<Combatant *> enemies);
 		void end_battle();
 		WorldMode get_mode();
 

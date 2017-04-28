@@ -192,6 +192,22 @@ void World::start_battle() {
 		battle->world = this;
 	}
 }
+void World::start_battle(Combatant *enemy) {
+	mode = MODE_BATTLE;
+
+	if (!battle) {
+		battle = new Battle(enemy);
+		battle->world = this;
+	}
+}
+void World::start_battle(std::vector<Combatant *> enemies) {
+	mode = MODE_BATTLE;
+
+	if (!battle) {
+		battle = new Battle(enemies);
+		battle->world = this;
+	}
+}
 void World::end_battle() {
 	mode = MODE_OVERWORLD;
 

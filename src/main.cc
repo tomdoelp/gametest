@@ -241,7 +241,7 @@ void game_loop() {
 
 			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 				LOG("click");
-				world.create_visible<Dummy>(mouse_coord.get_x(), mouse_coord.get_y());
+				world.create_visible<Enemy>(mouse_coord.get_x(), mouse_coord.get_y());
 
 				break;
 

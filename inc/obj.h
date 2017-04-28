@@ -13,6 +13,18 @@
 #include "script.h"
 
 
+typedef enum OBJTYPE { 
+	OBJ, 
+	OBJ_PHYSICAL, 
+	OBJ_VISIBLE, 
+	OBJ_MOBILE, 
+	OBJ_DUMMY, 
+	OBJ_PLAYER, 
+	OBJ_PROP, 
+	OBJ_ENEMY,
+	OBJNUM
+} ObjType;
+
 class World;
 class VisibleObj;
 /* Basic object. Holds the total number of instances, an id, and can update */
@@ -135,6 +147,7 @@ class MobileObj : public VisibleObj {
 
 /* Prop. Static object (not C++ static), sprite determined by map file. Possibly solid. */
 
+typedef enum PROPTYPE { PROP_CANDELABRUM, PROP_CANDELABRUM_LIT, PROP_NUM } PropType;
 class Prop : public VisibleObj {
 	public:
 		Prop(float x, float y, PropType t);
@@ -172,6 +185,29 @@ class Dummy : public MobileObj {
 
 
 class Combatant;
+class Enemy : public MobileObj {
+	public:
+		Enemy(float x=0.0f, float y=0.0f, float w=0.0f, float h=0.0f, SpriteSheet *s=NULL);
+		virtual ~Enemy();
+		virtual void update();
+		virtual Box get_bbox() const;
+		virtual void draw();
+
+		virtual ObjType get_type() const;
+		Combatant *get_combatant() const; 
+
+		bool is_invincible() const;
+		bool is_aggro() const;
+	protected:
+		typedef MobileObj super;
+		Sprite *spr_shadow;
+		bool aggro = false;
+		bool invincible = false;
+		Combatant *combatant;
+};
+
+
+
 /* Player object. Has a score. Horizontal and vertical motion controlled with arrow keys. */
 /* Just a scratchpad for ideas, really */
 class Player : public MobileObj {
