@@ -374,9 +374,9 @@ void Enemy::update() {
 				invincible=true;
 				world->start_battle(combatant);
 			}
-			else {
-				invincible = false;
-			}
+		}
+		else {
+/*			invincible = false; */
 		}
 	}
 
