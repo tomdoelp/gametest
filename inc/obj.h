@@ -22,6 +22,7 @@ typedef enum OBJTYPE {
 	OBJ_PLAYER, 
 	OBJ_PROP, 
 	OBJ_ENEMY,
+	OBJ_ENEMY_SPIRIT,
 	OBJNUM
 } ObjType;
 
@@ -142,6 +143,7 @@ class MobileObj : public VisibleObj {
 		CompassDir direction;
 		typedef VisibleObj super;
 		float dx, dy;
+		void collide_with_tiles();
 };
 
 
@@ -184,10 +186,11 @@ class Dummy : public MobileObj {
 };
 
 
+/* An overworld enemy object! */
 class Combatant;
 class Enemy : public MobileObj {
 	public:
-		Enemy(float x=0.0f, float y=0.0f, float w=0.0f, float h=0.0f, SpriteSheet *s=NULL);
+		Enemy(float x=0.0f, float y=0.0f, float w=0.0f, float h=0.0f, SpriteSheet *s=NULL, std::string cname="Enemy");
 		virtual ~Enemy();
 		virtual void update();
 		virtual Box get_bbox() const;
@@ -206,6 +209,25 @@ class Enemy : public MobileObj {
 		Combatant *combatant;
 };
 
+
+/* A spirit that was left out for too long. Refrigerate after opening. */
+class Spirit : public Enemy /* jokes */{
+	public:
+		Spirit(float x=0.0f, float y=0.0f);
+		virtual ~Spirit();
+		virtual void update();
+		virtual ObjType get_type() const;
+	protected:
+		typedef Enemy super;
+		float maxspeed = 0.5f; 
+};
+
+
+class PartyMember : public MobileObj {
+	public:
+	protected:
+		PartyMember *ahead;
+};
 
 
 /* Player object. Has a score. Horizontal and vertical motion controlled with arrow keys. */
@@ -233,6 +255,7 @@ class Player : public MobileObj {
 		Sprite *sprites[SPRNUM];
 		Sprite *spr_shadow;
 		Combatant *combatant;
+		float maxspeed = 1.0f;
 };
 
 #endif

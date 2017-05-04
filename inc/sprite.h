@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
@@ -33,22 +34,23 @@ typedef enum SPRITE_ORIGIN { ORIGIN_DEFAULT, ORIGIN_CENTER_MIDDLE, ORIGIN_CENTER
 class Sprite {
 	public:
 		Sprite(ALLEGRO_BITMAP *sheet, float w, float h, int frames=1, float gap=0, float offx=0, float offy=0, float ox=0, float oy=0);
-		Sprite(const char* name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
+		Sprite(std::string name, ALLEGRO_BITMAP *sheet, std::vector<Box> framearray, float w, float h, int n, float ox=0, float oy=0);
 		~Sprite();
 
-		float get_x();
-		float get_y();
-		float get_w();
-		float get_h();
-		int getframes();
-		const char *getname();
+		float get_x() const;
+		float get_y() const;
+		float get_w() const;
+		float get_h() const;
+		int getframes() const;
+		std::string getname() const;
 
 		void sprite_center_origin(Origin o, float offsetx=0, float offsety=0);
 		void sprite_set_origin(float ox, float oy);
+		void set_name(std::string str);
 
 		void sprite_draw(float destx, float desty, int f=0, int flags=0, ALLEGRO_COLOR blend=al_map_rgba_f(1.0f,1.0f,1.0f,1.0f), float angle=0, float xscale=1, float yscale=1);
 	protected:
-		const char *name;
+		std::string name="spr";
 		std::vector< ALLEGRO_BITMAP* > subimages;
 
 		float w, h;
@@ -70,9 +72,9 @@ class SpriteSheet {
 		ALLEGRO_BITMAP *getbitmap();
 
 		Sprite *getsprite(int i);
-		Sprite *getsprite(const char *name);
+		Sprite *getsprite(std::string str);
 		Sprite *operator[](int i);
-		Sprite *operator[](const char *name);
+		Sprite *operator[](std::string str);
 	private:
 		ALLEGRO_BITMAP *sheet;
 		float w; /* total sheet width */

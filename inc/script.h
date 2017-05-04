@@ -16,8 +16,8 @@ template <class T> class Tween : public GenericTween {
 			*var = init;
 			amount = (fin - *var) / frames;
 		}
-		~Tween<T>() {}
-		bool step() {
+		virtual ~Tween<T>() {}
+		virtual bool step() {
 			T diff = MAX(fin, *var) - MIN(fin, *var);
 			if (diff > threshold) {
 				*var += amount;
@@ -31,7 +31,7 @@ template <class T> class Tween : public GenericTween {
 		}
 
 
-	private:
+	protected:
 		T *var;
 		T fin;
 		T amount;
@@ -42,6 +42,28 @@ template <class T> class Tween : public GenericTween {
 		T threshold;
 		int timer;
 };
+
+/*
+template <class T> class CallbackTween : public Tween {
+	public:
+		CallbackTween<T>(T *var, T init, T fin, int frames, T threshold, void (*callback)()) : Tween(var, init, fin, frames, threshold), callback(callback) {}
+		~CallbackTween<T>() {}
+
+		bool step() {
+			bool res = super::step();
+
+			if (!res) {
+				(*callback)();
+			}
+
+			return res;
+		}
+
+	protected:
+		typedef Tween super;
+		void (*callback)();
+};
+*/
 
 template <class T> class BounceTween : public GenericTween {
 	public:
@@ -92,6 +114,7 @@ template <class T> class BounceTween : public GenericTween {
 };
 
 
+/* random tween for shakes */
 /* LoopTween with stop function, pingpong, norepeatends, loop points separate from starting value, etc */
 
 #endif

@@ -40,7 +40,7 @@ SpriteSheet::SpriteSheet(const char *fname, const char* jname) {
 			strips[i].emplace_back(fx,fy,fw,fh); 
 		}
 		sprites.emplace_back(
-				data["sprites"][i]["name"].get<std::string>().c_str(),
+				data["sprites"][i]["name"].get<std::string>(),
 				sheet, 
 				strips[i], 
 				strips[i][0].get_w(), 
@@ -64,9 +64,9 @@ Sprite *SpriteSheet::getsprite(int i) {
 	}
 	else return NULL;
 }
-Sprite *SpriteSheet::getsprite(const char* name) {
+Sprite *SpriteSheet::getsprite(std::string str) {
 	for (auto &spr : sprites) {
-		if (!strcmp(name, spr.getname()))
+		if (str == spr.getname())
 			return &spr;
 	}
 	return NULL;
@@ -74,8 +74,8 @@ Sprite *SpriteSheet::getsprite(const char* name) {
 Sprite *SpriteSheet::operator[](int i) {
 	return getsprite(i);
 }
-Sprite *SpriteSheet::operator[](const char* name) {
-	return getsprite(name);
+Sprite *SpriteSheet::operator[](std::string str) {
+	return getsprite(str);
 }
 
 
@@ -98,9 +98,8 @@ Sprite::Sprite(
 			subimages[i] = al_create_sub_bitmap(sheet, offx + (i*w + i*gap), offy, w, h);
 		}
 	}
-	name = "spr";
 }
-Sprite::Sprite(const char *name, ALLEGRO_BITMAP *sheet, std::vector< Box > framearray, float w, float h, int n, float ox, float oy) : name(name), w(w), h(h), frames(n), x(ox), y(oy) {
+Sprite::Sprite(std::string name, ALLEGRO_BITMAP *sheet, std::vector< Box > framearray, float w, float h, int n, float ox, float oy) : name(name), w(w), h(h), frames(n), x(ox), y(oy) {
 	LOG("Sprite " << name << " created");
 	if (sheet) {
 		subimages.reserve(frames);
@@ -124,12 +123,13 @@ Sprite::~Sprite() {
 /*	LOG("Sprite destroyed"); */
 }
 
-float Sprite::get_x() { return x; }
-float Sprite::get_y() { return y; }
-float Sprite::get_w() { return w; }
-float Sprite::get_h() { return h; }
-int Sprite::getframes() { return frames; }
-const char *Sprite::getname() { return name; }
+float Sprite::get_x() const { return x; }
+float Sprite::get_y() const { return y; }
+float Sprite::get_w() const { return w; }
+float Sprite::get_h() const { return h; }
+int Sprite::getframes() const { return frames; }
+std::string Sprite::getname() const { return name; }
+void Sprite::set_name(std::string str) { name = str; }
 
 void Sprite::sprite_center_origin(Origin o, float offsetx, float offsety) {
 	switch (o) {

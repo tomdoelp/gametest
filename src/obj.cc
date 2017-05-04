@@ -236,6 +236,20 @@ void MobileObj::face_point(float ox, float oy) {
 			direction = DIR_SW;
 	}
 }
+void MobileObj::collide_with_tiles() {
+	/* Tile collision handling */
+	if (world && (dx != 0 || dy != 0)) {
+		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
+
+		if (intersection.get_x() == 0)
+			intersection.set_x(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_x());
+		if (intersection.get_y() == 0)
+			intersection.set_y(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_y());
+
+		dx += intersection.get_x();
+		dy += intersection.get_y();
+	}
+}
 
 
 /* Prop object */
@@ -351,13 +365,15 @@ void Dummy::interact() {
 }
 
 
-Enemy::Enemy(float x, float y, float w, float h, SpriteSheet *s) : MobileObj(x,y,w,h,0, SheetManager::get_sheet(SH_DUMMY)) {
+Enemy::Enemy(float x, float y, float w, float h, SpriteSheet *s, std::string cname) : MobileObj(x,y,w,h,0, s) {
 	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
 	aspeed = 0;
 	
-	set_sprite(sheet, 5);
-	combatant = new Combatant("Enemy");
+	/*
+	set_sprite(SheetManager::get_sheet(SH_DUMMY), 5);
+	*/
+	combatant = new Combatant(cname);
 	combatant->set_parent(this);
 }
 Enemy::~Enemy() {
@@ -385,8 +401,38 @@ void Enemy::update() {
 Box Enemy::get_bbox() const { return Box(x-w/2, y-h+2, w, h); }
 ObjType Enemy::get_type() const { return OBJ_ENEMY; }
 void Enemy::draw() {
+	spr_shadow->sprite_draw(x,y+1,0.0f);
 	super::draw();
 }
+
+Spirit::Spirit(float x, float y) : Enemy(x, y, 16, 8, SheetManager::get_sheet(SH_SPIRIT), "Stale Spirit") {
+	set_sprite(sheet, 0);
+	combatant->add_action(ACT_ATT);
+	aspeed = 1.0f / 25.0f;
+	z = 4.0f;
+}
+Spirit::~Spirit() {}
+void Spirit::update() {
+	if (world->get_player()->get_x() > x)
+		dx = maxspeed;
+	else if (world->get_player()->get_x() < x)
+		dx = -maxspeed;
+	else
+		dx = 0;
+
+	if (world->get_player()->get_y() > y)
+		dy = maxspeed;
+	else if (world->get_player()->get_y() < y)
+		dy = -maxspeed;
+	else
+		dy = 0;
+
+	collide_with_tiles();
+
+	super::update();
+}
+ObjType Spirit::get_type() const { return OBJ_ENEMY_SPIRIT; }
+
 
 
 /* Player Object */
@@ -461,9 +507,9 @@ void Player::update() {
 
 	/* vertical control */
 	if (kmap(ALLEGRO_KEY_UP)) {
-		dy = -1;
+		dy = -maxspeed;
 	} else if (kmap(ALLEGRO_KEY_DOWN)) {
-		dy = 1;
+		dy = maxspeed;
 	} else
 		dy = 0;
 
@@ -472,9 +518,9 @@ void Player::update() {
 
 	/* horizontal control */
 	if (kmap(ALLEGRO_KEY_LEFT)) {
-		dx = -1;
+		dx = -maxspeed;
 	} else if (kmap(ALLEGRO_KEY_RIGHT)) {
-		dx = 1;
+		dx = maxspeed;
 	} else
 		dx = 0;
 
@@ -551,6 +597,7 @@ void Player::update() {
 		aspeed = 6.0f/60.0f;
 
 	/* Tile collision handling */
+	/*
 	if (world && (dx != 0 || dy != 0)) {
 		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
 
@@ -562,6 +609,8 @@ void Player::update() {
 		dx += intersection.get_x();
 		dy += intersection.get_y();
 	}
+	*/
+	collide_with_tiles();
 
 	/* update position based on speed */
 	super::update();

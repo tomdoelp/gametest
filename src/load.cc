@@ -62,6 +62,8 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 		return SheetList[sheet];
 	}
 
+	/* ye gods this is going to be huge isn't it */
+	/* $$SPRITE_SHEET_SWITCH */
 	switch (sheet) {
 		case SH_DEATH:
 			SheetList[sheet] = new SpriteSheet("sprites/death/death2.png", "sprites/death/death2.json");
@@ -69,13 +71,14 @@ SpriteSheet *SheetManager::get_sheet(SheetName sheet) {
 		case SH_SHADOW:
 			SheetList[sheet] = new SpriteSheet("sprites/shadow.png", "sprites/shadow.json");
 			break;
-
 		case SH_DUMMY:
 			SheetList[sheet] = new SpriteSheet("sprites/dummy/dummy2.png", "sprites/dummy/dummy2.json");
 			break;
-
 		case SH_CASTLE_PROPS:
 			SheetList[sheet] = new SpriteSheet("sprites/props/castleprops.png", "sprites/props/castleprops.json");
+			break;
+		case SH_SPIRIT:
+			SheetList[sheet] = new SpriteSheet("sprites/enemies/spirit.png", "sprites/enemies/spirit.json");
 			break;
 		default:
 			break;
@@ -109,6 +112,7 @@ void SoundManager::init(){
 	al_attach_mixer_to_voice(master_mixer, voice); 
 /*	al_set_default_mixer(sound_mixer); */
 
+	/* $$SAMPLE_FILENAME_LIST */
 	const char *fnames[] = {
 		"samples/accept.wav", 
 		"samples/select.wav",
@@ -118,7 +122,8 @@ void SoundManager::init(){
 		"samples/tick2.wav",
 		"samples/okdesuka.wav",
 /*		"samples/collect.wav" */
-		"samples/ignite.wav"
+		"samples/ignite.wav",
+		"samples/hit.wav"
 	};
 
 	for(int i =0; i < SND_NUM; i++){

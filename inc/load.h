@@ -17,11 +17,13 @@ json load_json(const char* fname);
 ALLEGRO_SAMPLE *load_sound(const char* fname);
 ALLEGRO_AUDIO_STREAM *load_stream(const char* fname, int buffers=4, int samples=2048);
 
+/* $$SPRITE_SHEET_ENUM_LIST */
 typedef enum SHNAME { 
 	SH_DEATH, 
 	SH_SHADOW, 
 	SH_DUMMY, 
 	SH_CASTLE_PROPS, 
+	SH_SPIRIT,
 	SH_NUM 
 } SheetName;
 class SheetManager{
@@ -36,10 +38,12 @@ class SheetManager{
 
 };
 
+/* $$MUSIC_ENUM_LIST */
 typedef enum MUSNAME { 
 	MUS_TEST, 
 	MUS_NUM 
 } MusicName;
+/* $$SAMPLE_ENUM_LIST */
 typedef enum SNDNAME { 
 	SND_ACCEPT, 
 	SND_SELECT, 
@@ -48,10 +52,12 @@ typedef enum SNDNAME {
 	SND_TICK, 
 	SND_COLLECT, 
 	SND_IGNITE, 
+	SND_HIT,
 	SND_NUM 
 } SoundName;
 
 /* Unlike SpriteSheets, we're just going to load all sounds at the beginning. */
+/* Hopefully it won't be a problem */
 class SoundManager {
 	public:
 		SoundManager(unsigned int depth);

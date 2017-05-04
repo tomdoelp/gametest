@@ -42,8 +42,11 @@ class SheetManager;
 const float FPS = 60;
 const int WINDOW_W = 1024;
 const int WINDOW_H = 768;
-const int SCREEN_W = 320;
-const int SCREEN_H = 240;
+const int SCREEN_W = 320; 
+const int SCREEN_H = 240; 
+const int TILE_SIDE = 16;
+/*const int SCREEN_W = 640; */
+/*const int SCREEN_H = 360; */
 const unsigned int AUDIO_DEPTH_GOOD = 44100;
 const unsigned int AUDIO_DEPTH_SHIT = 11025;
 const unsigned int AUDIO_DEPTH = AUDIO_DEPTH_GOOD;
