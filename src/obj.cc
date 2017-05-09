@@ -408,7 +408,7 @@ void Enemy::draw() {
 Spirit::Spirit(float x, float y) : Enemy(x, y, 16, 8, SheetManager::get_sheet(SH_SPIRIT), "Stale Spirit") {
 	set_sprite(sheet, 0);
 	combatant->add_action(ACT_ATT);
-	aspeed = 1.0f / 25.0f;
+	aspeed = 1.0f / 20.0f;
 	z = 4.0f;
 }
 Spirit::~Spirit() {}

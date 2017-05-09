@@ -1,6 +1,7 @@
 #include "render.h"
 #include "world.h"
 #include "obj.h"
+#include "battle.h"
 
 View::View() {}
 View::~View() {}
@@ -217,7 +218,7 @@ void Renderer::render(Map &m) {
 			world->textbox.draw(v.get_x(), v.get_y());
 			break;
 		case World::MODE_BATTLE:
-			/* world->battle.draw(v.get_x(), v.get_y()) */
+			world->battle->draw(v.get_x(), v.get_y());
 			break;
 		default:
 			break;

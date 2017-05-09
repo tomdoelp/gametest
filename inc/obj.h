@@ -230,8 +230,7 @@ class PartyMember : public MobileObj {
 };
 
 
-/* Player object. Has a score. Horizontal and vertical motion controlled with arrow keys. */
-/* Just a scratchpad for ideas, really */
+/* Player object. */
 class Player : public MobileObj {
 	public:
 		Player();
