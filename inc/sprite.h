@@ -43,6 +43,8 @@ class Sprite {
 		float get_h() const;
 		int getframes() const;
 		std::string getname() const;
+		ALLEGRO_BITMAP *get_bitmap(int i=0) const;
+		ALLEGRO_BITMAP *operator[](int i) const;
 
 		void sprite_center_origin(Origin o, float offsetx=0, float offsety=0);
 		void sprite_set_origin(float ox, float oy);
@@ -69,10 +71,10 @@ class SpriteSheet {
 		float get_w();
 		float get_h();
 
-		ALLEGRO_BITMAP *getbitmap();
+		ALLEGRO_BITMAP *get_bitmap();
 
-		Sprite *getsprite(int i);
-		Sprite *getsprite(std::string str);
+		Sprite *get_sprite(int i);
+		Sprite *get_sprite(std::string str);
 		Sprite *operator[](int i);
 		Sprite *operator[](std::string str);
 	private:

@@ -39,6 +39,8 @@ class World {
 		void start_battle();
 		void start_battle(Combatant *enemy);
 		void start_battle(std::vector<Combatant *> enemies);
+		void pause_battle();
+		void resume_battle();
 		void end_battle();
 		WorldMode get_mode();
 

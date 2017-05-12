@@ -408,6 +408,7 @@ void Enemy::draw() {
 Spirit::Spirit(float x, float y) : Enemy(x, y, 16, 8, SheetManager::get_sheet(SH_SPIRIT), "Stale Spirit") {
 	set_sprite(sheet, 0);
 	combatant->add_action(ACT_ATT);
+	combatant->set_image(sheet->get_sprite(1)->get_bitmap());
 	aspeed = 1.0f / 20.0f;
 	z = 4.0f;
 }
@@ -429,6 +430,12 @@ void Spirit::update() {
 
 	collide_with_tiles();
 
+	/* face the way yer going */
+	if (dx > 0)
+		hflip = true;
+	if (dx < 0)
+		hflip = false;
+
 	super::update();
 }
 ObjType Spirit::get_type() const { return OBJ_ENEMY_SPIRIT; }
@@ -440,12 +447,6 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	score = 0;
 	aspeed = 0;
 	spritenum = 6;
-	combatant = new Combatant("Death");
-	combatant->set_parent(this);
-	/*	combatant->add_action<Act_Run>(combatant); */
-	/*	combatant->add_action<Act_Attack>(combatant); */
-	combatant->add_action(ACT_RUN);
-	combatant->add_action(ACT_ATT);
 
 	for (int i = 0; i < spritenum; i++) {
 		sprites[i] = (*sheet)[i];
@@ -457,6 +458,12 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
 
+	combatant = new Combatant("Death", sprites[SPR_STAND]->get_bitmap(DIR_N));
+	combatant->set_parent(this);
+	/*	combatant->add_action<Act_Run>(combatant); */
+	/*	combatant->add_action<Act_Attack>(combatant); */
+	combatant->add_action(ACT_RUN);
+	combatant->add_action(ACT_ATT);
 }
 ObjType Player::get_type() const { return OBJ_PLAYER; }
 Player::~Player() {
@@ -597,19 +604,6 @@ void Player::update() {
 		aspeed = 6.0f/60.0f;
 
 	/* Tile collision handling */
-	/*
-	if (world && (dx != 0 || dy != 0)) {
-		Vec2f intersection = world->get_map()->get_collision_vec(get_bbox(), get_bbox()+Vec2f(dx,dy));
-
-		if (intersection.get_x() == 0)
-			intersection.set_x(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_x());
-		if (intersection.get_y() == 0)
-			intersection.set_y(world->get_object_collision_solid(get_bbox(), get_bbox()+Vec2f(dx,dy)).get_y());
-
-		dx += intersection.get_x();
-		dy += intersection.get_y();
-	}
-	*/
 	collide_with_tiles();
 
 	/* update position based on speed */

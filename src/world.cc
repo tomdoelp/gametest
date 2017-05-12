@@ -128,7 +128,7 @@ void World::update() {
 			for (auto &o : objects) {
 				o->update();
 			}
-			clear_dead_objects();
+/*			clear_dead_objects(); */
 			break;
 		case MODE_PAUSE:
 			pmenu.update();
@@ -143,18 +143,7 @@ void World::update() {
 			break;
 	}
 
-	/*		for (auto &o : objects) { 
-			if (o->is_active()){
-			for (auto &other : objects) {
-			if (other->is_active() && *o != *other && obj_collision(o,other)) {
-			other->collide(o);
-			}
-			}
-			}
-			}
-			*/
-
-	/* double dispatch ? ? ? */
+	clear_dead_objects();
 
 	/* timers */
 	for (int i = 0; i < TIMERNUM; i++) {
@@ -185,30 +174,37 @@ Player *World::get_player(){
 }
 
 void World::start_battle() {
+	sndmgr->play_sound(SND_BATTLE_START);
+	sndmgr->play_music(MUS_BATTLE1);
 	mode = MODE_BATTLE;
 
 	if (!battle) {
-		battle = new Battle();
+		battle = new Battle(r->v.get_x(), r->v.get_y());
 		battle->world = this;
 	}
 }
 void World::start_battle(Combatant *enemy) {
+	sndmgr->play_sound(SND_BATTLE_START);
+	sndmgr->play_music(MUS_BATTLE1);
 	mode = MODE_BATTLE;
 
 	if (!battle) {
-		battle = new Battle(enemy);
+		battle = new Battle(r->v.get_x(), r->v.get_y(), enemy);
 		battle->world = this;
 	}
 }
 void World::start_battle(std::vector<Combatant *> enemies) {
+	sndmgr->play_sound(SND_BATTLE_START);
+	sndmgr->play_music(MUS_BATTLE1);
 	mode = MODE_BATTLE;
 
 	if (!battle) {
-		battle = new Battle(enemies);
+		battle = new Battle(r->v.get_x(), r->v.get_y(), enemies);
 		battle->world = this;
 	}
 }
 void World::end_battle() {
+	sndmgr->play_music(MUS_TEST);
 	mode = MODE_OVERWORLD;
 
 	if (battle) {

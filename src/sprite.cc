@@ -58,13 +58,13 @@ SpriteSheet::~SpriteSheet(){
 	sheet = NULL;
 	LOG("Sheet destroyed");
 }
-Sprite *SpriteSheet::getsprite(int i) {
+Sprite *SpriteSheet::get_sprite(int i) {
 	if (i >= 0 && i < sprnum) {
 		return &sprites[i];
 	}
 	else return NULL;
 }
-Sprite *SpriteSheet::getsprite(std::string str) {
+Sprite *SpriteSheet::get_sprite(std::string str) {
 	for (auto &spr : sprites) {
 		if (str == spr.getname())
 			return &spr;
@@ -72,10 +72,10 @@ Sprite *SpriteSheet::getsprite(std::string str) {
 	return NULL;
 }
 Sprite *SpriteSheet::operator[](int i) {
-	return getsprite(i);
+	return get_sprite(i);
 }
 Sprite *SpriteSheet::operator[](std::string str) {
-	return getsprite(str);
+	return get_sprite(str);
 }
 
 
@@ -129,6 +129,16 @@ float Sprite::get_w() const { return w; }
 float Sprite::get_h() const { return h; }
 int Sprite::getframes() const { return frames; }
 std::string Sprite::getname() const { return name; }
+
+ALLEGRO_BITMAP *Sprite::get_bitmap(int i) const {
+	return subimages[i];
+}
+ALLEGRO_BITMAP *Sprite::operator [](int i) const {
+	return get_bitmap(i);
+}
+
+
+
 void Sprite::set_name(std::string str) { name = str; }
 
 void Sprite::sprite_center_origin(Origin o, float offsetx, float offsety) {

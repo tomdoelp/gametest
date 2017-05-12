@@ -41,6 +41,8 @@ class SheetManager{
 /* $$MUSIC_ENUM_LIST */
 typedef enum MUSNAME { 
 	MUS_TEST, 
+	MUS_BATTLE_END,
+	MUS_BATTLE1,
 	MUS_NUM 
 } MusicName;
 /* $$SAMPLE_ENUM_LIST */
@@ -53,6 +55,7 @@ typedef enum SNDNAME {
 	SND_COLLECT, 
 	SND_IGNITE, 
 	SND_HIT,
+	SND_BATTLE_START,
 	SND_NUM 
 } SoundName;
 
@@ -64,7 +67,7 @@ class SoundManager {
 		~SoundManager();
 
 		ALLEGRO_SAMPLE_ID play_sound(SoundName sound, float gain=1.0f, float speed=1.0f, float pan = ALLEGRO_AUDIO_PAN_NONE);
-		ALLEGRO_AUDIO_STREAM *play_music(MusicName music);
+		ALLEGRO_AUDIO_STREAM *play_music(MusicName music, bool loop=true);
 		void stop_music();
 		void clear_sounds();
 		void init();

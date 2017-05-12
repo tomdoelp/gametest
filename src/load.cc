@@ -123,7 +123,8 @@ void SoundManager::init(){
 		"samples/okdesuka.wav",
 /*		"samples/collect.wav" */
 		"samples/ignite.wav",
-		"samples/hit.wav"
+		"samples/hit.wav",
+		"samples/battle_start.wav"
 	};
 
 	for(int i =0; i < SND_NUM; i++){
@@ -142,9 +143,17 @@ void SoundManager::init(){
 	current_song = NULL;
 }
 
-ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music) {
+ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music, bool loop) {
+	ALLEGRO_PLAYMODE mode;
+	if (loop)
+		mode = ALLEGRO_PLAYMODE_LOOP;
+	else
+		mode = ALLEGRO_PLAYMODE_ONCE;
+	
 	const char *fnames[] = {
-		"music/offbeat.xm"
+		"music/offbeat.xm",
+		"music/victory.xm",
+		"music/punkrockshow.xm"
 	};
 	if (current_song)
 		al_destroy_audio_stream(current_song);
@@ -152,7 +161,7 @@ ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music) {
 	current_song = load_stream(fnames[music]);
 	if (current_song) {
 		al_attach_audio_stream_to_mixer(current_song, music_mixer);
-		al_set_audio_stream_playmode(current_song, ALLEGRO_PLAYMODE_LOOP);
+		al_set_audio_stream_playmode(current_song, mode);
 		al_set_audio_stream_gain(current_song, 0.4f);
 		al_set_audio_stream_playing(current_song, true);
 	}
