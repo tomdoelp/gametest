@@ -316,9 +316,8 @@ Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_she
 
 	set_sprite(sheet, 5);
 
-	tweens.push(new Tween<float>(&alpha, 0.0f, 1.0f, 60, 0.01f)); 
-/*	tweens.push(new Tween<float>(&z, 0.0f, 8.0f, 60, 0.01f));  */
-	tweens.push(new BounceTween<float>(&z, 8.0f, 4.0f, 60, 0.01f)); 
+	tweens.push(new Tween<float>(&alpha, 0.0f, 1.0f, 60));  
+	tweens.push(new LoopTween<float>(&z, 8.0f, 4.0f, 60));  
 	// TODO simultaneous tweens
 	// OR they work? Check this out further.
 }
@@ -464,6 +463,7 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 	/*	combatant->add_action<Act_Attack>(combatant); */
 	combatant->add_action(ACT_RUN);
 	combatant->add_action(ACT_ATT);
+	combatant->set_speed(2);
 }
 ObjType Player::get_type() const { return OBJ_PLAYER; }
 Player::~Player() {

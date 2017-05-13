@@ -153,7 +153,7 @@ ALLEGRO_AUDIO_STREAM *SoundManager::play_music(MusicName music, bool loop) {
 	const char *fnames[] = {
 		"music/offbeat.xm",
 		"music/victory.xm",
-		"music/punkrockshow.xm"
+		"music/Untitled.xm"
 	};
 	if (current_song)
 		al_destroy_audio_stream(current_song);
