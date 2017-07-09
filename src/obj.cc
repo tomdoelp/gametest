@@ -39,11 +39,13 @@ void Obj::update() {
 void Obj::map_start() {}
 void Obj::map_end() {}
 bool Obj::destroy() {
+	dead=true;
 	if (!world)
 		return false;
 
 	world->queue_destroy(this);
 	return true;
+	/* TODO make World just check for dead instead of keeping a vector of deads */
 }
 /*void Obj::collide(Obj *other) {} */
 void Obj::set_active(bool active) { this->active = active; }
@@ -459,8 +461,6 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 
 	combatant = new Combatant("Death", sprites[SPR_STAND]->get_bitmap(DIR_N));
 	combatant->set_parent(this);
-	/*	combatant->add_action<Act_Run>(combatant); */
-	/*	combatant->add_action<Act_Attack>(combatant); */
 	combatant->add_action(ACT_RUN);
 	combatant->add_action(ACT_ATT);
 	combatant->set_speed(2);
@@ -477,6 +477,8 @@ Player::~Player() {
 		combatant = NULL;
 	}
 }
+
+bool Player::is_sneaking() const { return sneaking; }
 
 void Player::update() {
 	/* interact with x */
@@ -509,6 +511,34 @@ void Player::update() {
 				break;
 			default:
 				break;
+		}
+	}
+
+	/* sneak timer */
+	if (sneak_cooldown > 0) {
+		sneak_cooldown--;
+		if (sneak_cooldown <= 0) {
+			can_sneak = true;
+			sneak_cooldown = 0;
+			/* TODO play a sound */
+			LOG("cooldown");
+		}
+	}
+	if (sneaking && (!kmap(ALLEGRO_KEY_Z) || sneak_time++ >= sneak_time_max)) {
+		sneaking = false;
+		sneak_time = 0;
+		LOG("unsneak");
+		sneak_cooldown = 60*2;
+	}
+
+	/* activate sneak with z */
+	if (key_press[ALLEGRO_KEY_Z]) {
+		if (can_sneak) {
+			sneaking = true;
+			can_sneak = false;
+			/* TODO create mist effect */
+			/* TODO play a sneaking sound */
+			LOG("sneaky");
 		}
 	}
 
@@ -628,16 +658,31 @@ void Player::draw() {
 		if (aspeed == 0)
 			frame_index = direction;
 
-		spr_shadow->sprite_draw(x,y+1,0.0f);
+		if (sneaking) {
+			float shad_alpha = 0.5;
+			spr_shadow->sprite_draw(x,y+1,0.0f, 0, al_map_rgba_f(1.0f * shad_alpha, 1.0f * shad_alpha, 1.0f * shad_alpha, shad_alpha));
 
-		super::draw(); 
-
-		/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE); */
-		/*		float a = 0.1f; */
-		/*		sprite->sprite_draw(x,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
-		/*		sprite->sprite_draw(x+1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
-		/*		sprite->sprite_draw(x-1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); */
-		/*		al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA); */
+			int flags = 0;
+			if (hflip)
+				flags = flags | ALLEGRO_FLIP_HORIZONTAL;
+			if (vflip)
+				flags = flags | ALLEGRO_FLIP_VERTICAL;
+/*			al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);  */
+			float a = 0.1f; 
+			sprite->sprite_draw(x,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); 
+			sprite->sprite_draw(x+1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); 
+			sprite->sprite_draw(x-1,y,frame_index, flags, al_map_rgba_f(a,a,a,a)); 
+/*			al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);  */
+			if (world && world->get_mode() == World::MODE_OVERWORLD)
+				frame_index += aspeed;
+			if (frame_index >= sprite->getframes() && !loop) {
+				aspeed = 0;
+				frame_index = sprite->getframes();
+			}
+		} else {
+			spr_shadow->sprite_draw(x,y+1,0.0f);
+			super::draw(); 
+		}
 	}
 }
 

@@ -49,6 +49,7 @@ class Obj {
 		bool is_active() const;
 		bool is_persistent() const;
 		bool is_solid() const;
+		bool is_dead() const;
 		int get_id() const;
 		virtual Box get_bbox() const;
 		float distance_from_point(float x, float y);
@@ -66,6 +67,7 @@ class Obj {
 		bool persistent;
 		std::queue<GenericTween*> tweens;
 		bool solid = false;
+		bool dead = false;
 };
 
 
@@ -242,6 +244,8 @@ class Player : public MobileObj {
 		virtual void map_start();
 		virtual void draw();
 
+		bool is_sneaking() const;
+
 		virtual Box get_bbox() const;
 
 		virtual ObjType get_type() const;
@@ -255,6 +259,13 @@ class Player : public MobileObj {
 		Sprite *spr_shadow;
 		Combatant *combatant;
 		float maxspeed = 1.0f;
+
+		bool can_sneak = true;
+		bool sneaking = false;
+		int sneak_time = 0;
+		int sneak_time_max = 60*5;
+		int sneak_cooldown = 0;
+
 };
 
 #endif
