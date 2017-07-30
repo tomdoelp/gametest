@@ -194,6 +194,7 @@ void World::start_battle(Combatant *enemy) {
 	}
 }
 void World::start_battle(std::vector<Combatant *> enemies) {
+	/*
 	sndmgr->play_sound(SND_BATTLE_START);
 	sndmgr->play_music(MUS_BATTLE1);
 	mode = MODE_BATTLE;
@@ -202,8 +203,10 @@ void World::start_battle(std::vector<Combatant *> enemies) {
 		battle = new Battle(r->v.get_x(), r->v.get_y(), enemies);
 		battle->world = this;
 	}
+	*/
 }
 void World::end_battle() {
+	/*
 	sndmgr->play_music(MUS_TEST);
 	mode = MODE_OVERWORLD;
 
@@ -211,6 +214,7 @@ void World::end_battle() {
 		delete battle;
 		battle = NULL;
 	}
+	*/
 }
 
 void World::set_mode(WorldMode mode) { this->mode = mode; }

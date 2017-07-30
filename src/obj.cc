@@ -406,41 +406,6 @@ void Enemy::draw() {
 	super::draw();
 }
 
-Spirit::Spirit(float x, float y) : Enemy(x, y, 16, 8, SheetManager::get_sheet(SH_SPIRIT), "Stale Spirit") {
-	set_sprite(sheet, 0);
-	combatant->add_action(ACT_ATT);
-	combatant->set_image(sheet->get_sprite(1)->get_bitmap());
-	aspeed = 1.0f / 20.0f;
-	z = 4.0f;
-}
-Spirit::~Spirit() {}
-void Spirit::update() {
-	if (world->get_player()->get_x() > x)
-		dx = maxspeed;
-	else if (world->get_player()->get_x() < x)
-		dx = -maxspeed;
-	else
-		dx = 0;
-
-	if (world->get_player()->get_y() > y)
-		dy = maxspeed;
-	else if (world->get_player()->get_y() < y)
-		dy = -maxspeed;
-	else
-		dy = 0;
-
-	collide_with_tiles();
-
-	/* face the way yer going */
-	if (dx > 0)
-		hflip = true;
-	if (dx < 0)
-		hflip = false;
-
-	super::update();
-}
-ObjType Spirit::get_type() const { return OBJ_ENEMY_SPIRIT; }
-
 
 
 /* Player Object */

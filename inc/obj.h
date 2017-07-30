@@ -212,18 +212,6 @@ class Enemy : public MobileObj {
 };
 
 
-/* A spirit that was left out for too long. Refrigerate after opening. */
-class Spirit : public Enemy /* jokes */{
-	public:
-		Spirit(float x=0.0f, float y=0.0f);
-		virtual ~Spirit();
-		virtual void update();
-		virtual ObjType get_type() const;
-	protected:
-		typedef Enemy super;
-		float maxspeed = 0.5f; 
-};
-
 
 class PartyMember : public MobileObj {
 	public:
