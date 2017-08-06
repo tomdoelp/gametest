@@ -189,7 +189,6 @@ class Dummy : public MobileObj {
 
 
 /* An overworld enemy object! */
-class Combatant;
 class Enemy : public MobileObj {
 	public:
 		Enemy(float x=0.0f, float y=0.0f, float w=0.0f, float h=0.0f, SpriteSheet *s=NULL, std::string cname="Enemy");
@@ -199,7 +198,6 @@ class Enemy : public MobileObj {
 		virtual void draw();
 
 		virtual ObjType get_type() const;
-		Combatant *get_combatant() const; 
 
 		bool is_invincible() const;
 		bool is_aggro() const;
@@ -208,7 +206,6 @@ class Enemy : public MobileObj {
 		Sprite *spr_shadow;
 		bool aggro = false;
 		bool invincible = false;
-		Combatant *combatant;
 };
 
 
@@ -237,7 +234,6 @@ class Player : public MobileObj {
 		virtual Box get_bbox() const;
 
 		virtual ObjType get_type() const;
-		virtual Combatant *get_combatant() const;
 	protected:
 		int spritenum;
 		typedef enum pose {SPR_STAND, SPR_WALK_DOWN, SPR_WALK_DOWN_RIGHT, SPR_WALK_RIGHT, SPR_WALK_UP, SPR_WALK_UP_RIGHT, SPRNUM} Pose;
@@ -245,7 +241,6 @@ class Player : public MobileObj {
 		int score;
 		Sprite *sprites[SPRNUM];
 		Sprite *spr_shadow;
-		Combatant *combatant;
 		float maxspeed = 1.0f;
 
 		bool can_sneak = true;

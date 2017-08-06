@@ -214,11 +214,6 @@ void game_loop() {
 					redraw = true;
 				}
 
-				if (key[ALLEGRO_KEY_B]) {
-					if (world.get_mode() == World::MODE_OVERWORLD)
-						world.start_battle();
-				}
-
 				/*
 				   if (key[ALLEGRO_KEY_PAD_PLUS]) {
 				   al_set_audio_stream_speed(song, al_get_audio_stream_speed(song) + 0.1f);

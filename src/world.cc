@@ -1,11 +1,9 @@
 #include "world.h"
-#include "battle.h"
 
 World::World(Renderer *r) : r(r) {
 	LOG("World created");
 	m = NULL;
 	player = NULL;
-	battle = NULL;
 	sndmgr = new SoundManager(AUDIO_DEPTH);
 	sndmgr->init();
 	mode = MODE_OVERWORLD;
@@ -29,11 +27,6 @@ World::~World(){
 	if (sndmgr){
 		delete sndmgr;
 		sndmgr = NULL;
-	}
-
-	if (battle) {
-		delete battle;
-		battle = NULL;
 	}
 
 	LOG("World destroyed");
@@ -137,8 +130,6 @@ void World::update() {
 			textbox.update();
 			break;
 		case MODE_BATTLE:
-			if (battle)
-				battle->update();
 		default:
 			break;
 	}
@@ -173,49 +164,6 @@ Player *World::get_player(){
 	return player;
 }
 
-void World::start_battle() {
-	sndmgr->play_sound(SND_BATTLE_START);
-	sndmgr->play_music(MUS_BATTLE1);
-	mode = MODE_BATTLE;
-
-	if (!battle) {
-		battle = new Battle(r->v.get_x(), r->v.get_y());
-		battle->world = this;
-	}
-}
-void World::start_battle(Combatant *enemy) {
-	sndmgr->play_sound(SND_BATTLE_START);
-	sndmgr->play_music(MUS_BATTLE1);
-	mode = MODE_BATTLE;
-
-	if (!battle) {
-		battle = new Battle(r->v.get_x(), r->v.get_y(), enemy);
-		battle->world = this;
-	}
-}
-void World::start_battle(std::vector<Combatant *> enemies) {
-	/*
-	sndmgr->play_sound(SND_BATTLE_START);
-	sndmgr->play_music(MUS_BATTLE1);
-	mode = MODE_BATTLE;
-
-	if (!battle) {
-		battle = new Battle(r->v.get_x(), r->v.get_y(), enemies);
-		battle->world = this;
-	}
-	*/
-}
-void World::end_battle() {
-	/*
-	sndmgr->play_music(MUS_TEST);
-	mode = MODE_OVERWORLD;
-
-	if (battle) {
-		delete battle;
-		battle = NULL;
-	}
-	*/
-}
 
 void World::set_mode(WorldMode mode) { this->mode = mode; }
 World::WorldMode World::get_mode() { return mode; }

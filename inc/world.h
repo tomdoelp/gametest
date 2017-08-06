@@ -21,7 +21,6 @@ class View;
 class Renderer;
 */
 
-class Battle;
 class World {
 	friend class Renderer;
 	public:
@@ -36,12 +35,6 @@ class World {
 		void render();
 		void set_view_focus(PhysicalObj *o);
 		void set_mode(WorldMode mode);
-		void start_battle();
-		void start_battle(Combatant *enemy);
-		void start_battle(std::vector<Combatant *> enemies);
-		void pause_battle();
-		void resume_battle();
-		void end_battle();
 		WorldMode get_mode();
 
 		Player *get_player();
@@ -93,7 +86,6 @@ class World {
 	protected:
 		Map *m;
 		Renderer *r;
-		Battle *battle;
 
 		Player *player;
 

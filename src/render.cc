@@ -1,7 +1,6 @@
 #include "render.h"
 #include "world.h"
 #include "obj.h"
-#include "battle.h"
 
 View::View() {}
 View::~View() {}
@@ -193,39 +192,8 @@ void Renderer::render(Map &m) {
 /*	al_set_target_bitmap(temp_buffer);  */
 /*	al_draw_bitmap(v.get_buffer(), 0.0f, 0.0f, 0);  */
 
-	if (world->mode == World::MODE_BATTLE) {
-		if (battle_buffer == NULL) {
-			battle_buffer = al_create_bitmap(v.get_w(), v.get_h());
-			al_set_target_bitmap(battle_buffer);
-			render_scene(m, false);
-		}
-		al_set_target_bitmap(v.get_buffer());
-		al_clear_to_color(al_map_rgb(9,9,9));
-		float a = 0.05f;
-		float r = 16.0f;
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y()-r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y()-r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y()+r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y()+r, 0);
-
-
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()-r, v.get_y(), 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x()+r, v.get_y(), 0);
-
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()+r, 0);
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y()-r, 0);
-
-		al_draw_tinted_bitmap(battle_buffer, al_map_rgba_f(a, a, a, a), v.get_x(), v.get_y(), 0);
-/*		al_clear_to_color(al_map_rgba_f(0.0f,0.0f,0.0f,0.1f));  */
-	}
-	else {
-		if (battle_buffer) {
-			al_destroy_bitmap(battle_buffer);
-			battle_buffer = NULL;
-		}
-		al_set_target_bitmap(v.get_buffer());
-		render_scene(m, true);
-	}
+	al_set_target_bitmap(v.get_buffer());
+	render_scene(m, true);
 
 	/* Draw the overlay, if there should be one. */
 	switch(world->mode){
@@ -234,9 +202,6 @@ void Renderer::render(Map &m) {
 			break;
 		case World::MODE_TEXT:
 			world->textbox.draw(v.get_x(), v.get_y());
-			break;
-		case World::MODE_BATTLE:
-			world->battle->draw();
 			break;
 		default:
 			break;

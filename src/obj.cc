@@ -1,6 +1,5 @@
 #include "obj.h"
 #include "world.h"
-#include "battle.h" 
 
 /* Basic Object */
 Obj::Obj(){
@@ -374,22 +373,15 @@ Enemy::Enemy(float x, float y, float w, float h, SpriteSheet *s, std::string cna
 	/*
 	set_sprite(SheetManager::get_sheet(SH_DUMMY), 5);
 	*/
-	combatant = new Combatant(cname);
-	combatant->set_parent(this);
 }
 Enemy::~Enemy() {
-	if (combatant) {
-		delete combatant;
-		combatant = NULL;
-	}
 }
 void Enemy::update() {
 	if (world) {
 		Player *p = world->get_player();
 		if (get_bbox().check_collision(p->get_bbox())) {
 			if (!invincible) {
-				invincible=true;
-				world->start_battle(combatant);
+				//world->start_battle(combatant);
 			}
 		}
 		else {
@@ -423,23 +415,12 @@ Player::Player(float x, float y) : MobileObj(x, y, 16, 8, 0, SheetManager::get_s
 
 	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
 	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
-
-	combatant = new Combatant("Death", sprites[SPR_STAND]->get_bitmap(DIR_N));
-	combatant->set_parent(this);
-	combatant->add_action(ACT_RUN);
-	combatant->add_action(ACT_ATT);
-	combatant->set_speed(2);
 }
 ObjType Player::get_type() const { return OBJ_PLAYER; }
 Player::~Player() {
 	if (world) {
 		world->set_player(NULL);
 		world->set_view_focus(NULL);
-	}
-
-	if (combatant) {
-		delete combatant;
-		combatant = NULL;
 	}
 }
 
@@ -652,5 +633,3 @@ void Player::draw() {
 }
 
 Box Player::get_bbox() const { return Box(x-w/2, y-h+2, w, h); }
-
-Combatant *Player::get_combatant() const { return this->combatant; }
