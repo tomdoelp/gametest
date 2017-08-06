@@ -69,6 +69,7 @@ Renderer::Renderer() {}
 Renderer::~Renderer() {}
 Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 	scale_shader = create_scale_shader();
+	gray_shader = create_gray_shader();
 	temp_buffer = al_create_bitmap(v.get_w(), v.get_h());
 	battle_buffer = NULL;
 }
@@ -112,6 +113,23 @@ ALLEGRO_SHADER *Renderer::create_scale_shader() {
 	}
 	if(!al_build_shader(shader)) {
 		printf("%s\n", al_get_shader_log(shader));
+		return NULL;
+	}
+	return shader;
+}
+
+ALLEGRO_SHADER *Renderer::create_gray_shader() {
+	ALLEGRO_SHADER *shader = al_create_shader(ALLEGRO_SHADER_AUTO);
+	if (!al_attach_shader_source(shader, ALLEGRO_VERTEX_SHADER, al_get_default_shader_source(ALLEGRO_SHADER_AUTO, ALLEGRO_VERTEX_SHADER))) {
+		LOG(al_get_shader_log(shader));
+		return NULL;
+	}
+	if (!al_attach_shader_source_file(shader, ALLEGRO_PIXEL_SHADER, al_get_shader_platform(shader) == ALLEGRO_SHADER_GLSL ? "shaders/grayscale.glsl" : "shaders/grayscale.hlsl")) {
+		LOG(al_get_shader_log(shader));
+		return NULL;
+	}
+	if (!al_build_shader(shader)) {
+		LOG(al_get_shader_log(shader));
 		return NULL;
 	}
 	return shader;
@@ -227,6 +245,16 @@ void Renderer::render(Map &m) {
 
 	/*	float a = 0.5; */
 	/*	al_draw_tinted_bitmap(temp_buffer, al_map_rgba_f(a,a,a,a), v.get_x(), v.get_y(), 0); */
+
+	if (gray_shader) {
+		ALLEGRO_BITMAP *graytemp = al_create_bitmap(al_get_bitmap_width(v.get_buffer()), al_get_bitmap_height(v.get_buffer()));
+		al_set_target_bitmap(graytemp);
+		al_use_shader(gray_shader);
+		al_draw_bitmap(v.get_buffer(),0,0,0);
+		al_use_shader(NULL);
+		al_set_target_bitmap(v.get_buffer());
+		al_draw_bitmap(graytemp,v.get_x(),v.get_y(),0);
+	}
 
 	al_set_target_backbuffer(display);
 	al_clear_to_color(al_map_rgb(0,0,0));

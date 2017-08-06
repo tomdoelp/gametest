@@ -246,8 +246,6 @@ void game_loop() {
 					al_get_mouse_state(&state);
 					if (state.buttons & 1)
 						world.create_visible<Dummy>(mouse_coord.get_x(), mouse_coord.get_y());
-					if (state.buttons & 2)
-						world.create_visible<Spirit>(mouse_coord.get_x(), mouse_coord.get_y());
 
 				}
 				break;

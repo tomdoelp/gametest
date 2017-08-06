@@ -71,9 +71,11 @@ class Renderer {
 
 		std::vector<VisibleObj*> visibles;
 		ALLEGRO_SHADER *scale_shader;
+		ALLEGRO_SHADER *gray_shader;
 
 		void depth_sort();
 		ALLEGRO_SHADER *create_scale_shader();
+		ALLEGRO_SHADER *create_gray_shader();
 		ALLEGRO_BITMAP *temp_buffer;
 		ALLEGRO_BITMAP *battle_buffer;
 
