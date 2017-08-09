@@ -23,7 +23,7 @@ typedef enum SHNAME {
 	SH_SHADOW, 
 	SH_DUMMY, 
 	SH_CASTLE_PROPS, 
-	SH_SPIRIT,
+	SH_NOSEMAN,
 	SH_NUM 
 } SheetName;
 class SheetManager{

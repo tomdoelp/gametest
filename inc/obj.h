@@ -23,6 +23,7 @@ typedef enum OBJTYPE {
 	OBJ_PROP, 
 	OBJ_ENEMY,
 	OBJ_ENEMY_SPIRIT,
+	OBJ_NOSEMAN,
 	OBJNUM
 } ObjType;
 
@@ -187,6 +188,23 @@ class Dummy : public MobileObj {
 		
 };
 
+/* A mysterious figure */
+class Noseman : public MobileObj {
+	public:
+		Noseman(float x=0.0f, float y=0.0f);
+		~Noseman();
+		void update();
+		Box get_bbox() const;
+		void draw();
+
+		ObjType get_type() const;
+
+		void interact();
+	protected:
+		typedef MobileObj super;
+		Sprite *spr_shadow;
+};
+
 
 /* An overworld enemy object! */
 class Enemy : public MobileObj {
@@ -206,14 +224,6 @@ class Enemy : public MobileObj {
 		Sprite *spr_shadow;
 		bool aggro = false;
 		bool invincible = false;
-};
-
-
-
-class PartyMember : public MobileObj {
-	public:
-	protected:
-		PartyMember *ahead;
 };
 
 

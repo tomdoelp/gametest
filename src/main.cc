@@ -240,7 +240,7 @@ void game_loop() {
 					ALLEGRO_MOUSE_STATE state;
 					al_get_mouse_state(&state);
 					if (state.buttons & 1)
-						world.create_visible<Dummy>(mouse_coord.get_x(), mouse_coord.get_y());
+						world.create_visible<Noseman>(mouse_coord.get_x(), mouse_coord.get_y());
 
 				}
 				break;

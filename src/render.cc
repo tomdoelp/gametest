@@ -65,7 +65,12 @@ float View::get_scale(float dispw, float disph) {
 Box View::get_view_box() { return Box(get_x(),get_y(),w,h); }
 
 Renderer::Renderer() {}
-Renderer::~Renderer() {}
+Renderer::~Renderer() {
+	if (scale_shader)
+		al_destroy_shader(scale_shader);
+	if (gray_shader)
+		al_destroy_shader(gray_shader);
+}
 Renderer::Renderer(ALLEGRO_DISPLAY *display, View &v) : display(display), v(v) {
 	scale_shader = create_scale_shader();
 	gray_shader = create_gray_shader();
@@ -195,6 +200,21 @@ void Renderer::render(Map &m) {
 	al_set_target_bitmap(v.get_buffer());
 	render_scene(m, true);
 
+	/* redraw the view's bitmap in grayscale */
+	if (key[ALLEGRO_KEY_G] && gray_shader) {
+		float resolution_w = al_get_bitmap_width(v.get_buffer());
+		float resolution_h = al_get_bitmap_height(v.get_buffer());
+		ALLEGRO_BITMAP *graytemp = al_create_bitmap(resolution_w, resolution_h);
+		al_set_target_bitmap(graytemp);
+		al_use_shader(gray_shader);
+/*		float resolution[1][2] = { {resolution_w, resolution_h} }; */
+/*		al_set_shader_float_vector("resolution", 2, (float*)resolution, 1); */
+		al_draw_bitmap(v.get_buffer(),0,0,0);
+		al_use_shader(NULL);
+		al_set_target_bitmap(v.get_buffer());
+		al_draw_bitmap(graytemp,v.get_x(),v.get_y(),0);
+	}
+
 	/* Draw the overlay, if there should be one. */
 	switch(world->mode){
 		case World::MODE_PAUSE:
@@ -205,20 +225,6 @@ void Renderer::render(Map &m) {
 			break;
 		default:
 			break;
-	}
-
-
-	/*	float a = 0.5; */
-	/*	al_draw_tinted_bitmap(temp_buffer, al_map_rgba_f(a,a,a,a), v.get_x(), v.get_y(), 0); */
-
-	if (gray_shader) {
-		ALLEGRO_BITMAP *graytemp = al_create_bitmap(al_get_bitmap_width(v.get_buffer()), al_get_bitmap_height(v.get_buffer()));
-		al_set_target_bitmap(graytemp);
-		al_use_shader(gray_shader);
-		al_draw_bitmap(v.get_buffer(),0,0,0);
-		al_use_shader(NULL);
-		al_set_target_bitmap(v.get_buffer());
-		al_draw_bitmap(graytemp,v.get_x(),v.get_y(),0);
 	}
 
 	al_set_target_backbuffer(display);
@@ -249,9 +255,6 @@ void Renderer::render(Map &m) {
 			scale * vw, 
 			scale * vh, 
 			0);
-	/*dispw/2-(vw * scale)/2, 
-	  disph/2-(vh * scale)/2,*/ 
-
 	al_use_shader(NULL);
 }
 

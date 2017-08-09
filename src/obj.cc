@@ -307,6 +307,47 @@ void Prop::interact() {
 Box Prop::get_bbox() const { return Box(x-w/2, y-h, w, h); }
 
 
+/* Noseman */
+Noseman::Noseman(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SH_NOSEMAN)) {
+	spr_shadow = (*SheetManager::get_sheet(SH_SHADOW))[0];
+	spr_shadow->sprite_center_origin(ORIGIN_CENTER_MIDDLE);
+/*	aspeed = 3.0f / 60.0f; */
+	aspeed = 0.0f;
+	solid = true;
+
+	set_sprite(sheet, 0);
+}
+Noseman::~Noseman() {}
+
+void Noseman::update() {
+	super::update();
+}
+
+Box Noseman::get_bbox() const { return Box(x-w/2, y-h, w, h); }
+
+void Noseman::draw() {
+	if (sprite) {
+		spr_shadow->sprite_draw(x,y+1, 0.0f);
+		super::draw();
+	}
+	else {
+		al_draw_filled_ellipse(x, y, w/2, h/2, al_map_rgb(0, 255, 0));
+	}
+}
+ObjType Noseman::get_type() const { return OBJ_NOSEMAN; }
+void Noseman::interact() {
+	if (world) {
+		Player *p = world->get_player();
+		p->face_point(x,y);
+		if (p->get_x() > x)
+			hflip = false;
+		else
+			hflip = true;
+	}
+	/* TODO talk something */
+}
+
+
 
 /* Dummy Object */
 Dummy::Dummy(float x, float y) : MobileObj(x, y, 12, 8, 0, SheetManager::get_sheet(SH_DUMMY)) {
