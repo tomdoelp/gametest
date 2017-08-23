@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+#include <queue>
 #include <string>
 
 #include <allegro5/allegro.h>
@@ -11,6 +12,7 @@
 
 #include "global.h"
 #include "utils.h"
+#include "tweens.h"
 
 class World;
 class Overlay {
@@ -19,6 +21,24 @@ class Overlay {
 		virtual ~Overlay();
 		virtual void draw(float x=0.0f, float y=0.0f);
 		virtual void update();
+};
+
+class Dialog : public Overlay {
+	public:
+		Dialog();
+		~Dialog();
+		void update();
+		void draw(float x, float y);
+		void script_advance();
+		void script_goto(int script_position);
+
+		void set_script(std::vector<std::string> script);
+
+	private:
+		int script_position = 0;
+		std::vector<std::string> script;
+		std::vector<std::string> interrupted_script;
+		std::queue<GenericTween*> tweens;
 };
 
 class Textbox : public Overlay {
